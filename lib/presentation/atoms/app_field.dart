@@ -1,0 +1,135 @@
+import 'dart:async';
+import 'package:coffix_app/core/constants/colors.dart';
+import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+
+class AppField<T> extends StatefulWidget {
+  final String hintText;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  final bool showPasswordToggle;
+  final bool autofocus;
+  final String name;
+  final bool isRequired;
+  final List<FormFieldValidator<T>>? validators;
+  final Widget? prefixIcon;
+  final Function(String?)? onChanged;
+  final Duration debounceDuration;
+  final String? initialValue;
+  final bool readOnly;
+  final List<TextInputFormatter>? inputFormatters;
+  final Widget? suffixIcon;
+  final BoxConstraints? suffixIconConstraints;
+  final int maxLines;
+  final String? label;
+
+  const AppField({
+    super.key,
+    required this.hintText,
+    this.keyboardType,
+    this.obscureText = false,
+    this.showPasswordToggle = false,
+    this.autofocus = false,
+    required this.name,
+    this.isRequired = false,
+    this.validators,
+    this.prefixIcon,
+    this.onChanged,
+    this.debounceDuration = const Duration(milliseconds: 500),
+    this.initialValue,
+    this.readOnly = false,
+    this.inputFormatters,
+    this.suffixIcon,
+    this.suffixIconConstraints,
+    this.maxLines = 1,
+    this.label,
+  });
+
+  @override
+  State<AppField<T>> createState() => _AppFieldState<T>();
+}
+
+class _AppFieldState<T> extends State<AppField<T>> {
+  bool isPasswordVisible = false;
+  Timer? _debounceTimer;
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onTextChanged(String? value) {
+    if (widget.onChanged == null) return;
+
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(widget.debounceDuration, () {
+      widget.onChanged!(value);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.label != null)
+          Padding(
+            padding: EdgeInsets.only(bottom: AppSizes.xs),
+            child: Text(
+              widget.label!,
+              style: theme.textTheme.labelSmall?.copyWith(),
+            ),
+          ),
+        FormBuilderTextField(
+          maxLines: widget.maxLines,
+          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+          initialValue: widget.initialValue,
+          onChanged: _onTextChanged,
+          name: widget.name,
+          inputFormatters: widget.inputFormatters,
+          readOnly: widget.readOnly,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText && !isPasswordVisible,
+          autofocus: widget.autofocus,
+          style: theme.textTheme.bodyMedium?.copyWith(),
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.lightGrey,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.md),
+              borderSide: BorderSide(color: AppColors.borderColor),
+            ),
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: widget.showPasswordToggle
+                ? IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: AppColors.softGrey,
+                    ),
+                    onPressed: () =>
+                        setState(() => isPasswordVisible = !isPasswordVisible),
+                  )
+                : null,
+          ),
+          validator: FormBuilderValidators.compose([
+            if (widget.isRequired) FormBuilderValidators.required(),
+            if (widget.validators != null)
+              ...widget.validators!.map(
+                (validator) => validator as FormFieldValidator<String>,
+              ),
+          ]),
+          errorBuilder: (context, error) => Text(error.toString()),
+        ),
+      ],
+    );
+  }
+}
