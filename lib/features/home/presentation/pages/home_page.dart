@@ -1,11 +1,13 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
   static String route = 'home_route';
@@ -30,7 +32,9 @@ class HomeView extends StatelessWidget {
         actions: [
           AppIconButton.withIconData(
             Icons.person,
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(ProfilePage.route);
+            },
             borderColor: Colors.transparent,
           ),
         ],

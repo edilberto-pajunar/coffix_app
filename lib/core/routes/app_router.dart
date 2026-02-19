@@ -12,6 +12,8 @@ import 'package:coffix_app/features/payment/presentation/pages/payment_successfu
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +82,16 @@ class AppRouter {
                 path: "/",
                 name: HomePage.route,
                 builder: (context, state) => const HomePage(),
+              ),
+              GoRoute(
+                path: "/profile",
+                name: ProfilePage.route,
+                builder: (context, state) => const ProfilePage(),
+              ),
+              GoRoute(
+                path: "/about",
+                name: AboutPage.route,
+                builder: (context, state) => const AboutPage(),
               ),
             ],
           ),
