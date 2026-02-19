@@ -20,6 +20,8 @@ class AppSizes {
   static const double iconSizeSmall = 16.0;
   static const double iconSizeMedium = 24.0;
   static const double iconSizeLarge = 32.0;
+  static const double iconSizeXLarge = 48.0;
+  static const double iconSizeXXLarge = xxxxl * 8; // 320
 
   // --- Page Padding ---
   static const defaultPadding = EdgeInsetsDirectional.only(
