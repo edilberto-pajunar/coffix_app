@@ -7,6 +7,8 @@ import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_successful_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
@@ -129,6 +131,16 @@ class AppRouter {
                 path: "/my-order",
                 name: OrderPage.route,
                 builder: (context, state) => const OrderPage(),
+              ),
+              GoRoute(
+                path: "/payment",
+                name: PaymentPage.route,
+                builder: (context, state) => const PaymentPage(),
+              ),
+              GoRoute(
+                path: "/payment-successful",
+                name: PaymentSuccessfulPage.route,
+                builder: (context, state) => const PaymentSuccessfulPage(),
               ),
             ],
           ),

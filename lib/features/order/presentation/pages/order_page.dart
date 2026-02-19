@@ -1,10 +1,12 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OrderPage extends StatelessWidget {
   static String route = 'order_route';
@@ -89,7 +91,9 @@ class OrderView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: AppButton.primary(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.pushNamed(PaymentPage.route);
+                          },
                           label: 'Pay',
                         ),
                       ),
