@@ -1,5 +1,6 @@
 import 'package:coffix_app/core/constants/sizes.dart';
-import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
+import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
+import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
@@ -7,24 +8,26 @@ import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class StoresPage extends StatelessWidget {
-  static String route = 'stores_route';
-  const StoresPage({super.key});
+class ProductsPage extends StatelessWidget {
+  static String route = 'products_route';
+  const ProductsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const StoresView();
+    return ProductView();
   }
 }
 
-class StoresView extends StatelessWidget {
-  const StoresView({super.key});
+class ProductView extends StatelessWidget {
+  const ProductView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Stores", style: theme.textTheme.titleLarge)),
+      appBar: AppBar(
+        title: Text("Products", style: theme.textTheme.titleLarge),
+      ),
       body: SingleChildScrollView(
         padding: AppSizes.defaultPadding,
         child: Column(
@@ -35,7 +38,7 @@ class StoresView extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: AppField(hintText: "Store Search", name: "search"),
+                  child: AppField(hintText: "Product Search", name: "search"),
                 ),
               ],
             ),
@@ -49,22 +52,25 @@ class StoresView extends StatelessWidget {
                 return AppClickable(
                   showSplash: false,
                   onPressed: () {
-                    context.pushNamed(ProductsPage.route);
+                    context.pushNamed(AddProductPage.route);
                   },
                   child: Row(
                     children: [
                       CircleAvatar(radius: AppSizes.iconSizeLarge),
                       const SizedBox(width: AppSizes.md),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [Text("Store Name"), Text("Store Address")],
+                        child: Text(
+                          "Americano",
+                          style: theme.textTheme.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      AppIconButton.withIconData(
-                        Icons.arrow_forward,
-                        onPressed: () {},
-                        borderColor: Colors.transparent,
+                      Text(
+                        "\$10.00",
+                        style: theme.textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),

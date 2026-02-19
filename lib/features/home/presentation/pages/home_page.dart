@@ -4,6 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
+import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -50,21 +51,7 @@ class HomeView extends StatelessWidget {
                         AppImages.nameLogo,
                         size: AppSizes.iconSizeXLarge,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AppIcon.withSvgPath(
-                            AppImages.location,
-                            size: AppSizes.iconSizeMedium,
-                          ),
-                          Text(
-                            "Coffix Hamilton",
-                            style: theme.textTheme.bodyMedium!.copyWith(
-                              color: AppColors.lightGrey,
-                            ),
-                          ),
-                        ],
-                      ),
+                      AppLocation(),
                     ],
                   ),
                 ),

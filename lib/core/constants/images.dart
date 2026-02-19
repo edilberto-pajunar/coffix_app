@@ -8,6 +8,7 @@ class AppImages {
   static const String logo = "assets/icons/logo.svg";
   static const String menu = "assets/icons/menu.svg";
   static const String nameLogo = "assets/icons/name-logo.svg";
+  static const String back = "assets/icons/back.svg";
 
   // SSO ICONS
   static const String google = "assets/icons/google.svg";

@@ -13,6 +13,7 @@ class AppButton extends StatelessWidget {
     required this.label,
     this.textColor = AppColors.white,
     this.borderColor,
+    this.prefixIcon,
     this.suffixIcon,
   });
 
@@ -21,17 +22,20 @@ class AppButton extends StatelessWidget {
   final String label;
   final Color textColor;
   final Color? borderColor;
+  final Widget? prefixIcon;
   final Widget? suffixIcon;
 
   factory AppButton.primary({
     required VoidCallback? onPressed,
     required String label,
+    Widget? prefixIcon,
     Widget? suffixIcon,
   }) {
     return AppButton(
       variant: AppButtonVariant.primary,
       onPressed: onPressed,
       label: label,
+      prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
     );
   }
@@ -40,6 +44,7 @@ class AppButton extends StatelessWidget {
     required VoidCallback? onPressed,
     required String label,
     Color textColor = AppColors.white,
+    Widget? prefixIcon,
     Widget? suffixIcon,
   }) {
     return AppButton(
@@ -47,6 +52,7 @@ class AppButton extends StatelessWidget {
       onPressed: onPressed,
       label: label,
       textColor: textColor,
+      prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
     );
   }
@@ -55,13 +61,16 @@ class AppButton extends StatelessWidget {
     required VoidCallback? onPressed,
     required String label,
     Color? borderColor,
+    Widget? prefixIcon,
     Widget? suffixIcon,
   }) {
     return AppButton(
       variant: AppButtonVariant.outlined,
       onPressed: onPressed,
       label: label,
+      textColor: AppColors.black,
       borderColor: borderColor,
+      prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
     );
   }
@@ -99,19 +108,25 @@ class AppButton extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 48),
         decoration: decoration,
         alignment: Alignment.center,
-        child: suffixIcon != null
+        child: prefixIcon != null || suffixIcon != null
             ? Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if (prefixIcon != null) ...[
+                    prefixIcon!,
+                    const SizedBox(width: AppSizes.sm),
+                  ],
                   Text(
                     label,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: textColor,
                     ),
                   ),
-                  const SizedBox(width: AppSizes.sm),
-                  suffixIcon!,
+                  if (suffixIcon != null) ...[
+                    const SizedBox(width: AppSizes.sm),
+                    suffixIcon!,
+                  ],
                 ],
               )
             : Text(

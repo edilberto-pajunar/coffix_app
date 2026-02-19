@@ -12,6 +12,7 @@ class AppTheme {
       elevation: 0,
       centerTitle: true,
       titleTextStyle: AppTypography.textTheme.titleLarge,
+      scrolledUnderElevation: 0,
     ),
   );
 }

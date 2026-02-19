@@ -7,6 +7,9 @@ import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
+import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
+import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -102,6 +105,21 @@ class AppRouter {
                 path: "/stores",
                 name: StoresPage.route,
                 builder: (context, state) => const StoresPage(),
+              ),
+              GoRoute(
+                path: "/products",
+                name: ProductsPage.route,
+                builder: (context, state) => const ProductsPage(),
+              ),
+              GoRoute(
+                path: "/add-product",
+                name: AddProductPage.route,
+                builder: (context, state) => const AddProductPage(),
+              ),
+              GoRoute(
+                path: "/customize-product",
+                name: CustomizeProductPage.route,
+                builder: (context, state) => const CustomizeProductPage(),
               ),
             ],
           ),
