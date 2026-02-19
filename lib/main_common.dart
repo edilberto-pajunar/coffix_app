@@ -1,9 +1,16 @@
-import 'package:coffix_app/bootstrap.dart';
+import 'package:coffix_app/core/flavors/flavor_config.dart';
 import 'package:coffix_app/core/routes/app_router.dart';
 import 'package:coffix_app/core/theme/app_theme.dart';
+import 'package:coffix_app/bootstrap.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void mainCommon({
+  required Flavor flavor,
+  required String baseUrl,
+  required String name,
+}) {
+  FlavorConfig(flavor: flavor, baseUrl: baseUrl, name: name);
+
   bootstrap(() => MyApp());
 }
 

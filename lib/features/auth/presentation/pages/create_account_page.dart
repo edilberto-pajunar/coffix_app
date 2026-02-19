@@ -1,13 +1,16 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateAccountPage extends StatelessWidget {
   static String route = 'create_account_route';
@@ -66,16 +69,28 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                   showPasswordToggle: true,
                   isRequired: true,
                 ),
-                const SizedBox(height: AppSizes.sm),
+
+                const SizedBox(height: AppSizes.md),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: AppTextButton(
-                    text: 'Forgot password?',
-                    onPressed: () {},
-                    textStyle: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.accent,
-                      decoration: TextDecoration.underline,
-                      decorationColor: AppColors.accent,
+                  child: RichText(
+                    text: TextSpan(
+                      style: theme.textTheme.bodyMedium?.copyWith(),
+                      children: [
+                        TextSpan(text: "Already have an account? "),
+                        TextSpan(
+                          text: 'Login',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.accent,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.accent,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              context.goNamed(LoginPage.route);
+                            },
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -120,6 +135,25 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSizes.lg),
+
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: theme.textTheme.bodyMedium?.copyWith(),
+                    children: [
+                      TextSpan(text: "By registering you accept our "),
+                      TextSpan(
+                        text: 'Terms of Use & Privacy',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () {},
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSizes.xxxxl),
                 AppButton.primary(onPressed: _onNext, label: 'Next'),
               ],
             ),

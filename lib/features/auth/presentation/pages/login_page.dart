@@ -4,6 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/features/auth/presentation/pages/create_account_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
+import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -73,6 +74,19 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: AppSizes.md),
                 Align(
                   alignment: Alignment.centerRight,
+                  child: AppTextButton(
+                    text: 'Forgot password?',
+                    onPressed: () {},
+                    textStyle: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.accent,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.accent,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSizes.md),
+                Align(
+                  alignment: Alignment.centerRight,
                   child: RichText(
                     text: TextSpan(
                       style: theme.textTheme.bodyMedium?.copyWith(),
@@ -87,7 +101,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              context.pushNamed(CreateAccountPage.route);
+                              context.goNamed(CreateAccountPage.route);
                             },
                         ),
                       ],
