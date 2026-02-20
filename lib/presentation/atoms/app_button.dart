@@ -84,17 +84,21 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.primary => BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.md),
         color: AppColors.primary,
+        boxShadow: [AppColors.shadow],
       ),
       AppButtonVariant.secondary => BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.md),
         color: AppColors.white,
+        boxShadow: [AppColors.shadow],
       ),
       AppButtonVariant.outlined => BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.md),
+        color: AppColors.white,
         border: Border.all(
           width: 1,
           color: borderColor ?? AppColors.borderColor,
         ),
+        boxShadow: [AppColors.shadow],
       ),
     };
 
@@ -105,7 +109,7 @@ class AppButton extends StatelessWidget {
       borderRadius: borderRadius,
       showSplash: enabled,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 48),
+        constraints: const BoxConstraints(minHeight: 48, maxHeight: 48),
         decoration: decoration,
         alignment: Alignment.center,
         child: prefixIcon != null || suffixIcon != null

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -80,10 +81,7 @@ class _AppFieldState<T> extends State<AppField<T>> {
         if (widget.label != null)
           Padding(
             padding: EdgeInsets.only(bottom: AppSizes.xs),
-            child: Text(
-              widget.label!,
-              style: theme.textTheme.labelSmall?.copyWith(),
-            ),
+            child: Text(widget.label!, style: AppTypography.bodyXS),
           ),
         FormBuilderTextField(
           maxLines: widget.maxLines,
@@ -113,7 +111,6 @@ class _AppFieldState<T> extends State<AppField<T>> {
                       isPasswordVisible
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: AppColors.softGrey,
                     ),
                     onPressed: () =>
                         setState(() => isPasswordVisible = !isPasswordVisible),

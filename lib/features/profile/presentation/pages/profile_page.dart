@@ -1,5 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
@@ -7,6 +9,7 @@ import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -15,7 +18,10 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ProfileView();
+    return BlocProvider.value(
+      value: getIt<AuthCubit>(),
+      child: const ProfileView(),
+    );
   }
 }
 
@@ -78,7 +84,9 @@ class ProfileView extends StatelessWidget {
             ),
             ProfileTile(
               label: 'Logout',
-              onTap: () {},
+              onTap: () {
+                context.read<AuthCubit>().signOut();
+              },
               textColor: AppColors.primary,
             ),
             const SizedBox(height: AppSizes.xxxl),

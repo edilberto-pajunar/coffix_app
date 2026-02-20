@@ -11,6 +11,7 @@ class AppSizes {
   static const double xxl = 24.0;
   static const double xxxl = 32.0;
   static const double xxxxl = 40.0;
+  static const double xxxxxl = 48.0;
 
   static const double opacityDisabled = 0.5;
   static const double opacityEnabled = 1.0;

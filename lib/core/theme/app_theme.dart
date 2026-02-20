@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData theme = ThemeData(
     scaffoldBackgroundColor: AppColors.background,
-    textTheme: AppTypography.textTheme,
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.background,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: AppTypography.textTheme.titleLarge,
+      titleTextStyle: AppTypography.titleXL,
       scrolledUnderElevation: 0,
     ),
   );

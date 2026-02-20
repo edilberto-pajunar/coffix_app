@@ -10,4 +10,13 @@ class AppColors {
   static const Color lightGrey = Color(0xFFB0B0B0);
   static const Color borderColor = Color(0xFFD0D0D0);
   static const Color background = Color(0xFFF5F5F5);
+
+  static const Color error = Color(0xFFD32F2F);
+  static const Color success = Color(0xFF00C853);
+
+  static final BoxShadow shadow = BoxShadow(
+    color: Color(0x1A000000),
+    offset: Offset(0, 2),
+    blurRadius: 4,
+  );
 }

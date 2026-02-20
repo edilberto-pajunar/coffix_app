@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coffix_app/features/auth/presentation/pages/create_account_page.dart';
 import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
+import 'package:coffix_app/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
@@ -43,34 +44,42 @@ class AppRouter {
       FirebaseAuth.instance.authStateChanges(),
     ),
     redirect: (context, state) {
-      print('Current state: ${state.uri.path}');
       final currentUser = FirebaseAuth.instance.currentUser;
+      print('Current state: ${state.uri.path} - ${currentUser?.uid}');
       final isLoggedIn = currentUser != null;
-      final loggingIn = state.matchedLocation.startsWith('/welcome');
+      final isOnAuthRoute = state.matchedLocation.startsWith('/auth');
 
-      // If the user is not logged in, they must login
-      if (!isLoggedIn && state.uri.path != LoginPage.route) {
-        return loggingIn ? null : LoginPage.route;
+      if (!isLoggedIn) {
+        if (!isOnAuthRoute) return '/auth';
+        return null;
       }
 
-      // If the user is logged in but still on AuthView, send them to
-      // the home
-      if (loggingIn) return '/';
-
-      // No need to redirect at all
+      if (isLoggedIn && isOnAuthRoute) return '/';
       return null;
     },
     routes: [
       GoRoute(
-        path: "/login",
+        path: "/auth",
         name: LoginPage.route,
         builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+            path: "create-account",
+            name: CreateAccountPage.route,
+            builder: (context, state) => const CreateAccountPage(),
+          ),
+          GoRoute(
+            path: "verify-email",
+            name: VerifyEmailPage.route,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>;
+              final email = extra['email'] as String;
+              return VerifyEmailPage(email: email);
+            },
+          ),
+        ],
       ),
-      GoRoute(
-        path: "/create-account",
-        name: CreateAccountPage.route,
-        builder: (context, state) => const CreateAccountPage(),
-      ),
+
       // WHEN USER IS LOGGED IN
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

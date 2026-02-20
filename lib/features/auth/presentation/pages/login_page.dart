@@ -2,10 +2,12 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/presentation/pages/create_account_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
+import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -66,8 +68,12 @@ class _LoginViewState extends State<LoginView> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    SvgPicture.asset(
+                      AppImages.nameLogo,
+                      height: 100,
+                      width: 100,
+                    ),
                     const SizedBox(height: AppSizes.xxl),
-                    SvgPicture.asset(AppImages.nameLogo),
                     AppField<String>(
                       name: 'email',
                       label: 'Email',
@@ -91,24 +97,73 @@ class _LoginViewState extends State<LoginView> {
                       child: AppTextButton(
                         text: 'Forgot password?',
                         onPressed: () {},
-                        textStyle: theme.textTheme.bodyMedium?.copyWith(
+                        textStyle: AppTypography.body2XS.copyWith(
                           color: AppColors.accent,
                           decoration: TextDecoration.underline,
                           decorationColor: AppColors.accent,
                         ),
                       ),
                     ),
+                    const SizedBox(height: AppSizes.xxxxl),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            color: AppColors.borderColor,
+                            thickness: 1,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.sm,
+                          ),
+                          child: Text(
+                            "or continue with",
+                            style: AppTypography.body2XS,
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            color: AppColors.borderColor,
+                            thickness: 1,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: AppSizes.md),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        AppIconButton.withSvgPath(
+                          AppImages.google,
+                          onPressed: () {},
+                        ),
+                        AppIconButton.withSvgPath(
+                          AppImages.facebook,
+                          onPressed: () {},
+                        ),
+                        AppIconButton.withSvgPath(
+                          AppImages.apple,
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSizes.xxxxl),
                     Align(
                       alignment: Alignment.centerRight,
                       child: RichText(
                         text: TextSpan(
                           style: theme.textTheme.bodyMedium?.copyWith(),
                           children: [
-                            TextSpan(text: "Don't have an account? "),
+                            TextSpan(
+                              text: "Don't have an account? ",
+                              style: AppTypography.body2XS.copyWith(
+                                color: AppColors.black,
+                              ),
+                            ),
                             TextSpan(
                               text: 'Create an account',
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              style: AppTypography.body2XS.copyWith(
                                 color: AppColors.accent,
                                 decoration: TextDecoration.underline,
                                 decorationColor: AppColors.accent,

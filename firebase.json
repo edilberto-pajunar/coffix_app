@@ -1,1 +1,56 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"coffix-app-prod","appId":"1:730392440608:android:985cf971e07786b37e3145","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"coffix-app-prod","appId":"1:730392440608:ios:0cba47268ac686e77e3145","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options_dev.dart":{"projectId":"coffix-app-dev","configurations":{"android":"1:659645318299:android:57e7148f7de0c4fa11323e","ios":"1:659645318299:ios:42dcd84c6a557c0111323e","web":"1:659645318299:web:b84bb7f22b6e83a211323e"}},"lib/firebase_options_prod.dart":{"projectId":"coffix-app-prod","configurations":{"android":"1:730392440608:android:985cf971e07786b37e3145","ios":"1:730392440608:ios:0cba47268ac686e77e3145","web":"1:730392440608:web:78e1082c7b7805647e3145"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "coffix-app-prod",
+          "appId": "1:730392440608:android:985cf971e07786b37e3145",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "coffix-app-prod",
+          "appId": "1:730392440608:ios:0cba47268ac686e77e3145",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options_dev.dart": {
+          "projectId": "coffix-app-dev",
+          "configurations": {
+            "android": "1:659645318299:android:57e7148f7de0c4fa11323e",
+            "ios": "1:659645318299:ios:42dcd84c6a557c0111323e",
+            "web": "1:659645318299:web:b84bb7f22b6e83a211323e"
+          }
+        },
+        "lib/firebase_options_prod.dart": {
+          "projectId": "coffix-app-prod",
+          "configurations": {
+            "android": "1:730392440608:android:985cf971e07786b37e3145",
+            "ios": "1:730392440608:ios:0cba47268ac686e77e3145",
+            "web": "1:730392440608:web:78e1082c7b7805647e3145"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}
