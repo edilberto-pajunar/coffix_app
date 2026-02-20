@@ -14,15 +14,11 @@ enum LayoutPageTab {
   home(title: "Home", icon: AppImages.home, selectedIcon: AppImages.home),
   coffixCredit(
     title: "Coffix Credit",
-    icon: AppImages.credit,
-    selectedIcon: AppImages.credit,
+    icon: AppImages.discount,
+    selectedIcon: AppImages.discount,
   ),
-  menu(title: "Menu", icon: AppImages.menu, selectedIcon: AppImages.menu),
-  stores(
-    title: "Stores",
-    icon: AppImages.location,
-    selectedIcon: AppImages.location,
-  ),
+  menu(title: "Menu", icon: AppImages.coffee, selectedIcon: AppImages.coffee),
+  stores(title: "Stores", icon: AppImages.shop, selectedIcon: AppImages.shop),
   order(title: "My Order", icon: AppImages.cart, selectedIcon: AppImages.cart);
 
   final String title;
@@ -133,7 +129,7 @@ class _LayoutViewState extends State<LayoutView> {
                             (tab) => BottomNavigationBarItem(
                               icon: AppIcon.withSvgPath(
                                 tab.icon,
-                                size: AppSizes.iconSizeLarge,
+                                size: AppSizes.iconSizeMedium,
                                 color:
                                     widget.shell.currentIndex ==
                                         LayoutPageTab.values.indexOf(tab)

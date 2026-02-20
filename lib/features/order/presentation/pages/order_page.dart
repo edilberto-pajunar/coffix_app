@@ -4,9 +4,8 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/order/logic/cart_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
 import 'package:coffix_app/features/order/presentation/widgets/order_item.dart';
-import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
-import 'package:coffix_app/presentation/atoms/app_location.dart';
+import 'package:coffix_app/presentation/molecules/app_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +31,6 @@ class OrderView extends StatelessWidget {
     final theme = Theme.of(context);
     const totalPrice = '\$100.00';
     return Scaffold(
-      appBar: AppBar(title: Text("Order", style: theme.textTheme.titleLarge)),
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           return Column(
@@ -43,7 +41,7 @@ class OrderView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      AppLocation(),
+                      AppHeader(title: "Order"),
                       const SizedBox(height: AppSizes.lg),
                       ListView.separated(
                         shrinkWrap: true,

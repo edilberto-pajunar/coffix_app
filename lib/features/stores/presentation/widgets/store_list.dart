@@ -6,7 +6,7 @@ import 'package:coffix_app/features/stores/data/model/store.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
-import 'package:coffix_app/presentation/atoms/app_location.dart';
+import 'package:coffix_app/presentation/molecules/app_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +22,7 @@ class StoreList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppLocation(),
+          AppHeader(title: "Stores"),
           const SizedBox(height: AppSizes.md),
           Row(
             children: [

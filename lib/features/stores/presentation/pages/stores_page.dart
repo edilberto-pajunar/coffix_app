@@ -44,7 +44,6 @@ class _StoresViewState extends State<StoresView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Stores", style: theme.textTheme.titleLarge)),
       body: BlocConsumer<StoreCubit, StoreState>(
         listener: (context, state) {},
         builder: (context, state) {

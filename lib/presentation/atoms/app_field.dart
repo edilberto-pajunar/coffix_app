@@ -81,8 +81,20 @@ class _AppFieldState<T> extends State<AppField<T>> {
         if (widget.label != null)
           Padding(
             padding: EdgeInsets.only(bottom: AppSizes.xs),
-            child: Text(widget.label!, style: AppTypography.bodyXS),
+            child: Row(
+              children: [
+                Text(widget.label!, style: AppTypography.bodyXS),
+                if (widget.isRequired)
+                  Text(
+                    '*',
+                    style: AppTypography.bodyXS.copyWith(
+                      color: AppColors.error,
+                    ),
+                  ),
+              ],
+            ),
           ),
+
         FormBuilderTextField(
           maxLines: widget.maxLines,
           onTapOutside: (_) => FocusScope.of(context).unfocus(),

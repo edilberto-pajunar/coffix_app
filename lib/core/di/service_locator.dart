@@ -1,5 +1,6 @@
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
+import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
@@ -10,6 +11,9 @@ import 'package:coffix_app/features/products/data/product_repository_impl.dart';
 import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
+import 'package:coffix_app/features/profile/data/profile_repository_impl.dart';
+import 'package:coffix_app/features/profile/domain/usecase/update_profile.dart';
+import 'package:coffix_app/features/profile/logic/profile_cubit.dart';
 import 'package:coffix_app/features/stores/data/store_repository_impl.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +28,7 @@ Future<void> setupServiceLocator() async {
   // -- Auth Feature --
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   getIt.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl());
+  getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl());
   getIt.registerLazySingleton<StoreRepository>(() => StoreRepositoryImpl());
 
   // Auth Cubit
@@ -50,6 +55,19 @@ Future<void> setupServiceLocator() async {
   // Product Modifier Cubit
   getIt.registerLazySingleton<ProductModifierCubit>(
     () => ProductModifierCubit(),
+  );
+
+  // Update Profile Use Case
+  getIt.registerLazySingleton<UpdateProfileUseCase>(
+    () => UpdateProfileUseCase(profileRepository: getIt<ProfileRepository>()),
+  );
+
+  // Profile Cubit
+  getIt.registerLazySingleton<ProfileCubit>(
+    () => ProfileCubit(
+      profileRepository: getIt<ProfileRepository>(),
+      updateProfileUseCase: getIt<UpdateProfileUseCase>(),
+    ),
   );
 
   // Product Cubit
