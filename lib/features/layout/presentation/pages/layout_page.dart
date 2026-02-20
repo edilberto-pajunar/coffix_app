@@ -121,7 +121,7 @@ class _LayoutViewState extends State<LayoutView> {
                     child: BottomNavigationBar(
                       currentIndex: widget.shell.currentIndex,
                       onTap: (index) {
-                        widget.shell.goBranch(index, initialLocation: true);
+                        widget.shell.goBranch(index);
                       },
                       type: BottomNavigationBarType.fixed,
                       backgroundColor: Colors.transparent,

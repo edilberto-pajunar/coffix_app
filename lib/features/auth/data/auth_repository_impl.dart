@@ -127,7 +127,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
   }) async {
     try {
-      await _firestore.collection('users').doc(docId).set({
+      await _firestore.collection('customers').doc(docId).set({
         'docId': docId,
         'email': email,
         'createdAt': DateTime.now(),
@@ -140,11 +140,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Stream<AppUser?> getUser() {
     return _firestore
-        .collection('users')
+        .collection('customers')
         .doc(_auth.currentUser?.uid)
         .snapshots()
         .map((event) {
-          print(event.data());
           return AppUser.fromJson(event.data() ?? {});
         });
   }

@@ -96,14 +96,21 @@ class _AppFieldState<T> extends State<AppField<T>> {
           autofocus: widget.autofocus,
           style: theme.textTheme.bodyMedium?.copyWith(),
           decoration: InputDecoration(
+            fillColor: widget.readOnly ? AppColors.softGrey : null,
+            filled: widget.readOnly,
             hintText: widget.hintText,
             hintStyle: theme.textTheme.bodyMedium?.copyWith(
               color: AppColors.lightGrey,
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.md),
-              borderSide: BorderSide(color: AppColors.borderColor),
-            ),
+            border: widget.readOnly
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.sm),
+                    borderSide: BorderSide.none,
+                  )
+                : OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.sm),
+                    borderSide: BorderSide(color: AppColors.borderColor),
+                  ),
             prefixIcon: widget.prefixIcon,
             suffixIcon: widget.showPasswordToggle
                 ? IconButton(

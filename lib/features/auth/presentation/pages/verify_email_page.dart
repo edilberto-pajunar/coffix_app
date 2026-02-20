@@ -6,6 +6,7 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
@@ -124,7 +125,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 'OTP sent to $email. Please check your email.',
               ),
               error: (message) => AppSnackbar.showError(context, message),
-              verified: () => context.goNamed(HomePage.route),
+              verified: () => context.goNamed(PersonalInfoPage.route),
             );
           },
           builder: (context, state) {
@@ -162,7 +163,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   ),
                   const SizedBox(height: AppSizes.xxxl),
                   AppButton.primary(
-                    onPressed: _pin.length == 6 ? _onVerify : null,
+                    onPressed: _onVerify,
+                    disabled: _pin.length != 6,
                     label: 'Verify',
                   ),
                   const SizedBox(height: AppSizes.md),

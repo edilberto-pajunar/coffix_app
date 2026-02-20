@@ -1,28 +1,27 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/features/auth/data/model/user.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   static String route = 'personal_info_route';
-  const PersonalInfoPage({super.key, this.initialEmail});
-
-  final String? initialEmail;
+  const PersonalInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return PersonalInfoView(email: initialEmail ?? '');
+    return PersonalInfoView();
   }
 }
 
 class PersonalInfoView extends StatefulWidget {
-  const PersonalInfoView({super.key, required this.email});
-
-  final String email;
+  const PersonalInfoView({super.key});
 
   @override
   State<PersonalInfoView> createState() => _PersonalInfoViewState();
@@ -40,6 +39,11 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final AppUser? user = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user,
+      orElse: () => null,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Personal info', style: theme.textTheme.titleLarge),
@@ -51,6 +55,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
       body: SingleChildScrollView(
         padding: AppSizes.defaultPadding,
         child: FormBuilder(
+          initialValue: {'email': user?.email},
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,7 +64,6 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                 name: 'email',
                 label: 'Email',
                 hintText: 'Email',
-                initialValue: widget.email,
                 readOnly: true,
               ),
               const SizedBox(height: AppSizes.lg),

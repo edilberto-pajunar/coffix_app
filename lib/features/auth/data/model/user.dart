@@ -19,6 +19,9 @@ class AppUser {
   @DateTimeConverter()
   final DateTime? createdAt;
   final bool? emailVerified;
+  final bool? getPurchaseInfoByMail;
+  final bool? getPromotions;
+  final bool? allowWinACoffee;
 
   AppUser({
     this.docId,
@@ -33,6 +36,9 @@ class AppUser {
     this.preferredStore,
     this.createdAt,
     this.emailVerified,
+    this.getPurchaseInfoByMail,
+    this.getPromotions,
+    this.allowWinACoffee,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

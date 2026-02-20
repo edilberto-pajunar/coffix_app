@@ -1,0 +1,48 @@
+import 'package:bloc/bloc.dart';
+import 'package:coffix_app/features/products/data/model/modifier.dart';
+import 'package:coffix_app/features/products/data/model/product.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'product_modifier_state.dart';
+part 'product_modifier_cubit.freezed.dart';
+
+class ProductModifierCubit extends Cubit<ProductModifierState> {
+  ProductModifierCubit() : super(ProductModifierState());
+
+  double getTotalPrice(List<Modifier> modifiers) {
+    return modifiers.fold(0.0, (sum, mod) => sum + (mod.priceDelta ?? 0));
+  }
+
+  void initProductModifiers({
+    required Product product,
+    required List<Modifier> allModifiers,
+  }) {
+    final groupCodes = product.modifierGroupCodes?.toSet() ?? {};
+    if (groupCodes.isEmpty) {
+      emit(ProductModifierState(modifiers: [], totalPrice: 0));
+      return;
+    }
+    final inScope = allModifiers.where((m) => groupCodes.contains(m.groupId));
+    final defaults = inScope.where((m) => m.isDefault == true).toList();
+    emit(
+      ProductModifierState(
+        modifiers: defaults,
+        totalPrice: getTotalPrice(defaults),
+      ),
+    );
+  }
+
+  void selectModifiers({required Modifier modifier}) {
+    final current = state.modifiers;
+    final sameModifier = current.any((m) => m.docId == modifier.docId);
+    final updated = sameModifier
+        ? current.where((m) => m.docId != modifier.docId).toList()
+        : [...current.where((m) => m.groupId != modifier.groupId), modifier];
+    emit(
+      ProductModifierState(
+        modifiers: updated,
+        totalPrice: getTotalPrice(updated),
+      ),
+    );
+  }
+}

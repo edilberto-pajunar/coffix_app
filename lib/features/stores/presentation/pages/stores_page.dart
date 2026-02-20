@@ -1,10 +1,16 @@
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
+import 'package:coffix_app/features/stores/presentation/widgets/store_list.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
+import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
+import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class StoresPage extends StatelessWidget {
@@ -13,68 +19,45 @@ class StoresPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const StoresView();
+    return BlocProvider.value(
+      value: getIt<StoreCubit>(),
+      child: const StoresView(),
+    );
   }
 }
 
-class StoresView extends StatelessWidget {
+class StoresView extends StatefulWidget {
   const StoresView({super.key});
+
+  @override
+  State<StoresView> createState() => _StoresViewState();
+}
+
+class _StoresViewState extends State<StoresView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<StoreCubit>().getStores();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: Text("Stores", style: theme.textTheme.titleLarge)),
-      body: SingleChildScrollView(
-        padding: AppSizes.defaultPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AppLocation(),
-            const SizedBox(height: AppSizes.md),
-            Row(
-              children: [
-                Expanded(
-                  child: AppField(hintText: "Store Search", name: "search"),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSizes.md),
-            Text("Please select your preferred loaction:"),
-            const SizedBox(height: AppSizes.lg),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return AppClickable(
-                  showSplash: false,
-                  onPressed: () {
-                    context.pushNamed(ProductsPage.route);
-                  },
-                  child: Row(
-                    children: [
-                      CircleAvatar(radius: AppSizes.iconSizeLarge),
-                      const SizedBox(width: AppSizes.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [Text("Store Name"), Text("Store Address")],
-                        ),
-                      ),
-                      AppIconButton.withIconData(
-                        Icons.arrow_forward,
-                        onPressed: () {},
-                        borderColor: Colors.transparent,
-                      ),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (_, __) => const Divider(),
-              itemCount: 10,
-            ),
-          ],
-        ),
+      body: BlocConsumer<StoreCubit, StoreState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return state.when(
+            initial: () => const SizedBox.shrink(),
+            loading: () => AppLoading(),
+            loaded: (stores) {
+              return StoreList(stores: stores);
+            },
+            error: (message) =>
+                AppError(title: "Failed getting store", subtitle: message),
+          );
+        },
       ),
     );
   }

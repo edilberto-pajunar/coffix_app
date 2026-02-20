@@ -24,6 +24,10 @@ class AppSizes {
   static const double iconSizeXLarge = 48.0;
   static const double iconSizeXXLarge = xxxxl * 8; // 320
 
+  // -- Card --
+  static const double chipSizeSmall = 48.0;
+  static const double productImageSize = 400;
+
   // --- Page Padding ---
   static const defaultPadding = EdgeInsetsDirectional.only(
     start: AppSizes.xxl,

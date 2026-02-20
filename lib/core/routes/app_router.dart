@@ -8,8 +8,11 @@ import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_successful_page.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_web_page.dart';
+import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
@@ -83,6 +86,13 @@ class AppRouter {
                 path: "/",
                 name: HomePage.route,
                 builder: (context, state) => const HomePage(),
+                routes: [
+                  GoRoute(
+                    path: "/personal-info",
+                    name: PersonalInfoPage.route,
+                    builder: (context, state) => const PersonalInfoPage(),
+                  ),
+                ],
               ),
               GoRoute(
                 path: "/verify-email",
@@ -102,11 +112,6 @@ class AppRouter {
                 path: "/about",
                 name: AboutPage.route,
                 builder: (context, state) => const AboutPage(),
-              ),
-              GoRoute(
-                path: "/personal-info",
-                name: PersonalInfoPage.route,
-                builder: (context, state) => const PersonalInfoPage(),
               ),
             ],
           ),
@@ -143,12 +148,33 @@ class AppRouter {
               GoRoute(
                 path: "/add-product",
                 name: AddProductPage.route,
-                builder: (context, state) => const AddProductPage(),
+                pageBuilder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final product = extra['product'] as Product;
+                  return CustomTransitionPage(
+                    child: AddProductPage(product: product),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                          final scale = Tween<double>(begin: 0.3, end: 1.0)
+                              .animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeInOut,
+                                ),
+                              );
+                          return ScaleTransition(scale: scale, child: child);
+                        },
+                  );
+                },
               ),
               GoRoute(
                 path: "/customize-product",
                 name: CustomizeProductPage.route,
-                builder: (context, state) => const CustomizeProductPage(),
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final product = extra['product'] as Product;
+                  return CustomizeProductPage(product: product);
+                },
               ),
             ],
           ),
@@ -167,7 +193,19 @@ class AppRouter {
               GoRoute(
                 path: "/payment-successful",
                 name: PaymentSuccessfulPage.route,
-                builder: (context, state) => const PaymentSuccessfulPage(),
+                builder: (context, state) => PaymentSuccessfulPage(
+                  pickupAt: state.extra as DateTime?,
+                ),
+              ),
+              GoRoute(
+                path: "/payment-web",
+                name: PaymentWebPage.route,
+                builder: (context, state) => const PaymentWebPage(),
+              ),
+              GoRoute(
+                path: "/schedule-order",
+                name: ScheduleOrderPage.route,
+                builder: (context, state) => const ScheduleOrderPage(),
               ),
             ],
           ),

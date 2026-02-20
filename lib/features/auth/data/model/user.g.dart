@@ -19,6 +19,9 @@ AppUser _$AppUserFromJson(Map<String, dynamic> json) => AppUser(
   preferredStore: json['preferredStore'] as String?,
   createdAt: const DateTimeConverter().fromJson(json['createdAt']),
   emailVerified: json['emailVerified'] as bool?,
+  getPurchaseInfoByMail: json['getPurchaseInfoByMail'] as bool?,
+  getPromotions: json['getPromotions'] as bool?,
+  allowWinACoffee: json['allowWinACoffee'] as bool?,
 );
 
 Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
@@ -34,4 +37,7 @@ Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
   'preferredStore': instance.preferredStore,
   'createdAt': const DateTimeConverter().toJson(instance.createdAt),
   'emailVerified': instance.emailVerified,
+  'getPurchaseInfoByMail': instance.getPurchaseInfoByMail,
+  'getPromotions': instance.getPromotions,
+  'allowWinACoffee': instance.allowWinACoffee,
 };

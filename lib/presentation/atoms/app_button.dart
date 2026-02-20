@@ -15,21 +15,24 @@ class AppButton extends StatelessWidget {
     this.borderColor,
     this.prefixIcon,
     this.suffixIcon,
+    this.disabled = false,
   });
 
   final AppButtonVariant variant;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
   final String label;
   final Color textColor;
   final Color? borderColor;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final bool disabled;
 
   factory AppButton.primary({
-    required VoidCallback? onPressed,
+    required VoidCallback onPressed,
     required String label,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    bool disabled = false,
   }) {
     return AppButton(
       variant: AppButtonVariant.primary,
@@ -37,15 +40,17 @@ class AppButton extends StatelessWidget {
       label: label,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
+      disabled: disabled,
     );
   }
 
   factory AppButton.secondary({
-    required VoidCallback? onPressed,
+    required VoidCallback onPressed,
     required String label,
     Color textColor = AppColors.white,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    bool disabled = false,
   }) {
     return AppButton(
       variant: AppButtonVariant.secondary,
@@ -54,15 +59,17 @@ class AppButton extends StatelessWidget {
       textColor: textColor,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
+      disabled: disabled,
     );
   }
 
   factory AppButton.outlined({
-    required VoidCallback? onPressed,
+    required VoidCallback onPressed,
     required String label,
     Color? borderColor,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    bool disabled = false,
   }) {
     return AppButton(
       variant: AppButtonVariant.outlined,
@@ -72,18 +79,18 @@ class AppButton extends StatelessWidget {
       borderColor: borderColor,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
+      disabled: disabled,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final enabled = onPressed != null;
 
     final BoxDecoration decoration = switch (variant) {
       AppButtonVariant.primary => BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.md),
-        color: AppColors.primary,
+        color: disabled ? AppColors.lightGrey : AppColors.primary,
         boxShadow: [AppColors.shadow],
       ),
       AppButtonVariant.secondary => BoxDecoration(
@@ -96,7 +103,9 @@ class AppButton extends StatelessWidget {
         color: AppColors.white,
         border: Border.all(
           width: 1,
-          color: borderColor ?? AppColors.borderColor,
+          color: disabled
+              ? AppColors.softGrey
+              : borderColor ?? AppColors.borderColor,
         ),
         boxShadow: [AppColors.shadow],
       ),
@@ -104,10 +113,10 @@ class AppButton extends StatelessWidget {
 
     final borderRadius = BorderRadius.circular(AppSizes.md);
     return AppClickable(
-      onPressed: onPressed ?? () {},
-      disabled: !enabled,
+      disabled: disabled,
+      onPressed: onPressed,
       borderRadius: borderRadius,
-      showSplash: enabled,
+      showSplash: !disabled,
       child: Container(
         constraints: const BoxConstraints(minHeight: 48, maxHeight: 48),
         decoration: decoration,

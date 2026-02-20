@@ -1,11 +1,13 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_web_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class PaymentPage extends StatelessWidget {
   static String route = 'payment_route';
@@ -138,7 +140,12 @@ class _PaymentViewState extends State<PaymentView> {
                   AppSizes.xxl,
                   AppSizes.xxl,
                 ),
-                child: AppButton.primary(onPressed: () {}, label: 'Pay'),
+                child: AppButton.primary(
+                  onPressed: () {
+                    context.pushNamed(PaymentWebPage.route);
+                  },
+                  label: 'Pay',
+                ),
               ),
             ),
         ],
