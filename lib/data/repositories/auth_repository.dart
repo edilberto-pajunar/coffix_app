@@ -8,4 +8,8 @@ abstract class AuthRepository {
     required String password,
   });
   Future<void> signOut();
+  Future<void> signInWithGoogle();
+  Future<void> signInWithFacebook();
+  Future<void> signInWithApple();
+  Future<void> createUserDoc({required String docId, required String email});
 }

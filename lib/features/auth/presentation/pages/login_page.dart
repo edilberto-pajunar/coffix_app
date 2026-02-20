@@ -8,6 +8,8 @@ import 'package:coffix_app/features/auth/presentation/pages/create_account_page.
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
+import 'package:coffix_app/presentation/atoms/app_loading.dart';
+import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +62,17 @@ class _LoginViewState extends State<LoginView> {
           padding: AppSizes.defaultPadding,
           child: FormBuilder(
             key: _formKey,
-            child: BlocBuilder<AuthCubit, AuthState>(
+            child: BlocConsumer<AuthCubit, AuthState>(
+              listener: (context, state) {
+                state.whenOrNull(
+                  authenticated: () => context.go('/'),
+                  error: (message) => AppSnackbar.showError(context, message),
+                );
+              },
               builder: (context, state) {
-                if (state == AuthState.loading()) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                state.whenOrNull(
+                  loading: () => const Center(child: AppLoading()),
+                );
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -136,7 +144,9 @@ class _LoginViewState extends State<LoginView> {
                       children: [
                         AppIconButton.withSvgPath(
                           AppImages.google,
-                          onPressed: () {},
+                          onPressed: () {
+                            context.read<AuthCubit>().signInWithGoogle();
+                          },
                         ),
                         AppIconButton.withSvgPath(
                           AppImages.facebook,

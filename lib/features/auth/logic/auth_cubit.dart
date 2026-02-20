@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 part 'auth_state.dart';
 part 'auth_cubit.freezed.dart';
@@ -44,7 +46,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthState.loading());
     try {
-    await _authRepository.signUpWithEmailAndPassword(
+      await _authRepository.signUpWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -58,6 +60,21 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       // await _authRepository.sendEmailVerification();
       emit(AuthState.authenticated());
+    } catch (e) {
+      emit(AuthState.error(message: e.toString()));
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    emit(AuthState.loading());
+    try {
+      await _authRepository.signInWithGoogle();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        emit(AuthState.initial());
+        return;
+      }
+      emit(AuthState.error(message: e.code.name));
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
     }
