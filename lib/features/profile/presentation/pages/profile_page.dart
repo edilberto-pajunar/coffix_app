@@ -3,6 +3,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
@@ -68,14 +69,34 @@ class ProfileView extends StatelessWidget {
                 color: AppColors.lightGrey,
               ),
             ),
+            ProfileTile(
+              label: 'Profile',
+              onTap: () {
+                context.pushNamed(PersonalInfoPage.route);
+              },
+            ),
             const SizedBox(height: AppSizes.sm),
+
+            Text(
+              'Wallet',
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: AppColors.lightGrey,
+              ),
+            ),
             ProfileTile(label: 'Transaction history', onTap: () {}),
             ProfileTile(label: 'Share your balance', onTap: () {}),
             ProfileTile(label: 'Specials', onTap: () {}),
             ProfileTile(label: 'Coffix QR ID', onTap: () {}),
             ProfileTile(label: 'Coffee on us', onTap: () {}),
             ProfileTile(label: 'Coffee for home', onTap: () {}),
-            const SizedBox(height: AppSizes.lg),
+            const SizedBox(height: AppSizes.sm),
+
+            Text(
+              'About Coffix',
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: AppColors.lightGrey,
+              ),
+            ),
             ProfileTile(
               label: 'About',
               onTap: () {

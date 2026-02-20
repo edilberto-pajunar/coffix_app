@@ -5,8 +5,8 @@ part 'user.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AppUser {
-  final String docId;
-  final String email;
+  final String? docId;
+  final String? email;
   final String? firstName;
   final String? lastName;
   final String? nickName;
@@ -18,10 +18,11 @@ class AppUser {
   final String? preferredStore;
   @DateTimeConverter()
   final DateTime? createdAt;
+  final bool? emailVerified;
 
   AppUser({
-    required this.docId,
-    required this.email,
+    this.docId,
+    this.email,
     this.firstName,
     this.lastName,
     this.nickName,
@@ -31,6 +32,7 @@ class AppUser {
     this.city,
     this.preferredStore,
     this.createdAt,
+    this.emailVerified,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

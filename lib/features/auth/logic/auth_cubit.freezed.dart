@@ -55,14 +55,16 @@ extension AuthStatePatterns on AuthState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Authenticated value)?  authenticated,TResult Function( _Unauthenticated value)?  unauthenticated,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _EmailNotVerified value)?  emailNotVerified,TResult Function( _Authenticated value)?  authenticated,TResult Function( _Unauthenticated value)?  unauthenticated,TResult Function( _OtpSent value)?  otpSent,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Authenticated() when authenticated != null:
+return loading(_that);case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified(_that);case _Authenticated() when authenticated != null:
 return authenticated(_that);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated(_that);case _Error() when error != null:
+return unauthenticated(_that);case _OtpSent() when otpSent != null:
+return otpSent(_that);case _Error() when error != null:
 return error(_that);case _:
   return orElse();
 
@@ -81,14 +83,16 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _Unauthenticated value)  unauthenticated,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _EmailNotVerified value)  emailNotVerified,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _Unauthenticated value)  unauthenticated,required TResult Function( _OtpSent value)  otpSent,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
-return loading(_that);case _Authenticated():
+return loading(_that);case _EmailNotVerified():
+return emailNotVerified(_that);case _Authenticated():
 return authenticated(_that);case _Unauthenticated():
-return unauthenticated(_that);case _Error():
+return unauthenticated(_that);case _OtpSent():
+return otpSent(_that);case _Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -106,14 +110,16 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _Unauthenticated value)?  unauthenticated,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _EmailNotVerified value)?  emailNotVerified,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _Unauthenticated value)?  unauthenticated,TResult? Function( _OtpSent value)?  otpSent,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Authenticated() when authenticated != null:
+return loading(_that);case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified(_that);case _Authenticated() when authenticated != null:
 return authenticated(_that);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated(_that);case _Error() when error != null:
+return unauthenticated(_that);case _OtpSent() when otpSent != null:
+return otpSent(_that);case _Error() when error != null:
 return error(_that);case _:
   return null;
 
@@ -131,13 +137,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  authenticated,TResult Function()?  unauthenticated,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  emailNotVerified,TResult Function( AppUser user)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String email)?  otpSent,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
-return loading();case _Authenticated() when authenticated != null:
-return authenticated();case _Unauthenticated() when unauthenticated != null:
-return unauthenticated();case _Error() when error != null:
+return loading();case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified();case _Authenticated() when authenticated != null:
+return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _OtpSent() when otpSent != null:
+return otpSent(_that.email);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -156,13 +164,15 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  authenticated,required TResult Function()  unauthenticated,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  emailNotVerified,required TResult Function( AppUser user)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String email)  otpSent,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
-return loading();case _Authenticated():
-return authenticated();case _Unauthenticated():
-return unauthenticated();case _Error():
+return loading();case _EmailNotVerified():
+return emailNotVerified();case _Authenticated():
+return authenticated(_that.user);case _Unauthenticated():
+return unauthenticated();case _OtpSent():
+return otpSent(_that.email);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -180,13 +190,15 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  emailNotVerified,TResult? Function( AppUser user)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String email)?  otpSent,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
-return loading();case _Authenticated() when authenticated != null:
-return authenticated();case _Unauthenticated() when unauthenticated != null:
-return unauthenticated();case _Error() when error != null:
+return loading();case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified();case _Authenticated() when authenticated != null:
+return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _OtpSent() when otpSent != null:
+return otpSent(_that.email);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -262,8 +274,8 @@ String toString() {
 /// @nodoc
 
 
-class _Authenticated implements AuthState {
-  const _Authenticated();
+class _EmailNotVerified implements AuthState {
+  const _EmailNotVerified();
   
 
 
@@ -273,7 +285,7 @@ class _Authenticated implements AuthState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailNotVerified);
 }
 
 
@@ -282,7 +294,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'AuthState.authenticated()';
+  return 'AuthState.emailNotVerified()';
 }
 
 
@@ -290,6 +302,72 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _Authenticated implements AuthState {
+  const _Authenticated({required this.user});
+  
+
+ final  AppUser user;
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AuthenticatedCopyWith<_Authenticated> get copyWith => __$AuthenticatedCopyWithImpl<_Authenticated>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated&&(identical(other.user, user) || other.user == user));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,user);
+
+@override
+String toString() {
+  return 'AuthState.authenticated(user: $user)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AuthenticatedCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
+  factory _$AuthenticatedCopyWith(_Authenticated value, $Res Function(_Authenticated) _then) = __$AuthenticatedCopyWithImpl;
+@useResult
+$Res call({
+ AppUser user
+});
+
+
+
+
+}
+/// @nodoc
+class __$AuthenticatedCopyWithImpl<$Res>
+    implements _$AuthenticatedCopyWith<$Res> {
+  __$AuthenticatedCopyWithImpl(this._self, this._then);
+
+  final _Authenticated _self;
+  final $Res Function(_Authenticated) _then;
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? user = null,}) {
+  return _then(_Authenticated(
+user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as AppUser,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
@@ -322,6 +400,72 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _OtpSent implements AuthState {
+  const _OtpSent({required this.email});
+  
+
+ final  String email;
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$OtpSentCopyWith<_OtpSent> get copyWith => __$OtpSentCopyWithImpl<_OtpSent>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OtpSent&&(identical(other.email, email) || other.email == email));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,email);
+
+@override
+String toString() {
+  return 'AuthState.otpSent(email: $email)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$OtpSentCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
+  factory _$OtpSentCopyWith(_OtpSent value, $Res Function(_OtpSent) _then) = __$OtpSentCopyWithImpl;
+@useResult
+$Res call({
+ String email
+});
+
+
+
+
+}
+/// @nodoc
+class __$OtpSentCopyWithImpl<$Res>
+    implements _$OtpSentCopyWith<$Res> {
+  __$OtpSentCopyWithImpl(this._self, this._then);
+
+  final _OtpSent _self;
+  final $Res Function(_OtpSent) _then;
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? email = null,}) {
+  return _then(_OtpSent(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 

@@ -8,11 +8,18 @@ class AuthState with _$AuthState {
   // Loading state (e.g., checking tokens, fetching user profile).
   const factory AuthState.loading() = _Loading;
 
+  // User is authenticated but email is not verified
+  const factory AuthState.emailNotVerified() = _EmailNotVerified;
+
   // User is authenticated and has completed onboarding
-  const factory AuthState.authenticated() = _Authenticated;
+  const factory AuthState.authenticated({required AppUser user}) =
+      _Authenticated;
 
   // User is not authenticated (logged out or no valid tokens).
   const factory AuthState.unauthenticated() = _Unauthenticated;
+
+  // OTP sent to email
+  const factory AuthState.otpSent({required String email}) = _OtpSent;
 
   // Authentication failed with an error message.
   const factory AuthState.error({required String message}) = _Error;

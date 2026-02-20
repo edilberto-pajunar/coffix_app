@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffix_app/core/api/endpoints.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
+import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -129,6 +134,56 @@ class AuthRepositoryImpl implements AuthRepository {
       });
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  @override
+  Stream<AppUser?> getUser() {
+    return _firestore
+        .collection('users')
+        .doc(_auth.currentUser?.uid)
+        .snapshots()
+        .map((event) {
+          print(event.data());
+          return AppUser.fromJson(event.data() ?? {});
+        });
+  }
+
+  @override
+  Future<void> sendEmailVerification({required String email}) async {
+    final token = await _auth.currentUser?.getIdToken();
+    log(token ?? '');
+    if (token == null) {
+      throw Exception('No token found');
+    }
+    final response = await http.post(
+      Uri.parse(
+        '${ApiEndpoints.baseUrl}/coffix-app-dev/us-central1/v1/otp/send',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+      body: {'email': email},
+    );
+    print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception('Failed to send email verification');
+    }
+  }
+
+  @override
+  Future<void> verifyOtp({required String otp}) async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw Exception('No token found');
+    }
+    final response = await http.post(
+      Uri.parse(
+        '${ApiEndpoints.baseUrl}/coffix-app-dev/us-central1/v1/otp/verify',
+      ),
+      headers: {'Authorization': 'Bearer $token'},
+      body: {'otp': otp},
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to verify OTP');
     }
   }
 }

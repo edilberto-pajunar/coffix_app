@@ -14,6 +14,7 @@ import 'package:coffix_app/features/products/presentation/pages/add_product_page
 import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -68,15 +69,6 @@ class AppRouter {
             name: CreateAccountPage.route,
             builder: (context, state) => const CreateAccountPage(),
           ),
-          GoRoute(
-            path: "verify-email",
-            name: VerifyEmailPage.route,
-            builder: (context, state) {
-              final extra = state.extra as Map<String, dynamic>;
-              final email = extra['email'] as String;
-              return VerifyEmailPage(email: email);
-            },
-          ),
         ],
       ),
 
@@ -93,6 +85,15 @@ class AppRouter {
                 builder: (context, state) => const HomePage(),
               ),
               GoRoute(
+                path: "/verify-email",
+                name: VerifyEmailPage.route,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final email = extra['email'] as String;
+                  return VerifyEmailPage(email: email);
+                },
+              ),
+              GoRoute(
                 path: "/profile",
                 name: ProfilePage.route,
                 builder: (context, state) => const ProfilePage(),
@@ -101,6 +102,11 @@ class AppRouter {
                 path: "/about",
                 name: AboutPage.route,
                 builder: (context, state) => const AboutPage(),
+              ),
+              GoRoute(
+                path: "/personal-info",
+                name: PersonalInfoPage.route,
+                builder: (context, state) => const PersonalInfoPage(),
               ),
             ],
           ),

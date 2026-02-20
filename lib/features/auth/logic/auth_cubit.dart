@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -9,6 +11,7 @@ part 'auth_cubit.freezed.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
+  StreamSubscription<AppUser?>? _userSubscription;
 
   AuthCubit({required AuthRepository authRepository})
     : _authRepository = authRepository,
@@ -24,7 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         password: password,
       );
-      emit(AuthState.authenticated());
+      // emit(AuthState.authenticated());
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
     }
@@ -55,16 +58,6 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> sendEmailVerification() async {
-    emit(AuthState.loading());
-    try {
-      // await _authRepository.sendEmailVerification();
-      emit(AuthState.authenticated());
-    } catch (e) {
-      emit(AuthState.error(message: e.toString()));
-    }
-  }
-
   Future<void> signInWithGoogle() async {
     emit(AuthState.loading());
     try {
@@ -78,5 +71,17 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
     }
+  }
+
+  Stream<AppUser?> getUser() {
+    final stream = _authRepository.getUser();
+    _userSubscription = stream.listen((AppUser? user) {
+      emit(
+        user != null
+            ? AuthState.authenticated(user: user)
+            : AuthState.unauthenticated(),
+      );
+    });
+    return stream;
   }
 }

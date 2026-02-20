@@ -55,3 +55,6 @@ ios/config/**/GoogleService-Info.plist
 # Firebase Android
 android/app/google-services.json
 android/app/src/**/google-services.json
+
+
+*.env*

@@ -1,6 +1,7 @@
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -16,5 +17,10 @@ Future<void> setupServiceLocator() async {
   // Auth Cubit
   getIt.registerLazySingleton<AuthCubit>(
     () => AuthCubit(authRepository: getIt<AuthRepository>()),
+  );
+
+  // Otp Cubit
+  getIt.registerLazySingleton<OtpCubit>(
+    () => OtpCubit(authRepository: getIt<AuthRepository>()),
   );
 }

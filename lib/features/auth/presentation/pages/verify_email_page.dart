@@ -1,4 +1,19 @@
+import 'dart:async';
+
+import 'package:coffix_app/core/constants/colors.dart';
+import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
+import 'package:coffix_app/presentation/atoms/app_button.dart';
+import 'package:coffix_app/presentation/atoms/app_loading.dart';
+import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
+import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pinput/pinput.dart';
 
 class VerifyEmailPage extends StatelessWidget {
   static String route = 'verify_email_route';
@@ -8,17 +23,168 @@ class VerifyEmailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return VerifyEmailView(email: email);
+    return BlocProvider.value(
+      value: getIt<OtpCubit>(),
+      child: VerifyEmailView(email: email),
+    );
   }
 }
 
-class VerifyEmailView extends StatelessWidget {
+class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key, required this.email});
 
   final String email;
 
   @override
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
+
+class _VerifyEmailViewState extends State<VerifyEmailView> {
+  final _pinController = TextEditingController();
+  String _pin = '';
+  static const _resendCooldownSeconds = 180;
+  int _remainingSeconds = _resendCooldownSeconds;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<OtpCubit>().sendEmailVerification(email: widget.email);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    setState(() => _remainingSeconds = _resendCooldownSeconds);
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      setState(() {
+        if (_remainingSeconds <= 1) {
+          _remainingSeconds = 0;
+          _timer?.cancel();
+        } else {
+          _remainingSeconds--;
+        }
+      });
+    });
+  }
+
+  String get _timerText {
+    final m = _remainingSeconds ~/ 60;
+    final s = _remainingSeconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pinController.dispose();
+    super.dispose();
+  }
+
+  void _onVerify() {
+    if (_pin.length != 6) return;
+    context.read<OtpCubit>().verifyOtp(otp: _pin);
+  }
+
+  void _onResendOtp() {
+    context.read<OtpCubit>().sendEmailVerification(email: widget.email);
+    _startTimer();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final theme = Theme.of(context);
+    final defaultPinTheme = PinTheme(
+      width: 48,
+      height: 56,
+      textStyle: theme.textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: AppColors.black,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.borderColor),
+        borderRadius: BorderRadius.circular(AppSizes.md),
+      ),
+    );
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration?.copyWith(
+        border: Border.all(color: AppColors.primary, width: 2),
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: SafeArea(
+        child: BlocConsumer<OtpCubit, OtpState>(
+          listener: (context, state) {
+            state.whenOrNull(
+              otpSent: (email) => AppSnackbar.showInfo(
+                context,
+                'OTP sent to $email. Please check your email.',
+              ),
+              error: (message) => AppSnackbar.showError(context, message),
+              verified: () => context.goNamed(HomePage.route),
+            );
+          },
+          builder: (context, state) {
+            if (state.maybeWhen(loading: () => true, orElse: () => false)) {
+              return const Center(child: AppLoading());
+            }
+            final canResend = _remainingSeconds == 0;
+            return SingleChildScrollView(
+              padding: AppSizes.defaultPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: AppSizes.xxl),
+                  Text(
+                    'Verify your email',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+                  Text(
+                    'Enter your verification code',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.lightGrey,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.xxl),
+                  Pinput(
+                    controller: _pinController,
+                    length: 6,
+                    defaultPinTheme: defaultPinTheme,
+                    focusedPinTheme: focusedPinTheme,
+                    onCompleted: (pin) => setState(() => _pin = pin),
+                    onChanged: (pin) => setState(() => _pin = pin),
+                  ),
+                  const SizedBox(height: AppSizes.xxxl),
+                  AppButton.primary(
+                    onPressed: _pin.length == 6 ? _onVerify : null,
+                    label: 'Verify',
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  Center(
+                    child: canResend
+                        ? AppTextButton(
+                            onPressed: _onResendOtp,
+                            text: 'Resend OTP',
+                          )
+                        : Text(
+                            'Resend code in $_timerText',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.lightGrey,
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
