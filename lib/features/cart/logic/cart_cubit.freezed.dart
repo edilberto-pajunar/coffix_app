@@ -206,10 +206,10 @@ return $default(_that.cart);case _:
 
 
 class _CartState extends CartState {
-  const _CartState({this.cart = null}): super._();
+  const _CartState({this.cart}): super._();
   
 
-@override@JsonKey() final  Cart? cart;
+@override final  Cart? cart;
 
 /// Create a copy of CartState
 /// with the given fields replaced by the non-null parameter values.

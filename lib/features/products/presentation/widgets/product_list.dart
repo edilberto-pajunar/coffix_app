@@ -4,6 +4,7 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
+import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
@@ -118,6 +119,7 @@ class ProductList extends StatelessWidget {
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
+                  context.read<ProductModifierCubit>().resetModifiers();
                   context.pushNamed(
                     AddProductPage.route,
                     extra: {"product": product.product, "storeId": storeId},

@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
-import 'package:coffix_app/features/order/data/model/cart_item.dart';
+import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,7 @@ class OrderItemRow extends StatelessWidget {
             child: SizedBox(
               width: 56,
               height: 56,
-              child: Image.network(
-                cartItem.product.imageUrl ?? '',
-                fit: BoxFit.cover,
-              ),
+              child: Image.network(cartItem.productImageUrl, fit: BoxFit.cover),
             ),
           ),
         ),
@@ -46,16 +44,19 @@ class OrderItemRow extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "${cartItem.product.name} x${cartItem.quantity}",
+                "${cartItem.productName} x${cartItem.quantity}",
                 style: theme.textTheme.titleSmall,
               ),
-              const SizedBox(height: AppSizes.xs),
               Wrap(
                 spacing: AppSizes.sm,
                 runSpacing: AppSizes.sm,
-                children: cartItem.modifiers
+                children: cartItem.selectedByGroup.entries
                     .map(
-                      (modifier) => AppCard(child: Text(modifier.label ?? '')),
+                      (entry) => Chip(
+                        padding: EdgeInsets.zero,
+
+                        label: Text(entry.value, style: AppTypography.label2XS),
+                      ),
                     )
                     .toList(),
               ),

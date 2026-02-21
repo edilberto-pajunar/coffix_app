@@ -2,7 +2,8 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/order/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
@@ -70,9 +71,9 @@ class _AddProductViewState extends State<AddProductView> {
 
   double calculateTotal() {
     final productModifierState = context.watch<ProductModifierCubit>().state;
-    final total =
-        widget.product.price! * quantity + productModifierState.totalPrice;
-    return total;
+    final unitPrice =
+        (widget.product.price ?? 0) + productModifierState.totalPrice;
+    return unitPrice * quantity;
   }
 
   @override
@@ -294,16 +295,14 @@ class _AddProductViewState extends State<AddProductView> {
                       final modifierState = context
                           .read<ProductModifierCubit>()
                           .state;
-                      final total =
-                          widget.product.price! * quantity +
-                          modifierState.totalPrice;
-                      context.read<CartCubit>().addProduct(
+                      final storeId = widget.storeId;
+                      final newItem = CartItem.fromSelection(
                         product: widget.product,
                         quantity: quantity,
-                        storeId: widget.product.availableToStores?.first ?? '',
-                        total: total,
+                        storeId: storeId,
                         modifiers: modifierState.modifiers,
                       );
+                      context.read<CartCubit>().addProduct(newItem: newItem);
                       context.pop();
                     },
                     label: "Add to Order",

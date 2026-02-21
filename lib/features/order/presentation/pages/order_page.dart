@@ -1,7 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
-import 'package:coffix_app/features/order/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
 import 'package:coffix_app/features/order/presentation/widgets/order_item.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
@@ -51,10 +51,10 @@ class OrderView extends StatelessWidget {
                           if (cartItem == null) return const SizedBox.shrink();
                           return OrderItemRow(
                             cartItem: cartItem,
-                            price: '\$${cartItem.total}',
+                            price: '\$${cartItem.lineTotal}',
                             onRemove: () {
                               context.read<CartCubit>().removeProduct(
-                                productId: cartItem.product.docId ?? '',
+                                cartItemId: cartItem.id,
                               );
                             },
                             onEdit: () {},
@@ -91,7 +91,7 @@ class OrderView extends StatelessWidget {
                         children: [
                           Text('Total', style: theme.textTheme.titleMedium),
                           Text(
-                            '\$${state.cart?.total ?? 0}',
+                            '\$${state.cart?.items.fold(0.0, (sum, item) => sum + item.lineTotal) ?? 0}',
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,

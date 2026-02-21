@@ -7,7 +7,7 @@ import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/features/modifier/data/modifier_repository_impl.dart';
-import 'package:coffix_app/features/order/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/order/logic/schedule_cubit.dart';
 import 'package:coffix_app/features/products/data/product_repository_impl.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';

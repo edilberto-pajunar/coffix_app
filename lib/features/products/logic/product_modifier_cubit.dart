@@ -34,15 +34,19 @@ class ProductModifierCubit extends Cubit<ProductModifierState> {
 
   void selectModifiers({required Modifier modifier}) {
     final current = state.modifiers;
-    final sameModifier = current.any((m) => m.docId == modifier.docId);
-    final updated = sameModifier
-        ? current.where((m) => m.docId != modifier.docId).toList()
-        : [...current.where((m) => m.groupId != modifier.groupId), modifier];
+    final updated = [
+      ...current.where((m) => m.groupId != modifier.groupId),
+      modifier,
+    ];
     emit(
       ProductModifierState(
         modifiers: updated,
         totalPrice: getTotalPrice(updated),
       ),
     );
+  }
+
+  void resetModifiers() {
+    emit(ProductModifierState(modifiers: [], totalPrice: 0));
   }
 }
