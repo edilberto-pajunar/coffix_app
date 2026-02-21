@@ -9,7 +9,7 @@ class Product {
   final double? cost;
   final String? docId;
   final String? imageUrl;
-  final List<String>? modifierGroupCodes;
+  final List<String>? modifierGroupIds;
   final String? name;
   final double? order;
   final double? price;
@@ -21,7 +21,7 @@ class Product {
     this.cost,
     this.docId,
     this.imageUrl,
-    this.modifierGroupCodes,
+    this.modifierGroupIds,
     this.name,
     this.order,
     this.price,
@@ -39,7 +39,7 @@ class Product {
     double? cost,
     String? docId,
     String? imageUrl,
-    List<String>? modifierGroupCodes,
+    List<String>? modifierGroupIds,
     String? name,
     double? order,
     double? price,
@@ -50,7 +50,7 @@ class Product {
     cost: cost,
     docId: docId,
     imageUrl: imageUrl,
-    modifierGroupCodes: modifierGroupCodes,
+    modifierGroupIds: modifierGroupIds,
     name: name,
     order: order,
     price: price,

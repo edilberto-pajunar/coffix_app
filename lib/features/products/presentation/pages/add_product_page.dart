@@ -4,9 +4,9 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/logic/cart_cubit.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
-import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
-import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
+import 'package:coffix_app/features/modifier/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
@@ -18,8 +18,14 @@ import 'package:go_router/go_router.dart';
 
 class AddProductPage extends StatelessWidget {
   static String route = 'add_product_route';
-  const AddProductPage({super.key, required this.product});
+  const AddProductPage({
+    super.key,
+    required this.product,
+    required this.storeId,
+  });
+
   final Product product;
+  final String storeId;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +35,19 @@ class AddProductPage extends StatelessWidget {
         BlocProvider.value(value: getIt<ProductModifierCubit>()),
         BlocProvider.value(value: getIt<ModifierCubit>()),
       ],
-      child: AddProductView(product: product),
+      child: AddProductView(product: product, storeId: storeId),
     );
   }
 }
 
 class AddProductView extends StatefulWidget {
-  const AddProductView({super.key, required this.product});
+  const AddProductView({
+    super.key,
+    required this.product,
+    required this.storeId,
+  });
   final Product product;
+  final String storeId;
 
   @override
   State<AddProductView> createState() => _AddProductViewState();
@@ -48,13 +59,13 @@ class _AddProductViewState extends State<AddProductView> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductModifierCubit>().initProductModifiers(
-      product: widget.product,
-      allModifiers: context.read<ModifierCubit>().state.maybeWhen(
-        loaded: (modifiers) => modifiers,
-        orElse: () => [],
-      ),
-    );
+    // context.read<ProductModifierCubit>().initProductModifiers(
+    //   product: widget.product,
+    //   allModifiers: context.read<ModifierCubit>().state.maybeWhen(
+    //     loaded: (modifiers) => modifiers,
+    //     orElse: () => [],
+    //   ),
+    // );
   }
 
   double calculateTotal() {
@@ -129,7 +140,10 @@ class _AddProductViewState extends State<AddProductView> {
                           onPressed: () {
                             context.pushNamed(
                               CustomizeProductPage.route,
-                              extra: {'product': widget.product},
+                              extra: {
+                                'product': widget.product,
+                                'storeId': widget.storeId,
+                              },
                             );
                           },
                           borderRadius: BorderRadius.circular(AppSizes.md),

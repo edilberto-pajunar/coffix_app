@@ -4,7 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/presentation/pages/verify_email_page.dart';
-import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
@@ -70,7 +70,7 @@ class _LayoutViewState extends State<LayoutView> {
     context.read<AuthCubit>().getUserWithStore();
     context.read<StoreCubit>().getStores();
     context.read<ProductCubit>().getProducts();
-    context.read<ModifierCubit>().getModifiers();
+    // context.read<ModifierCubit>().getModifiers();
   }
 
   @override

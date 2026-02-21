@@ -2,9 +2,8 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/products/data/model/modifier.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
-import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
@@ -16,19 +15,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-Map<String, List<Modifier>> _groupModifiersByGroupId(List<Modifier> modifiers) {
-  final map = <String, List<Modifier>>{};
-  for (final m in modifiers) {
-    final key = m.groupId ?? '';
-    map.putIfAbsent(key, () => []).add(m);
-  }
-  return map;
-}
-
 class CustomizeProductPage extends StatelessWidget {
   static String route = 'customize_product_route';
-  const CustomizeProductPage({super.key, required this.product});
+  const CustomizeProductPage({
+    super.key,
+    required this.product,
+    required this.storeId,
+  });
   final Product product;
+  final String storeId;
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +32,34 @@ class CustomizeProductPage extends StatelessWidget {
         BlocProvider.value(value: getIt<ModifierCubit>()),
         BlocProvider.value(value: getIt<ProductModifierCubit>()),
       ],
-      child: CustomizeProductView(product: product),
+      child: CustomizeProductView(product: product, storeId: storeId),
     );
   }
 }
 
 class CustomizeProductView extends StatefulWidget {
-  const CustomizeProductView({super.key, required this.product});
+  const CustomizeProductView({
+    super.key,
+    required this.product,
+    required this.storeId,
+  });
   final Product product;
+  final String storeId;
 
   @override
   State<CustomizeProductView> createState() => _CustomizeProductViewState();
 }
 
 class _CustomizeProductViewState extends State<CustomizeProductView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ModifierCubit>().getModifiers(
+      product: widget.product,
+      storeId: widget.storeId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -61,11 +70,9 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
       body: BlocBuilder<ModifierCubit, ModifierState>(
         builder: (context, state) {
           return state.when(
-            initial: () => const SizedBox.shrink(),
+            initial: () => AppLoading(),
             loading: () => AppLoading(),
-            loaded: (modifiers) {
-              final byGroup = _groupModifiersByGroupId(modifiers);
-
+            loaded: (modifiersGroups) {
               return BlocBuilder<ProductModifierCubit, ProductModifierState>(
                 builder: (context, productModifierState) {
                   return SingleChildScrollView(
@@ -74,12 +81,11 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         AppLocation(),
-                        ...byGroup.entries.map((e) {
-                          final groupId = e.key;
-                          final items = e.value;
-                          final groupTitle = groupId.isEmpty
-                              ? 'Options'
-                              : groupId;
+                        ...modifiersGroups.map((bundle) {
+                          final groupTitle =
+                              bundle.group.name ??
+                              bundle.group.docId ??
+                              'Options';
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: AppSizes.lg),
@@ -96,14 +102,10 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                                 Wrap(
                                   spacing: AppSizes.sm,
                                   runSpacing: AppSizes.sm,
-                                  children: items.map((mod) {
+                                  children: bundle.modifiers.map((mod) {
                                     final isSelected = productModifierState
                                         .modifiers
-                                        .any(
-                                          (modifier) =>
-                                              modifier.groupId == groupId &&
-                                              modifier.docId == mod.docId,
-                                        );
+                                        .any((m) => m.docId == mod.docId);
 
                                     final priceText =
                                         mod.priceDelta != null &&

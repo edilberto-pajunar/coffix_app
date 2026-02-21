@@ -3,6 +3,7 @@ import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
+import 'package:coffix_app/features/products/data/model/product_override.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -48,5 +49,26 @@ class StoreRepositoryImpl implements StoreRepository {
         },
       );
     });
+  }
+
+  /// Get the product override for a given product and store.
+  /// If the product override does not exist, treat as empty override
+  @override
+  Future<ProductOverride> getProductOverride({
+    required String productId,
+    required String storeId,
+  }) async {
+    final overrideSnap = await _firestore
+        .collection('stores')
+        .doc(storeId)
+        .collection("productOverrides")
+        .doc(productId)
+        .get();
+
+    final override = overrideSnap.exists
+        ? ProductOverride.fromJson(overrideSnap.data() ?? {})
+        : ProductOverride(disabledGroupIds: [], disabledModifierIds: []);
+
+    return override;
   }
 }

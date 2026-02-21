@@ -21,11 +21,13 @@ class ProductList extends StatelessWidget {
     required this.products,
     this.isRoot = false,
     this.categoryFilter,
+    required this.storeId,
   });
 
   final List<ProductWithCategory> products;
   final bool isRoot;
   final String? categoryFilter;
+  final String storeId;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,7 @@ class ProductList extends StatelessWidget {
                 onPressed: () {
                   context.pushNamed(
                     AddProductPage.route,
-                    extra: {"product": product.product},
+                    extra: {"product": product.product, "storeId": storeId},
                   );
                 },
                 child: Row(

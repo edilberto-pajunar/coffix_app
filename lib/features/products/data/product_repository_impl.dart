@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
-import 'package:coffix_app/features/products/data/model/modifier.dart';
+import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
+import 'package:coffix_app/features/products/data/model/product_override.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final StoreRepository _storeRepository;
+
+  ProductRepositoryImpl({required StoreRepository storeRepository})
+    : _storeRepository = storeRepository;
 
   @override
   Stream<List<Product>> getProducts() {
@@ -23,12 +29,6 @@ class ProductRepositoryImpl implements ProductRepository {
           .map((doc) => ProductCategory.fromJson(doc.data()))
           .toList();
     });
-  }
-
-  @override
-  Future<List<Modifier>> getModifiers() async {
-    final snapshot = await _firestore.collection('modifiers').get();
-    return snapshot.docs.map((doc) => Modifier.fromJson(doc.data())).toList();
   }
 
   @override

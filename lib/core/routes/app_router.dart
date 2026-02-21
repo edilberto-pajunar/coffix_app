@@ -14,7 +14,7 @@ import 'package:coffix_app/features/payment/presentation/pages/payment_successfu
 import 'package:coffix_app/features/payment/presentation/pages/payment_web_page.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
-import 'package:coffix_app/features/products/presentation/pages/customize_product_page.dart';
+import 'package:coffix_app/features/modifier/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
@@ -155,8 +155,9 @@ class AppRouter {
                 pageBuilder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>;
                   final product = extra['product'] as Product;
+                  final storeId = extra['storeId'] as String;
                   return CustomTransitionPage(
-                    child: AddProductPage(product: product),
+                    child: AddProductPage(product: product, storeId: storeId),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                           final scale = Tween<double>(begin: 0.3, end: 1.0)
@@ -177,7 +178,11 @@ class AppRouter {
                 builder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>;
                   final product = extra['product'] as Product;
-                  return CustomizeProductPage(product: product);
+                  final storeId = extra['storeId'] as String;
+                  return CustomizeProductPage(
+                    product: product,
+                    storeId: storeId,
+                  );
                 },
               ),
             ],

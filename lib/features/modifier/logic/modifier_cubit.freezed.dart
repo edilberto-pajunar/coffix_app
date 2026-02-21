@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Modifier> modifiers)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<ModifierGroupBundle> modifiersGroups)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.modifiers);case _Error() when error != null:
+return loaded(_that.modifiersGroups);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Modifier> modifiers)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<ModifierGroupBundle> modifiersGroups)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.modifiers);case _Error():
+return loaded(_that.modifiersGroups);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Modifier> modifiers)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<ModifierGroupBundle> modifiersGroups)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.modifiers);case _Error() when error != null:
+return loaded(_that.modifiersGroups);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,14 +257,14 @@ String toString() {
 
 
 class _Loaded implements ModifierState {
-  const _Loaded({required final  List<Modifier> modifiers}): _modifiers = modifiers;
+  const _Loaded({required final  List<ModifierGroupBundle> modifiersGroups}): _modifiersGroups = modifiersGroups;
   
 
- final  List<Modifier> _modifiers;
- List<Modifier> get modifiers {
-  if (_modifiers is EqualUnmodifiableListView) return _modifiers;
+ final  List<ModifierGroupBundle> _modifiersGroups;
+ List<ModifierGroupBundle> get modifiersGroups {
+  if (_modifiersGroups is EqualUnmodifiableListView) return _modifiersGroups;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_modifiers);
+  return EqualUnmodifiableListView(_modifiersGroups);
 }
 
 
@@ -278,16 +278,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._modifiers, _modifiers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._modifiersGroups, _modifiersGroups));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_modifiers));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_modifiersGroups));
 
 @override
 String toString() {
-  return 'ModifierState.loaded(modifiers: $modifiers)';
+  return 'ModifierState.loaded(modifiersGroups: $modifiersGroups)';
 }
 
 
@@ -298,7 +298,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ModifierStateCopyWith<$R
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Modifier> modifiers
+ List<ModifierGroupBundle> modifiersGroups
 });
 
 
@@ -315,10 +315,10 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ModifierState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? modifiers = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? modifiersGroups = null,}) {
   return _then(_Loaded(
-modifiers: null == modifiers ? _self._modifiers : modifiers // ignore: cast_nullable_to_non_nullable
-as List<Modifier>,
+modifiersGroups: null == modifiersGroups ? _self._modifiersGroups : modifiersGroups // ignore: cast_nullable_to_non_nullable
+as List<ModifierGroupBundle>,
   ));
 }
 

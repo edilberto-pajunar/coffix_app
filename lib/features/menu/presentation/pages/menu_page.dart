@@ -30,6 +30,7 @@ class MenuView extends StatelessWidget {
               products: products,
               isRoot: true,
               categoryFilter: categoryFilter,
+              storeId: "",
             ),
             error: (message) =>
                 AppError(title: "Failed getting products", subtitle: message),

@@ -1,14 +1,16 @@
 import 'package:coffix_app/data/repositories/auth_repository.dart';
+import 'package:coffix_app/data/repositories/modifier_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
+import 'package:coffix_app/features/modifier/data/modifier_repository_impl.dart';
 import 'package:coffix_app/features/order/logic/cart_cubit.dart';
 import 'package:coffix_app/features/order/logic/schedule_cubit.dart';
 import 'package:coffix_app/features/products/data/product_repository_impl.dart';
-import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/profile/data/profile_repository_impl.dart';
@@ -28,9 +30,14 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<StoreRepository>(
     () => StoreRepositoryImpl(authRepository: getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton<ModifierRepository>(
+    () => ModifierRepositoryImpl(storeRepository: getIt<StoreRepository>()),
+  );
   // -- Auth Feature --
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
-  getIt.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl());
+  getIt.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImpl(storeRepository: getIt<StoreRepository>()),
+  );
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl());
 
   // Auth Cubit
@@ -54,7 +61,7 @@ Future<void> setupServiceLocator() async {
 
   // Modifier Cubit
   getIt.registerLazySingleton<ModifierCubit>(
-    () => ModifierCubit(productRepository: getIt<ProductRepository>()),
+    () => ModifierCubit(modifierRepository: getIt<ModifierRepository>()),
   );
 
   // Product Modifier Cubit
