@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'store_state.dart';
@@ -11,6 +13,7 @@ part 'store_cubit.freezed.dart';
 class StoreCubit extends Cubit<StoreState> {
   final StoreRepository _storeRepository;
   StreamSubscription<List<Store>>? _storesSubscription;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   StoreCubit({required StoreRepository storeRepository})
     : _storeRepository = storeRepository,
@@ -24,4 +27,6 @@ class StoreCubit extends Cubit<StoreState> {
       onError: (e) => emit(StoreState.error(message: e.toString())),
     );
   }
+
+ 
 }

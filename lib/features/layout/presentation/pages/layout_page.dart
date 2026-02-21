@@ -4,6 +4,9 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/presentation/pages/verify_email_page.dart';
+import 'package:coffix_app/features/products/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/products/logic/product_cubit.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +42,13 @@ class LayoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<AuthCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<AuthCubit>()),
+        BlocProvider.value(value: getIt<StoreCubit>()),
+        BlocProvider.value(value: getIt<ProductCubit>()),
+        BlocProvider.value(value: getIt<ModifierCubit>()),
+      ],
       child: LayoutView(shell: shell),
     );
   }
@@ -59,7 +67,10 @@ class _LayoutViewState extends State<LayoutView> {
   @override
   initState() {
     super.initState();
-    context.read<AuthCubit>().getUser();
+    context.read<AuthCubit>().getUserWithStore();
+    context.read<StoreCubit>().getStores();
+    context.read<ProductCubit>().getProducts();
+    context.read<ModifierCubit>().getModifiers();
   }
 
   @override
@@ -76,10 +87,10 @@ class _LayoutViewState extends State<LayoutView> {
       listener: (context, state) {
         state.whenOrNull(
           authenticated: (user) {
-            if (user.emailVerified != true) {
+            if (user.user.emailVerified != true) {
               context.goNamed(
                 VerifyEmailPage.route,
-                extra: {'email': user.email},
+                extra: {'email': user.user.email},
               );
             }
           },

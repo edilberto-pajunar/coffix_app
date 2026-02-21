@@ -286,7 +286,7 @@ class _AddProductViewState extends State<AddProductView> {
                       context.read<CartCubit>().addProduct(
                         product: widget.product,
                         quantity: quantity,
-                        storeId: widget.product.availableStores?.first ?? '',
+                        storeId: widget.product.availableToStores?.first ?? '',
                         total: total,
                         modifiers: modifierState.modifiers,
                       );

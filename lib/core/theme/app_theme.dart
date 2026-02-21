@@ -13,5 +13,7 @@ class AppTheme {
       titleTextStyle: AppTypography.titleXL,
       scrolledUnderElevation: 0,
     ),
+    fontFamily: "Inter",
+    textTheme: TextTheme(),
   );
 }

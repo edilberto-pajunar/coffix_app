@@ -143,7 +143,11 @@ class AppRouter {
               GoRoute(
                 path: "/products",
                 name: ProductsPage.route,
-                builder: (context, state) => const ProductsPage(),
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final storeId = extra['storeId'] as String;
+                  return ProductsPage(storeId: storeId);
+                },
               ),
               GoRoute(
                 path: "/add-product",
@@ -193,9 +197,8 @@ class AppRouter {
               GoRoute(
                 path: "/payment-successful",
                 name: PaymentSuccessfulPage.route,
-                builder: (context, state) => PaymentSuccessfulPage(
-                  pickupAt: state.extra as DateTime?,
-                ),
+                builder: (context, state) =>
+                    PaymentSuccessfulPage(pickupAt: state.extra as DateTime?),
               ),
               GoRoute(
                 path: "/payment-web",

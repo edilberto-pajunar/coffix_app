@@ -5,8 +5,8 @@ class ProductState with _$ProductState {
   const factory ProductState.initial() = _Initial;
   const factory ProductState.loading() = _Loading;
   const factory ProductState.loaded({
-    required List<Product> products,
-    required List<ProductCategory> productCategories,
+    required List<ProductWithCategory> products,
+    @Default(null) String? categoryFilter,
   }) = _Loaded;
   const factory ProductState.error({required String message}) = _Error;
 }

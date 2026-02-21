@@ -35,6 +35,7 @@ class StoreList extends StatelessWidget {
           Text("Please select your preferred loaction:"),
           const SizedBox(height: AppSizes.lg),
           ListView.separated(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
@@ -42,7 +43,10 @@ class StoreList extends StatelessWidget {
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
-                  context.pushNamed(ProductsPage.route);
+                  context.pushNamed(
+                    ProductsPage.route,
+                    extra: {'storeId': store.docId},
+                  );
                 },
                 child: Row(
                   children: [

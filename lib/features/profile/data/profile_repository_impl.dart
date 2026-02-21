@@ -15,7 +15,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     DateTime? birthday,
     String? suburb,
     String? city,
-    String? preferredStore,
+    String? preferredStoreId,
   }) async {
     try {
       final customerRef = _firestore
@@ -33,7 +33,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
           'birthday': ?birthday,
           'suburb': ?suburb,
           'city': ?city,
-          'preferredStore': ?preferredStore,
+          'preferredStoreId': ?preferredStoreId,
         };
         if (data.isNotEmpty) await customerRef.update(data);
       } else {

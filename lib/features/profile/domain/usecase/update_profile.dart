@@ -9,7 +9,7 @@ class UpdateProfileParams {
   final DateTime? birthday;
   final String? suburb;
   final String? city;
-  final String? preferredStore;
+  final String? preferredStoreId;
 
   UpdateProfileParams({
     this.firstName,
@@ -19,7 +19,7 @@ class UpdateProfileParams {
     this.birthday,
     this.suburb,
     this.city,
-    this.preferredStore,
+    this.preferredStoreId,
   });
 }
 
@@ -39,7 +39,7 @@ class UpdateProfileUseCase implements UseCase<void, UpdateProfileParams> {
       birthday: params.birthday,
       suburb: params.suburb,
       city: params.city,
-      preferredStore: params.preferredStore,
+      preferredStoreId: params.preferredStoreId,
     );
   }
 }

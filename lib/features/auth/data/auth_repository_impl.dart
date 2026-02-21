@@ -13,6 +13,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  AuthRepositoryImpl();
+
   @override
   Future<void> signInWithEmailAndPassword({
     required String email,

@@ -1,62 +1,114 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
+import 'package:coffix_app/features/products/data/model/product_with_category.dart';
+import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
-import 'package:coffix_app/presentation/atoms/app_location.dart';
+import 'package:coffix_app/presentation/atoms/app_text_button.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
+import 'package:coffix_app/presentation/molecules/app_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class ProductList extends StatelessWidget {
   const ProductList({
     super.key,
     required this.products,
-    required this.productCategories,
+    this.isRoot = false,
+    this.categoryFilter,
   });
 
-  final List<Product> products;
-  final List<ProductCategory> productCategories;
+  final List<ProductWithCategory> products;
+  final bool isRoot;
+  final String? categoryFilter;
 
   @override
   Widget build(BuildContext context) {
+    final List<ProductCategory> categories = products
+        .map((product) => product.category)
+        .toSet()
+        .toList();
+
     return SingleChildScrollView(
       padding: AppSizes.defaultPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppLocation(),
+          isRoot
+              ? AppHeader(title: "Products")
+              : AppBackHeader(title: "Products"),
           const SizedBox(height: AppSizes.md),
           Row(
             children: [
               Expanded(
-                child: AppField(hintText: "Product Search", name: "search"),
+                child: AppField(
+                  onChanged: (val) {
+                    context.read<ProductCubit>().searchProducts(val ?? "");
+                  },
+                  hintText: "Product Search",
+                  name: "search",
+                ),
               ),
             ],
           ),
           const SizedBox(height: AppSizes.md),
-          SizedBox(
-            height: AppSizes.chipSizeSmall,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemCount: productCategories.length,
-              separatorBuilder: (_, index) =>
-                  const SizedBox(width: AppSizes.md),
-              itemBuilder: (context, index) {
-                final category = productCategories[index];
-                return AppCard(
-                  color: AppColors.white,
-                  child: Text(category.name ?? "", style: AppTypography.labelS),
-                );
-              },
-            ),
+
+          // product categories
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: AppSizes.chipSizeSmall,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: categories.length,
+                  separatorBuilder: (_, index) =>
+                      const SizedBox(width: AppSizes.md),
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return AppClickable(
+                      showSplash: false,
+                      onPressed: () {
+                        context.read<ProductCubit>().filterProductsByCategory(
+                          category.name!,
+                        );
+                      },
+                      child: AppCard(
+                        color: categoryFilter == category.name
+                            ? AppColors.primary
+                            : AppColors.white,
+                        child: Text(
+                          category.name ?? "",
+                          style: AppTypography.labelS,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSizes.md),
+              if (categoryFilter != null) ...[
+                AppTextButton(
+                  textStyle: AppTypography.labelS.copyWith(
+                    color: AppColors.primary,
+                  ),
+                  text: "Clear Filter",
+                  onPressed: () {
+                    context.read<ProductCubit>().clearFilter();
+                  },
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: AppSizes.lg),
           ListView.separated(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
@@ -64,16 +116,17 @@ class ProductList extends StatelessWidget {
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
-                  context.pushNamed(AddProductPage.route, extra: {
-                    "product": product,
-                  });
+                  context.pushNamed(
+                    AddProductPage.route,
+                    extra: {"product": product.product},
+                  );
                 },
                 child: Row(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(AppSizes.md),
                       child: Image.network(
-                        product.imageUrl ?? "",
+                        product.product.imageUrl ?? "",
                         width: AppSizes.iconSizeXLarge,
                         height: AppSizes.iconSizeXLarge,
                         fit: BoxFit.cover,
@@ -82,12 +135,12 @@ class ProductList extends StatelessWidget {
                     const SizedBox(width: AppSizes.md),
                     Expanded(
                       child: Text(
-                        product.name ?? "",
+                        product.product.name ?? "",
                         style: AppTypography.labelS,
                       ),
                     ),
                     Text(
-                      "\$${product.price ?? 0}",
+                      "\$${product.product.price ?? 0}",
                       style: AppTypography.labelS.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

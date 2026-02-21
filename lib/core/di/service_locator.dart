@@ -25,15 +25,20 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // Initializes all singleton services for the app.
 Future<void> setupServiceLocator() async {
+  getIt.registerLazySingleton<StoreRepository>(
+    () => StoreRepositoryImpl(authRepository: getIt<AuthRepository>()),
+  );
   // -- Auth Feature --
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   getIt.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl());
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl());
-  getIt.registerLazySingleton<StoreRepository>(() => StoreRepositoryImpl());
 
   // Auth Cubit
   getIt.registerLazySingleton<AuthCubit>(
-    () => AuthCubit(authRepository: getIt<AuthRepository>()),
+    () => AuthCubit(
+      authRepository: getIt<AuthRepository>(),
+      storeRepository: getIt<StoreRepository>(),
+    ),
   );
 
   // Cart Cubit
@@ -64,10 +69,7 @@ Future<void> setupServiceLocator() async {
 
   // Profile Cubit
   getIt.registerLazySingleton<ProfileCubit>(
-    () => ProfileCubit(
-      profileRepository: getIt<ProfileRepository>(),
-      updateProfileUseCase: getIt<UpdateProfileUseCase>(),
-    ),
+    () => ProfileCubit(updateProfileUseCase: getIt<UpdateProfileUseCase>()),
   );
 
   // Product Cubit

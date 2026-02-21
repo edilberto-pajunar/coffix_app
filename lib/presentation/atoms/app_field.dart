@@ -121,8 +121,12 @@ class _AppFieldState<T> extends State<AppField<T>> {
                   )
                 : OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSizes.sm),
-                    borderSide: BorderSide(color: AppColors.borderColor),
+                    borderSide: BorderSide(color: AppColors.lightGrey),
                   ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.sm),
+              borderSide: BorderSide(color: AppColors.lightGrey),
+            ),
             prefixIcon: widget.prefixIcon,
             suffixIcon: widget.showPasswordToggle
                 ? IconButton(

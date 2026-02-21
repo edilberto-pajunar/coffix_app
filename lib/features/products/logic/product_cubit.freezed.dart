@@ -128,12 +128,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Product> products,  List<ProductCategory> productCategories)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<ProductWithCategory> products,  String? categoryFilter)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.products,_that.productCategories);case _Error() when error != null:
+return loaded(_that.products,_that.categoryFilter);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +152,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Product> products,  List<ProductCategory> productCategories)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<ProductWithCategory> products,  String? categoryFilter)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.products,_that.productCategories);case _Error():
+return loaded(_that.products,_that.categoryFilter);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +175,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Product> products,  List<ProductCategory> productCategories)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<ProductWithCategory> products,  String? categoryFilter)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.products,_that.productCategories);case _Error() when error != null:
+return loaded(_that.products,_that.categoryFilter);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -257,23 +257,17 @@ String toString() {
 
 
 class _Loaded implements ProductState {
-  const _Loaded({required final  List<Product> products, required final  List<ProductCategory> productCategories}): _products = products,_productCategories = productCategories;
+  const _Loaded({required final  List<ProductWithCategory> products, this.categoryFilter = null}): _products = products;
   
 
- final  List<Product> _products;
- List<Product> get products {
+ final  List<ProductWithCategory> _products;
+ List<ProductWithCategory> get products {
   if (_products is EqualUnmodifiableListView) return _products;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_products);
 }
 
- final  List<ProductCategory> _productCategories;
- List<ProductCategory> get productCategories {
-  if (_productCategories is EqualUnmodifiableListView) return _productCategories;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_productCategories);
-}
-
+@JsonKey() final  String? categoryFilter;
 
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
@@ -285,16 +279,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._products, _products)&&const DeepCollectionEquality().equals(other._productCategories, _productCategories));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&const DeepCollectionEquality().equals(other._products, _products)&&(identical(other.categoryFilter, categoryFilter) || other.categoryFilter == categoryFilter));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products),const DeepCollectionEquality().hash(_productCategories));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_products),categoryFilter);
 
 @override
 String toString() {
-  return 'ProductState.loaded(products: $products, productCategories: $productCategories)';
+  return 'ProductState.loaded(products: $products, categoryFilter: $categoryFilter)';
 }
 
 
@@ -305,7 +299,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $ProductStateCopyWith<$Re
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Product> products, List<ProductCategory> productCategories
+ List<ProductWithCategory> products, String? categoryFilter
 });
 
 
@@ -322,11 +316,11 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? products = null,Object? productCategories = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? products = null,Object? categoryFilter = freezed,}) {
   return _then(_Loaded(
 products: null == products ? _self._products : products // ignore: cast_nullable_to_non_nullable
-as List<Product>,productCategories: null == productCategories ? _self._productCategories : productCategories // ignore: cast_nullable_to_non_nullable
-as List<ProductCategory>,
+as List<ProductWithCategory>,categoryFilter: freezed == categoryFilter ? _self.categoryFilter : categoryFilter // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

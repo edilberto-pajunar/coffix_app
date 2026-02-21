@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
+import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
+import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -11,11 +13,16 @@ part 'auth_cubit.freezed.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
+  final StoreRepository _storeRepository;
   StreamSubscription<AppUser?>? _userSubscription;
+  StreamSubscription<AppUserWithStore?>? _userWithStoreSubscription;
 
-  AuthCubit({required AuthRepository authRepository})
-    : _authRepository = authRepository,
-      super(AuthState.initial());
+  AuthCubit({
+    required AuthRepository authRepository,
+    required StoreRepository storeRepository,
+  }) : _authRepository = authRepository,
+       _storeRepository = storeRepository,
+       super(AuthState.initial());
 
   Future<void> signInWithEmailAndPassword({
     required String email,
@@ -73,15 +80,20 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Stream<AppUser?> getUser() {
-    final stream = _authRepository.getUser();
-    _userSubscription = stream.listen((AppUser? user) {
-      emit(
-        user != null
-            ? AuthState.authenticated(user: user)
-            : AuthState.unauthenticated(),
-      );
-    });
-    return stream;
+  void getUserWithStore() {
+    final stream = _storeRepository.getUserWithStore();
+    _userWithStoreSubscription?.cancel();
+    _userWithStoreSubscription = stream.listen(
+      (AppUserWithStore? user) {
+        emit(
+          user != null
+              ? AuthState.authenticated(userWithStore: user)
+              : AuthState.unauthenticated(),
+        );
+      },
+      onError: (error) {
+        emit(AuthState.error(message: error.toString()));
+      },
+    );
   }
 }

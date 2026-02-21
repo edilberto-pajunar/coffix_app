@@ -137,13 +137,13 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  emailNotVerified,TResult Function( AppUser user)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String email)?  otpSent,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function()?  emailNotVerified,TResult Function( AppUserWithStore userWithStore)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String email)?  otpSent,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _EmailNotVerified() when emailNotVerified != null:
 return emailNotVerified();case _Authenticated() when authenticated != null:
-return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
+return authenticated(_that.userWithStore);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated();case _OtpSent() when otpSent != null:
 return otpSent(_that.email);case _Error() when error != null:
 return error(_that.message);case _:
@@ -164,13 +164,13 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  emailNotVerified,required TResult Function( AppUser user)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String email)  otpSent,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function()  emailNotVerified,required TResult Function( AppUserWithStore userWithStore)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String email)  otpSent,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _EmailNotVerified():
 return emailNotVerified();case _Authenticated():
-return authenticated(_that.user);case _Unauthenticated():
+return authenticated(_that.userWithStore);case _Unauthenticated():
 return unauthenticated();case _OtpSent():
 return otpSent(_that.email);case _Error():
 return error(_that.message);case _:
@@ -190,13 +190,13 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  emailNotVerified,TResult? Function( AppUser user)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String email)?  otpSent,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function()?  emailNotVerified,TResult? Function( AppUserWithStore userWithStore)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String email)?  otpSent,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _EmailNotVerified() when emailNotVerified != null:
 return emailNotVerified();case _Authenticated() when authenticated != null:
-return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
+return authenticated(_that.userWithStore);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated();case _OtpSent() when otpSent != null:
 return otpSent(_that.email);case _Error() when error != null:
 return error(_that.message);case _:
@@ -307,10 +307,10 @@ String toString() {
 
 
 class _Authenticated implements AuthState {
-  const _Authenticated({required this.user});
+  const _Authenticated({required this.userWithStore});
   
 
- final  AppUser user;
+ final  AppUserWithStore userWithStore;
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
@@ -322,16 +322,16 @@ _$AuthenticatedCopyWith<_Authenticated> get copyWith => __$AuthenticatedCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Authenticated&&(identical(other.userWithStore, userWithStore) || other.userWithStore == userWithStore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,user);
+int get hashCode => Object.hash(runtimeType,userWithStore);
 
 @override
 String toString() {
-  return 'AuthState.authenticated(user: $user)';
+  return 'AuthState.authenticated(userWithStore: $userWithStore)';
 }
 
 
@@ -342,7 +342,7 @@ abstract mixin class _$AuthenticatedCopyWith<$Res> implements $AuthStateCopyWith
   factory _$AuthenticatedCopyWith(_Authenticated value, $Res Function(_Authenticated) _then) = __$AuthenticatedCopyWithImpl;
 @useResult
 $Res call({
- AppUser user
+ AppUserWithStore userWithStore
 });
 
 
@@ -359,10 +359,10 @@ class __$AuthenticatedCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? user = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? userWithStore = null,}) {
   return _then(_Authenticated(
-user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as AppUser,
+userWithStore: null == userWithStore ? _self.userWithStore : userWithStore // ignore: cast_nullable_to_non_nullable
+as AppUserWithStore,
   ));
 }
 

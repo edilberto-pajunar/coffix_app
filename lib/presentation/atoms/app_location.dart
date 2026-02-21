@@ -24,12 +24,13 @@ class AppLocation extends StatelessWidget {
                   AppImages.location,
                   size: AppSizes.iconSizeMedium,
                 ),
-                Text(
-                  "${user.suburb}, ${user.city}",
-                  style: theme.textTheme.bodyMedium!.copyWith(
-                    color: AppColors.lightGrey,
+                if (user.store != null)
+                  Text(
+                    "${user.store?.name}",
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: AppColors.lightGrey,
+                    ),
                   ),
-                ),
               ],
             );
           },

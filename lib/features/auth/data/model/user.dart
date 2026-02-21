@@ -15,7 +15,7 @@ class AppUser {
   final DateTime? birthday;
   final String? suburb;
   final String? city;
-  final String? preferredStore;
+  final String? preferredStoreId;
   @DateTimeConverter()
   final DateTime? createdAt;
   final bool? emailVerified;
@@ -33,7 +33,7 @@ class AppUser {
     this.birthday,
     this.suburb,
     this.city,
-    this.preferredStore,
+    this.preferredStoreId,
     this.createdAt,
     this.emailVerified,
     this.getPurchaseInfoByMail,

@@ -12,8 +12,9 @@ class AuthState with _$AuthState {
   const factory AuthState.emailNotVerified() = _EmailNotVerified;
 
   // User is authenticated and has completed onboarding
-  const factory AuthState.authenticated({required AppUser user}) =
-      _Authenticated;
+  const factory AuthState.authenticated({
+    required AppUserWithStore userWithStore,
+  }) = _Authenticated;
 
   // User is not authenticated (logged out or no valid tokens).
   const factory AuthState.unauthenticated() = _Unauthenticated;

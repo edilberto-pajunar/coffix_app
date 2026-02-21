@@ -1,11 +1,16 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/profile/logic/profile_cubit.dart';
+import 'package:coffix_app/features/stores/data/model/store.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
+import 'package:coffix_app/presentation/atoms/app_date_field.dart';
+import 'package:coffix_app/presentation/atoms/app_dropdown.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
@@ -14,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   static String route = 'personal_info_route';
@@ -47,10 +51,10 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
         lastName: formValues?['lastName'],
         nickName: formValues?['nickname'],
         mobile: formValues?['mobile'],
-        // birthday: formValues?['birthDate'],
+        birthday: formValues?['birthDate'],
         suburb: formValues?['suburb'],
         city: formValues?['city'],
-        preferredStore: formValues?['preferredStore'],
+        preferredStoreId: formValues?['preferredStoreId'],
       );
     }
   }
@@ -59,8 +63,12 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final AppUser? user = context.watch<AuthCubit>().state.maybeWhen(
-      authenticated: (user) => user,
+      authenticated: (user) => user.user,
       orElse: () => null,
+    );
+    final List<Store> stores = context.watch<StoreCubit>().state.maybeWhen(
+      loaded: (stores) => stores,
+      orElse: () => [],
     );
 
     return Scaffold(
@@ -83,7 +91,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
             "birthday": user?.birthday,
             "suburb": user?.suburb,
             "city": user?.city,
-            "preferredStore": user?.preferredStore,
+            "preferredStoreId": user?.preferredStoreId,
           },
           key: _formKey,
           child: BlocConsumer<ProfileCubit, ProfileState>(
@@ -140,12 +148,19 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                     isRequired: true,
                   ),
                   const SizedBox(height: AppSizes.lg),
-                  // AppField(
-                  //   hintText: "Birthdate",
-                  //   name: "birthDate",
-                  //   label: "Birthdate",
-                  // ),
-                  // const SizedBox(height: AppSizes.lg),
+                  AppDateField(
+                    hintText: "Birthdate",
+                    name: "birthDate",
+                    label: "Birthdate",
+                    isRequired: true,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                  ),
+                  Text(
+                    "You might get something for your birthday ",
+                    style: AppTypography.bodyXS,
+                  ),
+                  const SizedBox(height: AppSizes.lg),
                   AppField<String>(
                     name: 'suburb',
                     label: 'Suburb',
@@ -159,11 +174,14 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                     hintText: 'Enter city',
                   ),
                   const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'preferredStore',
+                  AppDropdown<Store, String>(
+                    name: 'preferredStoreId',
                     label: 'Preferred store',
-                    hintText: 'Enter preferred store',
+                    hintText: 'Select preferred store',
                     isRequired: true,
+                    options: stores,
+                    itemLabel: (Store store) => store.name ?? "",
+                    itemValue: (Store store) => store.docId,
                   ),
                   const SizedBox(height: AppSizes.xxl),
                   Text('Settings', style: theme.textTheme.titleMedium),

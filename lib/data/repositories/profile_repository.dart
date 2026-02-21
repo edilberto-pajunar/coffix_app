@@ -1,4 +1,3 @@
-
 abstract class ProfileRepository {
   Future<void> updateProfile({
     String? firstName,
@@ -8,6 +7,6 @@ abstract class ProfileRepository {
     DateTime? birthday,
     String? suburb,
     String? city,
-    String? preferredStore,
+    String? preferredStoreId,
   });
 }
