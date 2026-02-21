@@ -6,6 +6,7 @@ import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
+import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
@@ -84,7 +85,12 @@ class ProfileView extends StatelessWidget {
                 color: AppColors.lightGrey,
               ),
             ),
-            ProfileTile(label: 'Transaction history', onTap: () {}),
+            ProfileTile(
+              label: 'Transaction history',
+              onTap: () {
+                context.pushNamed(TransactionPage.route);
+              },
+            ),
             ProfileTile(label: 'Share your balance', onTap: () {}),
             ProfileTile(label: 'Specials', onTap: () {}),
             ProfileTile(

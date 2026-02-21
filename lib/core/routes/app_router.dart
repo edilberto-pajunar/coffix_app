@@ -21,6 +21,7 @@ import 'package:coffix_app/features/profile/presentation/pages/personal_info_pag
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
+import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -87,6 +88,31 @@ class AppRouter {
                 path: "/",
                 name: HomePage.route,
                 builder: (context, state) => const HomePage(),
+                routes: [
+                  GoRoute(
+                    path: "/profile",
+                    name: ProfilePage.route,
+                    builder: (context, state) => const ProfilePage(),
+                    routes: [
+                      GoRoute(
+                        path: "/personal-info",
+                        name: PersonalInfoPage.route,
+                        builder: (context, state) => const PersonalInfoPage(),
+                        routes: [],
+                      ),
+                      GoRoute(
+                        path: "/about",
+                        name: AboutPage.route,
+                        builder: (context, state) => const AboutPage(),
+                      ),
+                      GoRoute(
+                        path: "/qr-id",
+                        name: QrIdPage.route,
+                        builder: (context, state) => const QrIdPage(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               GoRoute(
                 path: "/verify-email",
@@ -96,29 +122,6 @@ class AppRouter {
                   final email = extra['email'] as String;
                   return VerifyEmailPage(email: email);
                 },
-              ),
-              GoRoute(
-                path: "/profile",
-                name: ProfilePage.route,
-                builder: (context, state) => const ProfilePage(),
-                routes: [
-                  GoRoute(
-                    path: "/personal-info",
-                    name: PersonalInfoPage.route,
-                    builder: (context, state) => const PersonalInfoPage(),
-                    routes: [],
-                  ),
-                  GoRoute(
-                    path: "/about",
-                    name: AboutPage.route,
-                    builder: (context, state) => const AboutPage(),
-                  ),
-                  GoRoute(
-                    path: "/qr-id",
-                    name: QrIdPage.route,
-                    builder: (context, state) => const QrIdPage(),
-                  ),
-                ],
               ),
             ],
           ),
@@ -221,6 +224,11 @@ class AppRouter {
                 path: "/schedule-order",
                 name: ScheduleOrderPage.route,
                 builder: (context, state) => const ScheduleOrderPage(),
+              ),
+              GoRoute(
+                path: "/transactions",
+                name: TransactionPage.route,
+                builder: (context, state) => const TransactionPage(),
               ),
             ],
           ),

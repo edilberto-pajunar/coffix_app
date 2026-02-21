@@ -4,6 +4,7 @@ import 'package:coffix_app/data/repositories/modifier_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/data/repositories/transaction_repository.dart';
 import 'package:coffix_app/features/app/data/app_repository_impl.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
@@ -21,6 +22,8 @@ import 'package:coffix_app/features/profile/domain/usecase/update_profile.dart';
 import 'package:coffix_app/features/profile/logic/profile_cubit.dart';
 import 'package:coffix_app/features/stores/data/store_repository_impl.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
+import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
+import 'package:coffix_app/features/transaction/transaction_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -43,7 +46,9 @@ Future<void> setupServiceLocator() async {
     () => ProductRepositoryImpl(storeRepository: getIt<StoreRepository>()),
   );
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl());
-
+  getIt.registerLazySingleton<TransactionRepository>(
+    () => TransactionRepositoryImpl(),
+  );
   // App Cubit
   getIt.registerLazySingleton<AppCubit>(
     () => AppCubit(appRepository: getIt<AppRepository>()),
@@ -59,22 +64,26 @@ Future<void> setupServiceLocator() async {
   // Cart Cubit
   getIt.registerLazySingleton<CartCubit>(() => CartCubit());
 
-  // Schedule Cubit (pickup time for current order)
-  getIt.registerLazySingleton<ScheduleCubit>(() => ScheduleCubit());
+  // Modifier Cubit
+  getIt.registerLazySingleton<ModifierCubit>(
+    () => ModifierCubit(modifierRepository: getIt<ModifierRepository>()),
+  );
 
   // Otp Cubit
   getIt.registerLazySingleton<OtpCubit>(
     () => OtpCubit(authRepository: getIt<AuthRepository>()),
   );
 
-  // Modifier Cubit
-  getIt.registerLazySingleton<ModifierCubit>(
-    () => ModifierCubit(modifierRepository: getIt<ModifierRepository>()),
-  );
-
   // Product Modifier Cubit
   getIt.registerLazySingleton<ProductModifierCubit>(
     () => ProductModifierCubit(),
+  );
+  // Schedule Cubit (pickup time for current order)
+  getIt.registerLazySingleton<ScheduleCubit>(() => ScheduleCubit());
+  // Transaction Cubit
+  getIt.registerLazySingleton<TransactionCubit>(
+    () =>
+        TransactionCubit(transactionRepository: getIt<TransactionRepository>()),
   );
 
   // Update Profile Use Case

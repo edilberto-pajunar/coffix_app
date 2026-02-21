@@ -2,9 +2,12 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AppLocation extends StatelessWidget {
   const AppLocation({super.key});
@@ -17,21 +20,27 @@ class AppLocation extends StatelessWidget {
       builder: (context, state) {
         return state.maybeWhen(
           authenticated: (user) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AppIcon.withSvgPath(
-                  AppImages.location,
-                  size: AppSizes.iconSizeMedium,
-                ),
-                if (user.store != null)
-                  Text(
-                    "${user.store?.name}",
-                    style: theme.textTheme.bodyMedium!.copyWith(
-                      color: AppColors.lightGrey,
-                    ),
+            return AppClickable(
+              showSplash: false,
+              onPressed: () {
+                context.pushNamed(ProfilePage.route);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppIcon.withSvgPath(
+                    AppImages.location,
+                    size: AppSizes.iconSizeMedium,
                   ),
-              ],
+                  if (user.store != null)
+                    Text(
+                      "${user.store?.name}",
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        color: AppColors.lightGrey,
+                      ),
+                    ),
+                ],
+              ),
             );
           },
           orElse: () {
