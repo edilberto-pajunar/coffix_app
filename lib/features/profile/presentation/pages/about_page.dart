@@ -1,9 +1,16 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/extensions/date_extensions.dart';
+import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/app/logic/app_cubit.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
+import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   static String route = 'about_route';
@@ -21,6 +28,14 @@ class AboutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final user = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user,
+      orElse: () => null,
+    );
+    final global = context.watch<AppCubit>().state.maybeWhen(
+      loaded: (global) => global,
+      orElse: () => null,
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text("About", style: theme.textTheme.titleLarge),
@@ -42,14 +57,21 @@ class AboutView extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.sm),
             AppCard(
+              padding: EdgeInsets.zero,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _InfoRow(label: 'App version', value: '1.0.0'),
+                  _InfoRow(
+                    label: 'App version',
+                    value: global?.appVersion ?? '',
+                  ),
                   const Divider(height: 1),
-                  _InfoRow(label: 'Last login', value: '—'),
+                  _InfoRow(
+                    label: 'Last login',
+                    value: '${user?.user.lastLogin?.formatDate()}',
+                  ),
                   const Divider(height: 1),
-                  _InfoRow(label: 'Customer ID', value: '—'),
+                  _InfoRow(label: 'Customer ID', value: '${user?.user.docId}'),
                 ],
               ),
             ),
@@ -68,7 +90,13 @@ class AboutView extends StatelessWidget {
               ),
             ),
             AppClickable(
-              onPressed: () {},
+              onPressed: () {
+                if (global?.specialUrl != null) {
+                  launchUrl(Uri.parse(global?.specialUrl ?? ''));
+                } else {
+                  AppSnackbar.error('No special URL found');
+                }
+              },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
                 child: Text(
@@ -80,7 +108,6 @@ class AboutView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: AppSizes.xxl),
             AppClickable(
               onPressed: () {},
               child: Padding(
@@ -110,19 +137,13 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
+      padding: const EdgeInsets.all(AppSizes.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.lightGrey,
-            ),
-          ),
-          Text(value, style: theme.textTheme.bodyMedium),
+          Text(label, style: AppTypography.labelXS),
+          Text(value, style: AppTypography.labelXS),
         ],
       ),
     );

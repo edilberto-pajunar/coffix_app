@@ -3,6 +3,7 @@ import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
@@ -82,7 +83,12 @@ class _HomeViewState extends State<HomeView> {
                 size: AppSizes.iconSizeXXLarge,
               ),
               Spacer(),
-              AppButton.primary(onPressed: () {}, label: "New Order"),
+              AppButton.primary(
+                onPressed: () {
+                  context.goNamed(MenuPage.route);
+                },
+                label: "New Order",
+              ),
               const SizedBox(height: AppSizes.md),
               Row(
                 children: [

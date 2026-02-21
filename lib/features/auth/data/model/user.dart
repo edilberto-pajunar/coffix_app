@@ -22,6 +22,8 @@ class AppUser {
   final bool? getPurchaseInfoByMail;
   final bool? getPromotions;
   final bool? allowWinACoffee;
+  @DateTimeConverter()
+  final DateTime? lastLogin;
 
   AppUser({
     this.docId,
@@ -39,6 +41,7 @@ class AppUser {
     this.getPurchaseInfoByMail,
     this.getPromotions,
     this.allowWinACoffee,
+    this.lastLogin,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

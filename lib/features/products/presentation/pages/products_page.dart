@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/product_extensions.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
@@ -9,6 +10,7 @@ import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/widgets/product_list.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
+import 'package:coffix_app/presentation/molecules/app_cart.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,21 +53,9 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
-    final cartItems = context.watch<CartCubit>().state.cart?.items;
 
     return Scaffold(
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: AppSizes.lg, right: AppSizes.lg),
-        child: FloatingActionButton(
-          onPressed: () {
-            context.goNamed(OrderPage.route);
-          },
-          child: Badge(
-            label: Text('${cartItems?.length ?? 0}'),
-            child: Icon(Icons.shopping_cart),
-          ),
-        ),
-      ),
+      floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(
         builder: (context, state) {
           return state.when(

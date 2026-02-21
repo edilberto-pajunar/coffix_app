@@ -1,6 +1,11 @@
+import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
+import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/widgets/product_list.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
+import 'package:coffix_app/presentation/molecules/app_cart.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +16,13 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MenuView();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<ProductModifierCubit>()),
+        BlocProvider.value(value: getIt<CartCubit>()),
+      ],
+      child: const MenuView(),
+    );
   }
 }
 
@@ -20,7 +31,12 @@ class MenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user,
+      orElse: () => null,
+    );
     return Scaffold(
+      floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(
         builder: (context, state) {
           return state.when(
@@ -30,7 +46,7 @@ class MenuView extends StatelessWidget {
               products: products,
               isRoot: true,
               categoryFilter: categoryFilter,
-              storeId: "",
+              storeId: user?.user.preferredStoreId ?? '',
             ),
             error: (message) =>
                 AppError(title: "Failed getting products", subtitle: message),

@@ -1,8 +1,11 @@
+import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/modifier_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/features/app/data/app_repository_impl.dart';
+import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
@@ -27,6 +30,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // Initializes all singleton services for the app.
 Future<void> setupServiceLocator() async {
+  getIt.registerLazySingleton<AppRepository>(() => AppRepositoryImpl());
   getIt.registerLazySingleton<StoreRepository>(
     () => StoreRepositoryImpl(authRepository: getIt<AuthRepository>()),
   );
@@ -40,6 +44,10 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl());
 
+  // App Cubit
+  getIt.registerLazySingleton<AppCubit>(
+    () => AppCubit(appRepository: getIt<AppRepository>()),
+  );
   // Auth Cubit
   getIt.registerLazySingleton<AuthCubit>(
     () => AuthCubit(

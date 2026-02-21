@@ -19,6 +19,7 @@ import 'package:coffix_app/features/products/presentation/pages/products_page.da
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -86,13 +87,6 @@ class AppRouter {
                 path: "/",
                 name: HomePage.route,
                 builder: (context, state) => const HomePage(),
-                routes: [
-                  GoRoute(
-                    path: "/personal-info",
-                    name: PersonalInfoPage.route,
-                    builder: (context, state) => const PersonalInfoPage(),
-                  ),
-                ],
               ),
               GoRoute(
                 path: "/verify-email",
@@ -107,11 +101,24 @@ class AppRouter {
                 path: "/profile",
                 name: ProfilePage.route,
                 builder: (context, state) => const ProfilePage(),
-              ),
-              GoRoute(
-                path: "/about",
-                name: AboutPage.route,
-                builder: (context, state) => const AboutPage(),
+                routes: [
+                  GoRoute(
+                    path: "/personal-info",
+                    name: PersonalInfoPage.route,
+                    builder: (context, state) => const PersonalInfoPage(),
+                    routes: [],
+                  ),
+                  GoRoute(
+                    path: "/about",
+                    name: AboutPage.route,
+                    builder: (context, state) => const AboutPage(),
+                  ),
+                  GoRoute(
+                    path: "/qr-id",
+                    name: QrIdPage.route,
+                    builder: (context, state) => const QrIdPage(),
+                  ),
+                ],
               ),
             ],
           ),

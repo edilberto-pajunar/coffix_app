@@ -80,7 +80,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  void updateLastLogin() async {
+    await _authRepository.updateLastLogin();
+  }
+
   void getUserWithStore() {
+    updateLastLogin();
     final stream = _storeRepository.getUserWithStore();
     _userWithStoreSubscription?.cancel();
     _userWithStoreSubscription = stream.listen(

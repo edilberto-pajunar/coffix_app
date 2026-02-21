@@ -17,4 +17,5 @@ abstract class AuthRepository {
   Stream<AppUser?> getUser();
   Future<void> sendEmailVerification({required String email});
   Future<void> verifyOtp({required String otp});
+  Future<void> updateLastLogin();
 }

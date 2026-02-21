@@ -1,0 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffix_app/data/repositories/app_repository.dart';
+import 'package:coffix_app/features/app/data/model/global.dart';
+
+class AppRepositoryImpl implements AppRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  Future<AppGlobal> getGlobal() async {
+    final snapshot = await _firestore
+        .collection('global')
+        .doc('EQ0i4V6H47Ra7yMCdG7B')
+        .get();
+    return AppGlobal.fromJson(snapshot.data() ?? {});
+  }
+}

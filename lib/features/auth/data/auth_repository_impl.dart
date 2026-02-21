@@ -187,4 +187,15 @@ class AuthRepositoryImpl implements AuthRepository {
       throw Exception('Failed to verify OTP');
     }
   }
+
+  @override
+  Future<void> updateLastLogin() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      throw Exception('No user found');
+    }
+    await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
+      {"lastLogin": DateTime.now()},
+    );
+  }
 }

@@ -35,6 +35,7 @@ class CreditView extends StatelessWidget {
               Text(
                 'Pay by Coffix Credit and save 10% - 20%',
                 style: AppTypography.headlineM.copyWith(color: AppColors.black),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSizes.xxl),
               Text(

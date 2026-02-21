@@ -57,6 +57,9 @@ dependencies:
   intl: ^0.20.2
   rxdart: ^0.28.0
   crypto: ^3.0.7
+  url_launcher: ^6.3.2
+  qr: ^3.0.2
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
