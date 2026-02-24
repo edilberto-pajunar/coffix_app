@@ -21,11 +21,12 @@ class ModifierRepositoryImpl implements ModifierRepository {
   Future<List<ModifierGroup>> getModifierGroups({
     required List<String> groupIds,
   }) async {
-    if (groupIds.isEmpty) return [];
+    final validIds = groupIds.where((id) => id.isNotEmpty).toList();
+    if (validIds.isEmpty) return [];
 
     final List<ModifierGroup> all = [];
-    for (var i = 0; i < groupIds.length; i += _whereInLimit) {
-      final chunk = groupIds.skip(i).take(_whereInLimit).toList();
+    for (var i = 0; i < validIds.length; i += _whereInLimit) {
+      final chunk = validIds.skip(i).take(_whereInLimit).toList();
       final snapshot = await _firestore
           .collection('modifierGroups')
           .where('docId', whereIn: chunk)
@@ -47,11 +48,12 @@ class ModifierRepositoryImpl implements ModifierRepository {
   Future<List<Modifier>> getModifiersByIds({
     required List<String> modifierIds,
   }) async {
-    if (modifierIds.isEmpty) return [];
+    final validIds = modifierIds.where((id) => id.isNotEmpty).toList();
+    if (validIds.isEmpty) return [];
 
     final List<Modifier> all = [];
-    for (var i = 0; i < modifierIds.length; i += _whereInLimit) {
-      final chunk = modifierIds.skip(i).take(_whereInLimit).toList();
+    for (var i = 0; i < validIds.length; i += _whereInLimit) {
+      final chunk = validIds.skip(i).take(_whereInLimit).toList();
       final snapshot = await _firestore
           .collection('modifiers')
           .where('docId', whereIn: chunk)
@@ -74,7 +76,8 @@ class ModifierRepositoryImpl implements ModifierRepository {
     required Product product,
   }) async {
     final productId = product.docId;
-    if (productId == null) return [];
+    if (productId == null || productId.isEmpty) return [];
+    if (storeId.isEmpty) return [];
 
     final override = await _storeRepository.getProductOverride(
       productId: productId,
@@ -82,14 +85,19 @@ class ModifierRepositoryImpl implements ModifierRepository {
     );
 
     final enabledGroupIds = product.modifierGroupIds
-        ?.where((id) => !override.disabledGroupIds.contains(id))
+        ?.where(
+          (id) => id.isNotEmpty && !override.disabledGroupIds.contains(id),
+        )
         .toList();
 
     if (enabledGroupIds == null || enabledGroupIds.isEmpty) return [];
 
     final groups = await getModifierGroups(groupIds: enabledGroupIds);
 
-    final allModifierIds = groups.expand((g) => g.modifierIds).toSet().toList();
+    final allModifierIds = groups
+        .expand((g) => g.modifierIds.where((id) => id.isNotEmpty))
+        .toSet()
+        .toList();
     final filteredModifierIds = allModifierIds
         .where((id) => !override.disabledModifierIds.contains(id))
         .toList();

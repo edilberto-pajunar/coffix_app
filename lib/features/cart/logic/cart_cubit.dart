@@ -17,7 +17,11 @@ class CartCubit extends Cubit<CartState> {
     if (currentCart == null) {
       emit(
         state.copyWith(
-          cart: Cart(storeId: newItem.storeId, items: [newItem]),
+          cart: Cart(
+            storeId: newItem.storeId,
+            items: [newItem],
+            scheduledAt: DateTime.now(),
+          ),
         ),
       );
       return;
@@ -67,5 +71,9 @@ class CartCubit extends Cubit<CartState> {
 
   void resetCart() {
     emit(state.copyWith(cart: null));
+  }
+
+  void pickTime(DateTime dateTime) {
+    emit(state.copyWith(cart: state.cart?.copyWith(scheduledAt: dateTime)));
   }
 }

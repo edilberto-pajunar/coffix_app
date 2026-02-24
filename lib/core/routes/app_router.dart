@@ -11,7 +11,6 @@ import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_successful_page.dart';
-import 'package:coffix_app/features/payment/presentation/pages/payment_web_page.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/features/modifier/presentation/pages/customize_product_page.dart';
@@ -97,7 +96,11 @@ class AppRouter {
                       GoRoute(
                         path: "/personal-info",
                         name: PersonalInfoPage.route,
-                        builder: (context, state) => const PersonalInfoPage(),
+                        builder: (context, state) {
+                          final extra = state.extra as Map<String, dynamic>?;
+                          final canBack = extra?['canBack'] as bool? ?? true;
+                          return PersonalInfoPage(canBack: canBack);
+                        },
                         routes: [],
                       ),
                       GoRoute(
@@ -158,30 +161,39 @@ class AppRouter {
                   final storeId = extra['storeId'] as String;
                   return ProductsPage(storeId: storeId);
                 },
-              ),
-              GoRoute(
-                path: "/add-product",
-                name: AddProductPage.route,
-                pageBuilder: (context, state) {
-                  final extra = state.extra as Map<String, dynamic>;
-                  final product = extra['product'] as Product;
-                  final storeId = extra['storeId'] as String;
-                  return CustomTransitionPage(
-                    child: AddProductPage(product: product, storeId: storeId),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                          final scale = Tween<double>(begin: 0.3, end: 1.0)
-                              .animate(
-                                CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeInOut,
-                                ),
+                routes: [
+                  GoRoute(
+                    path: "add",
+                    name: AddProductPage.route,
+                    pageBuilder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      final product = extra['product'] as Product;
+                      final storeId = extra['storeId'] as String;
+                      return CustomTransitionPage(
+                        child: AddProductPage(
+                          product: product,
+                          storeId: storeId,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              final scale = Tween<double>(begin: 0.3, end: 1.0)
+                                  .animate(
+                                    CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInOut,
+                                    ),
+                                  );
+                              return ScaleTransition(
+                                scale: scale,
+                                child: child,
                               );
-                          return ScaleTransition(scale: scale, child: child);
-                        },
-                  );
-                },
+                            },
+                      );
+                    },
+                  ),
+                ],
               ),
+
               GoRoute(
                 path: "/customize-product",
                 name: CustomizeProductPage.route,
@@ -215,11 +227,7 @@ class AppRouter {
                 builder: (context, state) =>
                     PaymentSuccessfulPage(pickupAt: state.extra as DateTime?),
               ),
-              GoRoute(
-                path: "/payment-web",
-                name: PaymentWebPage.route,
-                builder: (context, state) => const PaymentWebPage(),
-              ),
+
               GoRoute(
                 path: "/schedule-order",
                 name: ScheduleOrderPage.route,

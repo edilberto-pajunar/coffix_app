@@ -1,4 +1,3 @@
-import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
@@ -22,19 +21,24 @@ import 'package:go_router/go_router.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   static String route = 'personal_info_route';
-  const PersonalInfoPage({super.key});
+  const PersonalInfoPage({super.key, required this.canBack});
+
+  /// [canBack] is used to determine if the user can go back to the previous page.
+  final bool canBack;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: getIt<ProfileCubit>(),
-      child: PersonalInfoView(),
+      child: PersonalInfoView(canBack: canBack),
     );
   }
 }
 
 class PersonalInfoView extends StatefulWidget {
-  const PersonalInfoView({super.key});
+  const PersonalInfoView({super.key, required this.canBack});
+
+  final bool canBack;
 
   @override
   State<PersonalInfoView> createState() => _PersonalInfoViewState();
@@ -59,6 +63,115 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
     }
   }
 
+  Widget _buildForm(
+    BuildContext context,
+    ThemeData theme,
+    AppUser? user,
+    List<Store> stores,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppField<String>(
+          name: 'email',
+          label: 'Email',
+          hintText: 'Email',
+          readOnly: true,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(
+          name: 'firstName',
+          label: 'First name',
+          hintText: 'Enter first name',
+          isRequired: true,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(
+          name: 'lastName',
+          label: 'Last name',
+          hintText: 'Enter last name',
+          isRequired: true,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(
+          name: 'nickname',
+          label: 'Nickname',
+          hintText: 'Enter nickname',
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(
+          name: 'mobile',
+          label: 'Mobile',
+          hintText: 'Enter mobile',
+          keyboardType: TextInputType.phone,
+          isRequired: true,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppDateField(
+          hintText: "Birthdate",
+          name: "birthDate",
+          label: "Birthdate",
+          isRequired: true,
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        ),
+        Text(
+          "You might get something for your birthday ",
+          style: AppTypography.bodyXS,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(
+          name: 'suburb',
+          label: 'Suburb',
+          hintText: 'Enter suburb',
+          isRequired: true,
+        ),
+        const SizedBox(height: AppSizes.lg),
+        AppField<String>(name: 'city', label: 'City', hintText: 'Enter city'),
+        const SizedBox(height: AppSizes.lg),
+        AppDropdown<Store, String>(
+          name: 'preferredStoreId',
+          label: 'Preferred store',
+          hintText: 'Select preferred store',
+          isRequired: true,
+          options: stores,
+          itemLabel: (Store store) => store.name ?? "",
+          itemValue: (Store store) => store.docId,
+        ),
+        const SizedBox(height: AppSizes.xxl),
+        Text('Settings', style: theme.textTheme.titleMedium),
+        const SizedBox(height: AppSizes.sm),
+        FormBuilderSwitch(
+          name: 'receiveNotification',
+          title: Text(
+            'Receive notification',
+            style: theme.textTheme.bodyMedium,
+          ),
+          initialValue: true,
+        ),
+        FormBuilderSwitch(
+          name: 'receiveNewsAndPromotions',
+          title: Text(
+            'Receive news and promotions',
+            style: theme.textTheme.bodyMedium,
+          ),
+          initialValue: true,
+        ),
+        FormBuilderSwitch(
+          name: 'receivePurchaseMessages',
+          title: Text(
+            'Receive purchase messages',
+            style: theme.textTheme.bodyMedium,
+          ),
+          initialValue: true,
+        ),
+        const SizedBox(height: AppSizes.xxl),
+        AppButton.primary(onPressed: _onSave, label: 'Save'),
+        const SizedBox(height: AppSizes.xxl),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -71,151 +184,57 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
       orElse: () => [],
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal info', style: theme.textTheme.titleLarge),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => context.pop(),
+    return PopScope(
+      canPop: widget.canBack,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Personal info', style: theme.textTheme.titleLarge),
+          leading: widget.canBack
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  onPressed: () => context.pop(),
+                )
+              : const SizedBox.shrink(),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: AppSizes.defaultPadding,
-        child: FormBuilder(
-          initialValue: {
-            'email': user?.email,
-            "firstName": user?.firstName,
-            "lastName": user?.lastName,
-            "nickname": user?.nickName,
-            "mobile": user?.mobile,
-            "birthday": user?.birthday,
-            "suburb": user?.suburb,
-            "city": user?.city,
-            "preferredStoreId": user?.preferredStoreId,
-          },
-          key: _formKey,
-          child: BlocConsumer<ProfileCubit, ProfileState>(
-            listener: (context, state) {
-              state.mapOrNull(
-                success: (state) {
-                  AppSnackbar.showSuccess(
-                    context,
-                    "Profile updated successfully",
-                  );
-                  context.goNamed(HomePage.route);
-                },
-                error: (state) =>
-                    AppError(title: "Error", subtitle: state.message),
-              );
+        body: SingleChildScrollView(
+          padding: AppSizes.defaultPadding,
+          child: FormBuilder(
+            initialValue: {
+              'email': user?.email,
+              "firstName": user?.firstName,
+              "lastName": user?.lastName,
+              "nickname": user?.nickName,
+              "mobile": user?.mobile,
+              "birthday": user?.birthday,
+              "suburb": user?.suburb,
+              "city": user?.city,
+              "preferredStoreId": user?.preferredStoreId,
             },
-            builder: (context, state) {
-              state.mapOrNull(loading: (state) => AppLoading());
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AppField<String>(
-                    name: 'email',
-                    label: 'Email',
-                    hintText: 'Email',
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'firstName',
-                    label: 'First name',
-                    hintText: 'Enter first name',
-                    isRequired: true,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'lastName',
-                    label: 'Last name',
-                    hintText: 'Enter last name',
-                    isRequired: true,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'nickname',
-                    label: 'Nickname',
-                    hintText: 'Enter nickname',
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'mobile',
-                    label: 'Mobile',
-                    hintText: 'Enter mobile',
-                    keyboardType: TextInputType.phone,
-                    isRequired: true,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppDateField(
-                    hintText: "Birthdate",
-                    name: "birthDate",
-                    label: "Birthdate",
-                    isRequired: true,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                  ),
-                  Text(
-                    "You might get something for your birthday ",
-                    style: AppTypography.bodyXS,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'suburb',
-                    label: 'Suburb',
-                    hintText: 'Enter suburb',
-                    isRequired: true,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppField<String>(
-                    name: 'city',
-                    label: 'City',
-                    hintText: 'Enter city',
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  AppDropdown<Store, String>(
-                    name: 'preferredStoreId',
-                    label: 'Preferred store',
-                    hintText: 'Select preferred store',
-                    isRequired: true,
-                    options: stores,
-                    itemLabel: (Store store) => store.name ?? "",
-                    itemValue: (Store store) => store.docId,
-                  ),
-                  const SizedBox(height: AppSizes.xxl),
-                  Text('Settings', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: AppSizes.sm),
-                  FormBuilderSwitch(
-                    name: 'receiveNotification',
-                    title: Text(
-                      'Receive notification',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    initialValue: true,
-                  ),
-                  FormBuilderSwitch(
-                    name: 'receiveNewsAndPromotions',
-                    title: Text(
-                      'Receive news and promotions',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    initialValue: true,
-                  ),
-                  FormBuilderSwitch(
-                    name: 'receivePurchaseMessages',
-                    title: Text(
-                      'Receive purchase messages',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    initialValue: true,
-                  ),
-                  const SizedBox(height: AppSizes.xxl),
-                  AppButton.primary(onPressed: _onSave, label: 'Save'),
-                  const SizedBox(height: AppSizes.xxl),
-                ],
-              );
-            },
+            key: _formKey,
+            child: BlocConsumer<ProfileCubit, ProfileState>(
+              listener: (context, state) {
+                state.mapOrNull(
+                  success: (state) {
+                    AppSnackbar.showSuccess(
+                      context,
+                      "Profile updated successfully",
+                    );
+                    context.goNamed(HomePage.route);
+                  },
+                  error: (state) =>
+                      AppError(title: "Error", subtitle: state.message),
+                );
+              },
+              builder: (context, state) {
+                return state.when(
+                  initial: () => _buildForm(context, theme, user, stores),
+                  loading: () => AppLoading(),
+                  success: () => _buildForm(context, theme, user, stores),
+                  error: (message) =>
+                      AppError(title: "Error", subtitle: message),
+                );
+              },
+            ),
           ),
         ),
       ),

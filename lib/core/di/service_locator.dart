@@ -1,6 +1,7 @@
 import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/modifier_repository.dart';
+import 'package:coffix_app/data/repositories/payment_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
@@ -12,7 +13,8 @@ import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/features/modifier/data/modifier_repository_impl.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/order/logic/schedule_cubit.dart';
+import 'package:coffix_app/features/payment/data/payment_repository_impl.dart';
+import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:coffix_app/features/products/data/product_repository_impl.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
@@ -40,8 +42,8 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<ModifierRepository>(
     () => ModifierRepositoryImpl(storeRepository: getIt<StoreRepository>()),
   );
-  // -- Auth Feature --
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
+  getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl());
   getIt.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(storeRepository: getIt<StoreRepository>()),
   );
@@ -73,13 +75,16 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<OtpCubit>(
     () => OtpCubit(authRepository: getIt<AuthRepository>()),
   );
+  // Payment Cubit
+  getIt.registerLazySingleton<PaymentCubit>(
+    () => PaymentCubit(paymentRepository: getIt<PaymentRepository>()),
+  );
 
   // Product Modifier Cubit
   getIt.registerLazySingleton<ProductModifierCubit>(
     () => ProductModifierCubit(),
   );
-  // Schedule Cubit (pickup time for current order)
-  getIt.registerLazySingleton<ScheduleCubit>(() => ScheduleCubit());
+
   // Transaction Cubit
   getIt.registerLazySingleton<TransactionCubit>(
     () =>

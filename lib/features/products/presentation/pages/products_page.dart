@@ -1,9 +1,6 @@
-import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/product_extensions.dart';
-import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
@@ -14,7 +11,6 @@ import 'package:coffix_app/presentation/molecules/app_cart.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ProductsPage extends StatelessWidget {
   static String route = 'products_route';
@@ -53,7 +49,6 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(

@@ -2,6 +2,7 @@ import express from "express";
 import { otpRouter } from "./otp/router";
 import windcaveRouter from "./windcave/router";
 import firebaseRouter from "./firebase/router";
+import webhookRouter from "./webhook/router";
 
 export const api = express();
 // Global middleware
@@ -15,3 +16,4 @@ api.use("/hello-world", (request, response) => {
 api.use("/otp", otpRouter)
 api.use("/payment", windcaveRouter)
 api.use("/firebase", firebaseRouter)
+api.use("/webhook", webhookRouter)

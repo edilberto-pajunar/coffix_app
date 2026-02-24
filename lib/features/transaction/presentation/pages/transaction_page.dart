@@ -127,7 +127,7 @@ class _TransactionViewState extends State<TransactionView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '#${t.orderNumber ?? '—'}',
+                                '#${t.orderId ?? '—'}',
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),

@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
-import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
-import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
@@ -125,7 +123,10 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 'OTP sent to $email. Please check your email.',
               ),
               error: (message) => AppSnackbar.showError(context, message),
-              verified: () => context.goNamed(PersonalInfoPage.route),
+              verified: () => context.goNamed(
+                PersonalInfoPage.route,
+                extra: {"canBack": false},
+              ),
             );
           },
           builder: (context, state) {

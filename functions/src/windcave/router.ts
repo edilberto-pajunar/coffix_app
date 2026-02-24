@@ -6,6 +6,7 @@ import { createPaymentSessionBodySchema } from "./schema";
 import { WindcaveService } from "./service";
 import { logger } from "firebase-functions";
 import { WindcaveError } from "../utils/windcave.error";
+import FirebaseService from "../firebase/service";
 
 const router = express.Router();
 
@@ -14,6 +15,16 @@ router.post(
   requirePost,
   requiredAuth,
   async (request: AuthenticatedRequest, response: Response) => {
+    const firebaseService = new FirebaseService();
+    const windcaveService = new WindcaveService();
+    const customerId = request.user?.uid;
+
+    if (!customerId) {
+      return response
+        .status(401)
+        .json({ success: false, message: "Unauthorized" });
+    }
+
     try {
       const validation = createPaymentSessionBodySchema.safeParse(request.body);
       let totalAmount = 0;
@@ -23,21 +34,35 @@ router.post(
           .join(", ");
         return response.status(400).json({ success: false, errors });
       }
-      totalAmount = await new WindcaveService().computeOrderTotal({
+      totalAmount = await windcaveService.computeOrderTotal({
         items: validation.data.items,
+      });
+
+      const orderId = await firebaseService.createNewOrder({
+        amount: totalAmount,
+        customerId,
+        storeId: validation.data.storeId,
+        items: validation.data.items,
+        scheduledAt: validation.data.scheduledAt,
       });
 
       logger.info("Total amount:", totalAmount);
 
-
-      const paymentSessionUrl =
-        await new WindcaveService().createPaymentSession({
+      const { paymentSessionUrl, sessionId } = await windcaveService.createPaymentSession(
+        {
           amount: totalAmount,
-        });
+          orderId,
+        },
+      );
 
-      return response
-        .status(200)
-        .json({ success: true, data: { paymentSessionUrl } });
+      await firebaseService.createNewTransaction({
+        customerId,
+        orderId,
+        amount: totalAmount,
+        sessionId,
+      });
+
+      return response.status(200).json({ success: true, data: { paymentSessionUrl } });
     } catch (error) {
       if (error instanceof WindcaveError) {
         return response

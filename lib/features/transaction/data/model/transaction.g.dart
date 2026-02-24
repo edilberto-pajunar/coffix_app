@@ -8,7 +8,7 @@ part of 'transaction.dart';
 
 Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
   docId: json['docId'] as String?,
-  orderNumber: json['orderNumber'] as String?,
+  orderId: json['orderId'] as String?,
   customerId: json['customerId'] as String?,
   amount: (json['amount'] as num?)?.toDouble(),
   createdAt: const DateTimeConverter().fromJson(json['createdAt']),
@@ -21,7 +21,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
       'docId': instance.docId,
-      'orderNumber': instance.orderNumber,
+      'orderId': instance.orderId,
       'customerId': instance.customerId,
       'amount': instance.amount,
       'createdAt': const DateTimeConverter().toJson(instance.createdAt),
@@ -32,7 +32,8 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     };
 
 const _$TransactionStatusEnumMap = {
-  TransactionStatus.pending: 'pending',
+  TransactionStatus.created: 'created',
   TransactionStatus.paid: 'paid',
   TransactionStatus.failed: 'failed',
+  TransactionStatus.approved: 'approved',
 };

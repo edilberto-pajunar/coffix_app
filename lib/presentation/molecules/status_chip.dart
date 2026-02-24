@@ -13,7 +13,8 @@ class StatusChip extends StatelessWidget {
     final theme = Theme.of(context);
     final (label, color) = switch (status) {
       TransactionStatus.paid => ('Paid', AppColors.success),
-      TransactionStatus.pending => ('Pending', AppColors.primary),
+      TransactionStatus.created => ('Created', AppColors.primary),
+      TransactionStatus.approved => ('Approved', AppColors.success),
       TransactionStatus.failed => ('Failed', AppColors.error),
       _ => ('—', AppColors.lightGrey),
     };

@@ -36,7 +36,7 @@ class MenuView extends StatelessWidget {
       orElse: () => null,
     );
     return Scaffold(
-      floatingActionButton: AppCart(),
+    floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(
         builder: (context, state) {
           return state.when(

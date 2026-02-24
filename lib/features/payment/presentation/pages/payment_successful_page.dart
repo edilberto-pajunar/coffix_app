@@ -1,7 +1,10 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
+import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
+import 'package:coffix_app/presentation/molecules/app_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -30,12 +33,12 @@ class PaymentSuccessfulView extends StatelessWidget {
     final timeText = DateFormat.jm().format(pickupTime);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Order confirmed'), centerTitle: true),
       body: SafeArea(
         child: Padding(
           padding: AppSizes.defaultPadding,
           child: Column(
             children: [
+              AppHeader(title: "Order Confirmed", showLocation: false),
               const Spacer(),
               Icon(
                 Icons.check_circle_rounded,
@@ -51,7 +54,7 @@ class PaymentSuccessfulView extends StatelessWidget {
               const SizedBox(height: AppSizes.lg),
               Text(
                 'Your order will be ready for pickup at',
-                style: AppTypography.bodyXS,
+                style: AppTypography.bodyM,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSizes.sm),
@@ -73,7 +76,7 @@ class PaymentSuccessfulView extends StatelessWidget {
               ),
               const Spacer(),
               AppButton.primary(
-                onPressed: () => context.go('/'),
+                onPressed: () => context.goNamed(OrderPage.route),
                 label: 'Back to home',
               ),
               const SizedBox(height: AppSizes.lg),

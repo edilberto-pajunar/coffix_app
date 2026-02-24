@@ -2,14 +2,31 @@ import { z } from "zod";
 
 export const createPaymentSessionBodySchema = z.object({
   storeId: z.string().trim(),
+  scheduledAt: z.coerce.date(),
   items: z.array(
     z.object({
       productId: z.string().trim(),
       quantity: z.number().positive(),
-      selectedModifiers: z.object({}),
+      selectedModifiers: z.record(z.string(), z.string()),
     }),
   ),
 });
+
+// {
+//   storeId: "1345 ";
+//   scheduledAt: Datetme.now()
+//   items: {
+//     productId: "1234567890";
+//     quantity: 1;
+//     selectedModifiers: {
+//       "1234567890": "1234567890";
+//     };
+//   }[];
+// }
+
+export type CreatePaymentSessionBodySchema = z.infer<
+  typeof createPaymentSessionBodySchema
+>;
 
 const linkSchema = z.object({
   href: z.string(),

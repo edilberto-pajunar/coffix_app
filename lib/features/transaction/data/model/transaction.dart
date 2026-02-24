@@ -4,18 +4,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'transaction.g.dart';
 
 enum TransactionStatus {
-  @JsonValue('pending')
-  pending,
+  @JsonValue('created')
+  created,
   @JsonValue('paid')
   paid,
   @JsonValue('failed')
   failed,
+  @JsonValue('approved')
+  approved,
 }
 
 @JsonSerializable()
 class Transaction {
   final String? docId;
-  final String? orderNumber;
+  final String? orderId;
   final String? customerId;
   final double? amount;
   @DateTimeConverter()
@@ -28,7 +30,7 @@ class Transaction {
 
   Transaction({
     this.docId,
-    this.orderNumber,
+    this.orderId,
     this.customerId,
     this.amount,
     this.createdAt,

@@ -150,7 +150,7 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                         const SizedBox(height: AppSizes.lg),
                         AppButton.primary(
                           label:
-                              "Update \$${productModifierState.totalPrice.toStringAsFixed(2)}",
+                              "Update \$${((widget.product.price ?? 0) + productModifierState.totalPrice).toStringAsFixed(2)}",
                           onPressed: () => context.pop(),
                         ),
                         const SizedBox(height: AppSizes.xxl),

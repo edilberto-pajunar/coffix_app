@@ -13,9 +13,11 @@ Cart _$CartFromJson(Map<String, dynamic> json) => Cart(
           ?.map((e) => CartItem.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  scheduledAt: DateTime.parse(json['scheduledAt'] as String),
 );
 
 Map<String, dynamic> _$CartToJson(Cart instance) => <String, dynamic>{
   'storeId': instance.storeId,
   'items': instance.items.map((e) => e.toJson()).toList(),
+  'scheduledAt': instance.scheduledAt.toIso8601String(),
 };

@@ -8,15 +8,30 @@ import {
 import { Product } from "../firebase/interface";
 import { WindcaveError } from "../utils/windcave.error";
 
+function getWindcaveApiSecret(
+  windcaveApiUsername: string,
+  windcaveApiKey: string,
+) {
+  return Buffer.from(`${windcaveApiUsername}:${windcaveApiKey}`).toString(
+    "base64",
+  );
+}
+
 export class WindcaveService {
   private readonly windcaveApiKey: string;
   private readonly windcaveApiUrl: string;
   private readonly windcaveApiUsername: string;
+  private readonly windcaveApiSecret: string;
 
   constructor() {
     this.windcaveApiKey = process.env.WINDCAVE_API_KEY ?? "";
     this.windcaveApiUrl = process.env.WINDCAVE_API_BASE_URL ?? "";
     this.windcaveApiUsername = process.env.WINDCAVE_API_USERNAME ?? "";
+
+    this.windcaveApiSecret = getWindcaveApiSecret(
+      this.windcaveApiUsername,
+      this.windcaveApiKey,
+    );
     if (
       !this.windcaveApiUsername ||
       !this.windcaveApiKey ||
@@ -32,29 +47,32 @@ export class WindcaveService {
    *
    * @returns - The URL to redirect the customer to for payment
    */
-  async createPaymentSession({ amount }: { amount: number }) {
-    const auth = Buffer.from(
-      `${this.windcaveApiUsername}:${this.windcaveApiKey}`,
-    ).toString("base64");
+  async createPaymentSession({
+    amount,
+    orderId,
+  }: {
+    amount: number;
+    orderId: string;
+  }) {
     const response = await fetch(`${this.windcaveApiUrl}/api/v1/sessions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${auth}`,
+        Authorization: `Basic ${this.windcaveApiSecret}`,
       },
       body: JSON.stringify({
         amount: amount,
         currency: "NZD",
-        merchantReference: "1234ABC",
+        merchantReference: orderId,
         type: "purchase",
         callbackUrls: {
           approved: WINDCAVE_SUCCESS_URL,
           declined: WINDCAVE_FAILED_URL,
           cancelled: WINDCAVE_CANCELLED_URL,
         },
-        notificationUrl: "https://example.com/txn_result?123",
+        notificationUrl: `${process.env.BASE_URL}/coffix-app-dev/us-central1/v1/webhook`,
         customer: {
-          email: "john.smith@example.com",
+          email: "pajunar0@gmail.com",
         },
       }),
     });
@@ -72,7 +90,10 @@ export class WindcaveService {
         "HPP link not found",
       );
     }
-    return hppLink.href;
+    return {
+      paymentSessionUrl: hppLink.href,
+      sessionId: responseData.id,
+    };
   }
 
   async computeOrderTotal({
@@ -123,6 +144,8 @@ export class WindcaveService {
         Boolean,
       );
 
+      console.log(modifierIds);
+
       let extra = 0;
 
       if (modifierIds.length > 0) {
@@ -132,6 +155,8 @@ export class WindcaveService {
         for (let i = 0; i < modifierIds.length; i += 10) {
           chunks.push(modifierIds.slice(i, i + 10));
         }
+
+        console.log("Chunks", chunks);
 
         const modifierDocs: FirebaseFirestore.QueryDocumentSnapshot[] = [];
 
@@ -154,6 +179,8 @@ export class WindcaveService {
           }
         }
 
+        console.log("Found", found);
+
         // 5. Validate each modifier matched the group it claims to be in
         for (const [groupId, modifierId] of Object.entries(
           item.selectedModifiers ?? {},
@@ -166,7 +193,7 @@ export class WindcaveService {
             );
           }
 
-          const extraPrice = Number(m.price ?? 0);
+          const extraPrice = Number(m.priceDelta ?? 0);
           if (!Number.isFinite(extraPrice)) {
             throw new Error(`Invalid modifier price: ${modifierId}`);
           }
@@ -184,5 +211,22 @@ export class WindcaveService {
       total += lineTotal;
     }
     return total;
+  }
+
+  async getSession(sessionId: string) {
+    const response = await fetch(
+      `${this.windcaveApiUrl}/api/v1/sessions/${sessionId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${this.windcaveApiSecret}`,
+        },
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to get session: ${response.statusText}`);
+    }
+    return response.json();
   }
 }

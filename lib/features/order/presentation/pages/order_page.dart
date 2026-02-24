@@ -29,7 +29,6 @@ class OrderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const totalPrice = '\$100.00';
     return Scaffold(
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
@@ -70,12 +69,7 @@ class OrderView extends StatelessWidget {
               SafeArea(
                 top: false,
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSizes.xxl,
-                    AppSizes.md,
-                    AppSizes.xxl,
-                    AppSizes.lg,
-                  ),
+                  padding: AppSizes.defaultPadding,
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     border: Border(
