@@ -18,10 +18,7 @@ class AppHeader extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppSizes.sm,
-              horizontal: AppSizes.xs,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AppSizes.xs),
             child: Column(
               children: [
                 Center(child: Text(title, style: theme.textTheme.titleLarge)),
