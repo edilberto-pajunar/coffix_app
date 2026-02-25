@@ -158,13 +158,10 @@ class AuthRepositoryImpl implements AuthRepository {
       throw Exception('No token found');
     }
     final response = await http.post(
-      Uri.parse(
-        '${ApiEndpoints.baseUrl}/coffix-app-dev/us-central1/v1/otp/send',
-      ),
+      Uri.parse('${ApiEndpoints.baseUrl}/v1/otp/send'),
       headers: {'Authorization': 'Bearer $token'},
       body: {'email': email},
     );
-    print(response.body);
     if (response.statusCode != 200) {
       throw Exception('Failed to send email verification');
     }
@@ -177,9 +174,7 @@ class AuthRepositoryImpl implements AuthRepository {
       throw Exception('No token found');
     }
     final response = await http.post(
-      Uri.parse(
-        '${ApiEndpoints.baseUrl}/coffix-app-dev/us-central1/v1/otp/verify',
-      ),
+      Uri.parse('${ApiEndpoints.baseUrl}/v1/otp/verify'),
       headers: {'Authorization': 'Bearer $token'},
       body: {'otp': otp},
     );

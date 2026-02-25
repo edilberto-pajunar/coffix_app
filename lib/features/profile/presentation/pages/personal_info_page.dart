@@ -84,6 +84,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
           label: 'First name',
           hintText: 'Enter first name',
           isRequired: true,
+          onChanged: (val) {
+            _formKey.currentState?.fields["nickname"]?.didChange(val);
+          },
         ),
         const SizedBox(height: AppSizes.lg),
         AppField<String>(
@@ -110,10 +113,11 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
         AppDateField(
           hintText: "Birthdate",
           name: "birthDate",
-          label: "Birthdate",
+          label: "Date of Birth",
           isRequired: true,
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
+          initialDate: user?.birthday,
         ),
         Text(
           "You might get something for your birthday ",
@@ -205,7 +209,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
               "lastName": user?.lastName,
               "nickname": user?.nickName,
               "mobile": user?.mobile,
-              "birthday": user?.birthday,
+              "birthDate": user?.birthday,
               "suburb": user?.suburb,
               "city": user?.city,
               "preferredStoreId": user?.preferredStoreId,

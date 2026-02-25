@@ -51,7 +51,7 @@ class _AppDateFieldState extends State<AppDateField> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
-    final format = widget.format ?? DateFormat('MMM dd, yyyy');
+    final format = widget.format ?? DateFormat('dd/MM/yyyy');
     return format.format(date);
   }
 

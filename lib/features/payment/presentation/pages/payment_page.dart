@@ -56,6 +56,8 @@ class _PaymentViewState extends State<PaymentView> {
                 uri.scheme == 'https' &&
                 uri.host == 'www.coffix.co.nz' &&
                 uri.path == '/payment/successful';
+
+            print("isSuccess: $isSuccess");
             if (isSuccess) {
               // IMPORTANT: prevent first
               WidgetsBinding.instance.addPostFrameCallback((_) {

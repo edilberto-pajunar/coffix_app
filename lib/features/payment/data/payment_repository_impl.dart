@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:coffix_app/core/api/endpoints.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
@@ -15,9 +16,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     if (token == null) throw Exception('No token found');
 
     final response = await http.post(
-      Uri.parse(
-        '${ApiEndpoints.baseUrl}/coffix-app-dev/us-central1/v1/payment/session',
-      ),
+      Uri.parse('${ApiEndpoints.baseUrl}/v1/payment/session'),
       body: jsonEncode(request.toJson()),
       headers: {
         'Authorization': 'Bearer $token',
