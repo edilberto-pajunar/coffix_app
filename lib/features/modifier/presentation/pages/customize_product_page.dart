@@ -77,7 +77,10 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        AppBackHeader(title: "Customize Product"),
+                        AppBackHeader(
+                          title: "Customize Product",
+                          showLocation: false,
+                        ),
                         ...modifiersGroups.map((bundle) {
                           final groupTitle =
                               bundle.group.name ??

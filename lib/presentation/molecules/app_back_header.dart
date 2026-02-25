@@ -31,7 +31,7 @@ class _AppBackHeaderState extends State<AppBackHeader> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.only(top: topPadding),
+        padding: EdgeInsets.only(top: topPadding, bottom: AppSizes.sm),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(

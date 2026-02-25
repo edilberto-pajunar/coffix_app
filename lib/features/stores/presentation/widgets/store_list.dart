@@ -76,7 +76,7 @@ class StoreList extends StatelessWidget {
                       ),
                     ),
                     AppIconButton.withIconData(
-                      Icons.arrow_forward,
+                      Icons.arrow_forward_ios,
                       onPressed: () {},
                       borderColor: Colors.transparent,
                     ),
