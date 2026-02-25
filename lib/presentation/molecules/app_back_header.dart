@@ -1,30 +1,37 @@
-import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
-class AppBackHeader extends StatelessWidget {
+class AppBackHeader extends StatefulWidget {
   final VoidCallback? onBack;
   final String title;
   final bool showLocation;
+  final bool showBackButton;
 
   const AppBackHeader({
     super.key,
     this.onBack,
     required this.title,
     this.showLocation = true,
+    this.showBackButton = true,
   });
 
   @override
+  State<AppBackHeader> createState() => _AppBackHeaderState();
+}
+
+class _AppBackHeaderState extends State<AppBackHeader> {
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return SafeArea(
+      top: false,
       child: Padding(
-        padding: const EdgeInsets.only(left: AppSizes.md),
+        padding: EdgeInsets.only(top: topPadding),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Padding(
@@ -41,21 +48,18 @@ class AppBackHeader extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AppClickable(
-                        showSplash: false,
-                        onPressed: () {
-                          if (onBack != null) {
-                            onBack!();
-                          } else {
-                            context.pop();
-                          }
-                        },
-                        child: SvgPicture.asset(
-                          AppImages.back,
-                          width: AppSizes.iconSizeSmall,
-                          height: AppSizes.iconSizeSmall,
+                      if (widget.showBackButton)
+                        AppClickable(
+                          showSplash: false,
+                          onPressed: () {
+                            if (widget.onBack != null) {
+                              widget.onBack!();
+                            } else {
+                              context.pop();
+                            }
+                          },
+                          child: Icon(Icons.arrow_back_ios),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -63,9 +67,12 @@ class AppBackHeader extends StatelessWidget {
                 Column(
                   children: [
                     Center(
-                      child: Text(title, style: theme.textTheme.titleLarge),
+                      child: Text(
+                        widget.title,
+                        style: theme.textTheme.titleLarge,
+                      ),
                     ),
-                    if (showLocation) AppLocation(),
+                    if (widget.showLocation) AppLocation(),
                   ],
                 ),
               ],

@@ -10,4 +10,5 @@ abstract class StoreRepository {
     required String productId,
     required String storeId,
   });
+  Future<void> updatePreferredStore({required String storeId});
 }

@@ -27,7 +27,6 @@ class StoresView extends StatefulWidget {
 }
 
 class _StoresViewState extends State<StoresView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

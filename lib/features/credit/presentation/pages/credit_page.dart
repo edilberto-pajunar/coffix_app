@@ -4,7 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/tier_card.dart';
-import 'package:coffix_app/presentation/molecules/app_header.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 
 class CreditPage extends StatelessWidget {
@@ -31,7 +31,7 @@ class CreditView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppHeader(title: "Coffix Credit", showLocation: false),
+              AppBackHeader(title: "Coffix Credit", showBackButton: false),
               Text(
                 'Pay by Coffix Credit and save 10% - 20%',
                 style: AppTypography.headlineM.copyWith(color: AppColors.black),

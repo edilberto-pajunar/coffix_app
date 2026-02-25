@@ -1,13 +1,15 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
+import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
-import 'package:coffix_app/presentation/molecules/app_header.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class StoreList extends StatelessWidget {
@@ -22,7 +24,7 @@ class StoreList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppHeader(title: "Stores"),
+          AppBackHeader(title: "Stores", showBackButton: false),
           const SizedBox(height: AppSizes.md),
           Row(
             children: [
@@ -43,10 +45,14 @@ class StoreList extends StatelessWidget {
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
-                  context.pushNamed(
-                    ProductsPage.route,
-                    extra: {'storeId': store.docId},
+                  context.read<StoreCubit>().updatePreferredStore(
+                    storeId: store.docId,
                   );
+                  context.goNamed(MenuPage.route);
+                  // context.pushNamed(
+                  //   ProductsPage.route,
+                  //   extra: {'storeId': store.docId},
+                  // );
                 },
                 child: Row(
                   children: [

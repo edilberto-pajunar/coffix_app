@@ -9,7 +9,7 @@ import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
-import 'package:coffix_app/presentation/atoms/app_location.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,9 +64,6 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Customize Product", style: theme.textTheme.titleLarge),
-      ),
       body: BlocBuilder<ModifierCubit, ModifierState>(
         builder: (context, state) {
           return state.when(
@@ -80,7 +77,7 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        AppLocation(),
+                        AppBackHeader(title: "Customize Product"),
                         ...modifiersGroups.map((bundle) {
                           final groupTitle =
                               bundle.group.name ??

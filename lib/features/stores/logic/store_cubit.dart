@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
-import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -28,5 +27,7 @@ class StoreCubit extends Cubit<StoreState> {
     );
   }
 
- 
+  void updatePreferredStore({required String storeId}) async {
+    await _storeRepository.updatePreferredStore(storeId: storeId);
+  }
 }

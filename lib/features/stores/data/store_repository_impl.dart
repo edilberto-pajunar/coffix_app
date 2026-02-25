@@ -5,11 +5,13 @@ import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/products/data/model/product_override.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
 class StoreRepositoryImpl implements StoreRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthRepository _authRepository;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   StoreRepositoryImpl({required AuthRepository authRepository})
     : _authRepository = authRepository;
@@ -70,5 +72,18 @@ class StoreRepositoryImpl implements StoreRepository {
         : ProductOverride(disabledGroupIds: [], disabledModifierIds: []);
 
     return override;
+  }
+
+  @override
+  Future<void> updatePreferredStore({required String storeId}) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('User not found');
+    }
+    final storeRef = _firestore.collection('customers').doc(user.uid);
+    await storeRef.set({
+      'preferredStoreId': storeId,
+      'updatedAt': DateTime.now(),
+    }, SetOptions(merge: true));
   }
 }

@@ -11,7 +11,6 @@ import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
-import 'package:coffix_app/presentation/molecules/app_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,9 +41,7 @@ class ProductList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          isRoot
-              ? AppHeader(title: "Products")
-              : AppBackHeader(title: "Products"),
+          AppBackHeader(title: "Products", showBackButton: !isRoot),
           const SizedBox(height: AppSizes.md),
           Row(
             children: [

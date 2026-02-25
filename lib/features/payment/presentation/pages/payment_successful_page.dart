@@ -1,10 +1,9 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
-import 'package:coffix_app/presentation/molecules/app_header.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -38,7 +37,7 @@ class PaymentSuccessfulView extends StatelessWidget {
           padding: AppSizes.defaultPadding,
           child: Column(
             children: [
-              AppHeader(title: "Order Confirmed", showLocation: false),
+              AppBackHeader(title: "Order Confirmed", showBackButton: false),
               const Spacer(),
               Icon(
                 Icons.check_circle_rounded,
