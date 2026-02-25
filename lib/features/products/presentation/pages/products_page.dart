@@ -50,7 +50,7 @@ class _ProductViewState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: AppCart(),
+      // floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(
         builder: (context, state) {
           return state.when(
