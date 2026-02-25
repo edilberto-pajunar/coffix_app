@@ -15,6 +15,14 @@ The GitHub Actions workflow is in `.github/workflows/deploy-functions.yml`.
 - Push to `main` → deploy to **prod**
 - Manual run → select `dev` or `prod`
 
+**Push path filter:** The workflow runs on push only when one or more of these paths changed:
+- `functions/**` – function code or config
+- `firebase.json` – Firebase project config
+- `.firebaserc` – Firebase project aliases
+- `.github/workflows/deploy-functions.yml` – this workflow
+
+Pushes that only change other files (e.g. `lib/`, `ios/`, `android/`) do **not** trigger a deploy.
+
 ## Required GitHub secrets
 
 Create these **repository secrets** (or environment-scoped secrets if you use GitHub Environments):
