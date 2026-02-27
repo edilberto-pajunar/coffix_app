@@ -36,7 +36,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final user = context.read<AuthCubit>().state.maybeWhen(
+    final user = context.watch<AuthCubit>().state.maybeWhen(
       authenticated: (user) => user.user,
       orElse: () => null,
     );

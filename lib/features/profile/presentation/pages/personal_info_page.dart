@@ -12,7 +12,7 @@ import 'package:coffix_app/presentation/atoms/app_date_field.dart';
 import 'package:coffix_app/presentation/atoms/app_dropdown.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
-import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
+import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,6 +100,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
           name: 'nickname',
           label: 'Nickname',
           hintText: 'Enter nickname',
+          isRequired: true,
         ),
         const SizedBox(height: AppSizes.lg),
         AppField<String>(
@@ -219,11 +220,13 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
               listener: (context, state) {
                 state.mapOrNull(
                   success: (state) {
-                    AppSnackbar.showSuccess(
+                    AppNotification.show(
                       context,
-                      "Profile updated successfully",
+                      "Profile updated successfully!",
                     );
-                    context.goNamed(HomePage.route);
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      if (context.mounted) context.goNamed(HomePage.route);
+                    });
                   },
                   error: (state) =>
                       AppError(title: "Error", subtitle: state.message),
