@@ -80,13 +80,26 @@ class _LayoutViewState extends State<LayoutView> {
 
   @override
   Widget build(BuildContext context) {
-    final location = GoRouterState.of(context).uri.toString();
+    final location = GoRouterState.of(context).uri.path;
+    final user = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user.user,
+      orElse: () => null,
+    );
+    final isEmailVerified = user?.emailVerified ?? false;
 
-    // List of exact routes where the bottom nav bar should show
-    const tabRoutes = ["/", "/coffix-credit", "/menu", "/stores", "/my-order"];
-
-    // Show bottom nav only if we are on a tab route
-    // final showBottomNav = tabRoutes.contains(location);
+    const topLevelTabPaths = [
+      '/home',
+      '/coffix-credit',
+      '/menu',
+      '/stores',
+      '/my-order',
+    ];
+    final isOnHomeBranchNested =
+        widget.shell.currentIndex == 0 && location != '/home';
+    final showBottomNav =
+        isEmailVerified &&
+        !isOnHomeBranchNested &&
+        topLevelTabPaths.contains(location);
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
@@ -117,60 +130,69 @@ class _LayoutViewState extends State<LayoutView> {
         },
         child: Scaffold(
           body: widget.shell,
-          bottomNavigationBar: Theme(
-            data: ThemeData(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              bottomAppBarTheme: const BottomAppBarThemeData(
-                shadowColor: Colors.transparent,
-              ),
-              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-                enableFeedback: false,
-              ),
-            ),
-            child: SizedBox(
-              child: BottomNavigationBar(
-                currentIndex: widget.shell.currentIndex,
-                onTap: (index) {
-                  widget.shell.goBranch(index);
-                },
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                fixedColor: AppColors.primary,
-                selectedFontSize: 12,
-                items: LayoutPageTab.values.map((tab) {
-                  final orderCount =
-                      context.watch<CartCubit>().state.cart?.items.length ?? 0;
-                  return BottomNavigationBarItem(
-                    icon: tab == LayoutPageTab.order
-                        ? Badge.count(
-                            count: orderCount,
-                            child: AppIcon.withSvgPath(
-                              tab.icon,
-                              size: AppSizes.iconSizeMedium,
-                              color:
-                                  widget.shell.currentIndex ==
-                                      LayoutPageTab.values.indexOf(tab)
-                                  ? AppColors.primary
-                                  : AppColors.lightGrey,
-                            ),
-                          )
-                        : AppIcon.withSvgPath(
-                            tab.icon,
-                            size: AppSizes.iconSizeMedium,
-                            color:
-                                widget.shell.currentIndex ==
-                                    LayoutPageTab.values.indexOf(tab)
-                                ? AppColors.primary
-                                : AppColors.lightGrey,
-                          ),
-                    label: tab.title,
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
+          bottomNavigationBar: showBottomNav
+              ? Theme(
+                  data: ThemeData(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    bottomAppBarTheme: const BottomAppBarThemeData(
+                      shadowColor: Colors.transparent,
+                    ),
+                    bottomNavigationBarTheme:
+                        const BottomNavigationBarThemeData(
+                          enableFeedback: false,
+                        ),
+                  ),
+                  child: SizedBox(
+                    child: BottomNavigationBar(
+                      currentIndex: widget.shell.currentIndex,
+                      onTap: (index) {
+                        widget.shell.goBranch(index);
+                      },
+                      type: BottomNavigationBarType.fixed,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      fixedColor: AppColors.primary,
+                      selectedFontSize: 12,
+                      items: LayoutPageTab.values.map((tab) {
+                        final orderCount =
+                            context
+                                .watch<CartCubit>()
+                                .state
+                                .cart
+                                ?.items
+                                .length ??
+                            0;
+                        return BottomNavigationBarItem(
+                          icon: tab == LayoutPageTab.order
+                              ? Badge.count(
+                                  count: orderCount,
+                                  child: AppIcon.withSvgPath(
+                                    tab.icon,
+                                    size: AppSizes.iconSizeMedium,
+                                    color:
+                                        widget.shell.currentIndex ==
+                                            LayoutPageTab.values.indexOf(tab)
+                                        ? AppColors.primary
+                                        : AppColors.lightGrey,
+                                  ),
+                                )
+                              : AppIcon.withSvgPath(
+                                  tab.icon,
+                                  size: AppSizes.iconSizeMedium,
+                                  color:
+                                      widget.shell.currentIndex ==
+                                          LayoutPageTab.values.indexOf(tab)
+                                      ? AppColors.primary
+                                      : AppColors.lightGrey,
+                                ),
+                          label: tab.title,
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ),
     );

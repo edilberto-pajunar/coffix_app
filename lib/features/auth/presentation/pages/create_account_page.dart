@@ -104,13 +104,13 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                           children: [
                             TextSpan(
                               text: "Already have an account? ",
-                              style: AppTypography.body2XS.copyWith(
+                              style: AppTypography.bodyXS.copyWith(
                                 color: AppColors.black,
                               ),
                             ),
                             TextSpan(
                               text: 'Login',
-                              style: AppTypography.body2XS.copyWith(
+                              style: AppTypography.bodyXS.copyWith(
                                 color: AppColors.accent,
                                 decoration: TextDecoration.underline,
                                 decorationColor: AppColors.accent,

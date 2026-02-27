@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
@@ -105,7 +107,7 @@ class _LoginViewState extends State<LoginView> {
                       child: AppTextButton(
                         text: 'Forgot password?',
                         onPressed: () {},
-                        textStyle: AppTypography.body2XS.copyWith(
+                        textStyle: AppTypography.bodyXS.copyWith(
                           color: AppColors.accent,
                           decoration: TextDecoration.underline,
                           decorationColor: AppColors.accent,
@@ -140,7 +142,8 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     const SizedBox(height: AppSizes.md),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         AppIconButton.withSvgPath(
                           AppImages.google,
@@ -148,14 +151,20 @@ class _LoginViewState extends State<LoginView> {
                             context.read<AuthCubit>().signInWithGoogle();
                           },
                         ),
-                        AppIconButton.withSvgPath(
-                          AppImages.facebook,
-                          onPressed: () {},
-                        ),
-                        AppIconButton.withSvgPath(
-                          AppImages.apple,
-                          onPressed: () {},
-                        ),
+                        const SizedBox(width: AppSizes.lg),
+
+                        // TODO: FIX THIS ONCE FACEBOOK IS ALREADY IMPLEMENTED
+                        // AppIconButton.withSvgPath(
+                        //   AppImages.facebook,
+                        //   onPressed: () {},
+                        // ),
+                        if (Platform.isIOS)
+                          AppIconButton.withSvgPath(
+                            AppImages.apple,
+                            onPressed: () {
+                              context.read<AuthCubit>().signInWithApple();
+                            },
+                          ),
                       ],
                     ),
                     const SizedBox(height: AppSizes.xxxxl),
@@ -163,17 +172,17 @@ class _LoginViewState extends State<LoginView> {
                       alignment: Alignment.centerRight,
                       child: RichText(
                         text: TextSpan(
-                          style: theme.textTheme.bodyMedium?.copyWith(),
+                          style: AppTypography.bodyXS,
                           children: [
                             TextSpan(
                               text: "Don't have an account? ",
-                              style: AppTypography.body2XS.copyWith(
+                              style: AppTypography.bodyXS.copyWith(
                                 color: AppColors.black,
                               ),
                             ),
                             TextSpan(
                               text: 'Create an account',
-                              style: AppTypography.body2XS.copyWith(
+                              style: AppTypography.bodyXS.copyWith(
                                 color: AppColors.accent,
                                 decoration: TextDecoration.underline,
                                 decorationColor: AppColors.accent,

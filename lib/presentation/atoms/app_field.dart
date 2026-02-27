@@ -111,7 +111,7 @@ class _AppFieldState<T> extends State<AppField<T>> {
             fillColor: widget.readOnly ? AppColors.softGrey : null,
             filled: widget.readOnly,
             hintText: widget.hintText,
-            hintStyle: theme.textTheme.bodyMedium?.copyWith(
+            hintStyle: AppTypography.bodyXS.copyWith(
               color: AppColors.lightGrey,
             ),
             border: widget.readOnly

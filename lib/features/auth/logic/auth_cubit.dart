@@ -7,6 +7,7 @@ import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 part 'auth_state.dart';
 part 'auth_cubit.freezed.dart';
@@ -75,6 +76,17 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
       emit(AuthState.error(message: e.code.name));
+    } catch (e) {
+      emit(AuthState.error(message: e.toString()));
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    emit(AuthState.loading());
+    try {
+      await _authRepository.signInWithApple();
+    } on SignInWithAppleException catch (e) {
+      emit(AuthState.error(message: e.toString()));
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
     }

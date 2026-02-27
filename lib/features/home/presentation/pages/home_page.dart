@@ -36,6 +36,11 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final user = context.read<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user.user,
+      orElse: () => null,
+    );
+
     return Scaffold(
       // appBar: AppBar(
       // toolbarHeight: 40,
@@ -71,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
               AppLocation(),
               const SizedBox(height: AppSizes.xxxxl),
               Text(
-                "Welcome Amine!",
+                "Welcome ${user?.nickName ?? ""}",
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleLarge!.copyWith(
                   fontWeight: FontWeight.bold,

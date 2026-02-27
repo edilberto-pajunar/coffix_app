@@ -21,6 +21,7 @@ import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
+import 'package:coffix_app/features/wrapper/presentation/pages/wrapper_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -63,6 +64,10 @@ class AppRouter {
       return null;
     },
     routes: [
+      GoRoute(path: "/",
+      name: WrapperPage.route,
+      builder: (context, state) => const WrapperPage(),
+      ),
       GoRoute(
         path: "/auth",
         name: LoginPage.route,
@@ -84,7 +89,7 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: "/",
+                path: "/home",
                 name: HomePage.route,
                 builder: (context, state) => const HomePage(),
                 routes: [

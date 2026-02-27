@@ -1,12 +1,16 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/core/api/endpoints.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -58,10 +62,68 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signInWithApple() async {
     try {
-      await _auth.signInWithProvider(AppleAuthProvider());
-    } catch (e) {
-      throw Exception(e);
+      final rawNonce = _generateNonce();
+      final hashedNonce = _sha256ofString(rawNonce);
+
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+
+      final idToken = appleCredential.identityToken;
+      if (idToken == null) {
+        throw Exception('Apple Sign In failed: No ID token');
+      }
+
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: idToken,
+        rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final credentialResult = await _auth.signInWithCredential(
+        oauthCredential,
+      );
+
+      if (credentialResult.user != null) {
+        final email =
+            credentialResult.user!.email ??
+            appleCredential.email ??
+            '${credentialResult.user!.uid}@privaterelay.appleid.com';
+        await createUserDoc(docId: credentialResult.user!.uid, email: email);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        throw Exception(
+          'An account already exists with this email. '
+          'Please sign in with your email and password first, then link your Apple account from settings.',
+        );
+      }
+      rethrow;
+    } on SignInWithAppleException catch (e) {
+      throw Exception(e.toString());
     }
+  }
+
+  String _generateNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
+  }
+
+  /// Returns SHA256 hash as a HEX string (this is what Firebase expects you to
+  /// send to Apple as `nonce:`).
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString(); // hex
   }
 
   @override
