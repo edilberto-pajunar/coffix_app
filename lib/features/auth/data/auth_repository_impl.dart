@@ -4,6 +4,7 @@ import 'dart:math' hide log;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/core/api/endpoints.dart';
+import 'package:coffix_app/core/errors/auth_exceptions.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:crypto/crypto.dart';
@@ -25,7 +26,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final isDisabled = await isUserDisabled(credential: credential);
+      if (isDisabled) {
+        await _auth.signOut();
+        throw FirebaseAuthException(
+          code: 'user-disabled',
+          message: 'User is disabled',
+        );
+      }
     } catch (e) {
       throw Exception(e);
     }
@@ -89,6 +101,14 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       if (credentialResult.user != null) {
+        final disabled = await isUserDisabled(credential: credentialResult);
+        if (disabled) {
+          await _auth.signOut();
+          throw FirebaseAuthException(
+            code: 'user-disabled',
+            message: 'User is disabled',
+          );
+        }
         final email =
             credentialResult.user!.email ??
             appleCredential.email ??
@@ -103,8 +123,11 @@ class AuthRepositoryImpl implements AuthRepository {
         );
       }
       rethrow;
-    } on SignInWithAppleException catch (e) {
-      throw Exception(e.toString());
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw UserCancelledSignIn();
+      }
+      rethrow;
     }
   }
 
@@ -160,6 +183,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
       try {
         final credentialResult = await _auth.signInWithCredential(credential);
+        final disabled = await isUserDisabled(credential: credentialResult);
+        if (disabled) {
+          await _auth.signOut();
+          throw FirebaseAuthException(
+            code: 'user-disabled',
+            message: 'User is disabled',
+          );
+        }
         await createUserDoc(
           docId: credentialResult.user!.uid,
           email: credentialResult.user!.email!,
@@ -175,6 +206,9 @@ class AuthRepositoryImpl implements AuthRepository {
         rethrow;
       }
     } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw UserCancelledSignIn();
+      }
       print(
         'Google Sign In error: code: ${e.code.name} description:${e.description} details:${e.details}',
       );
@@ -190,14 +224,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String docId,
     required String email,
   }) async {
-    try {
-      await _firestore.collection('customers').doc(docId).set({
+    final ref = _firestore.collection('customers').doc(docId);
+    final existing = await ref.get();
+    if (!existing.exists) {
+      await ref.set({
         'docId': docId,
         'email': email,
         'createdAt': DateTime.now(),
       });
-    } catch (e) {
-      throw Exception(e);
     }
   }
 
@@ -254,5 +288,14 @@ class AuthRepositoryImpl implements AuthRepository {
     await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
       {"lastLogin": DateTime.now()},
     );
+  }
+
+  @override
+  Future<bool> isUserDisabled({required UserCredential credential}) async {
+    final user = await _firestore
+        .collection("customers")
+        .doc(credential.user?.uid)
+        .get();
+    return user.exists && user.data()?["disabled"] == true;
   }
 }

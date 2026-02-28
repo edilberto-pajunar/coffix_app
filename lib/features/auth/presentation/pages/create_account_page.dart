@@ -62,10 +62,10 @@ class _CreateAccountViewState extends State<CreateAccountView> {
           key: _formKey,
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
-              state.whenOrNull(
-                authenticated: (user) => context.go('/'),
-                error: (message) => AppSnackbar.showError(context, message),
-              );
+              // state.whenOrNull(
+              //   authenticated: (user) => context.go('/'),
+              //   error: (message) => AppSnackbar.showError(context, message),
+              // );
             },
             builder: (context, state) {
               if (state == AuthState.loading()) {

@@ -7,6 +7,7 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/presentation/pages/create_account_page.dart';
+import 'package:coffix_app/features/wrapper/presentation/pages/wrapper_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
@@ -55,8 +56,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -67,14 +66,14 @@ class _LoginViewState extends State<LoginView> {
             child: BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 state.whenOrNull(
-                  authenticated: (user) => context.go('/'),
+                  authenticated: (_) => context.goNamed(WrapperPage.route),
                   error: (message) => AppSnackbar.showError(context, message),
                 );
               },
               builder: (context, state) {
-                state.whenOrNull(
-                  loading: () => const Center(child: AppLoading()),
-                );
+                if (state == AuthState.loading()) {
+                  return const Center(child: AppLoading());
+                }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [

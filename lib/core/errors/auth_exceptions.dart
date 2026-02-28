@@ -1,0 +1,1 @@
+class UserCancelledSignIn implements Exception {}

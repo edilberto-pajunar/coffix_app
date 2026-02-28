@@ -71,10 +71,7 @@ class _LayoutViewState extends State<LayoutView> {
   @override
   initState() {
     super.initState();
-    context.read<AppCubit>().getGlobal();
-    context.read<AuthCubit>().getUserWithStore();
-    context.read<StoreCubit>().getStores();
-    context.read<ProductCubit>().getProducts();
+
     // context.read<ModifierCubit>().getModifiers();
   }
 

@@ -1,4 +1,5 @@
 import 'package:coffix_app/features/auth/data/model/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthRepository {
   Future<void> signInWithEmailAndPassword({
@@ -14,6 +15,7 @@ abstract class AuthRepository {
   Future<void> signInWithFacebook();
   Future<void> signInWithApple();
   Future<void> createUserDoc({required String docId, required String email});
+  Future<bool> isUserDisabled({required UserCredential credential});
   Stream<AppUser?> getUser();
   Future<void> sendEmailVerification({required String email});
   Future<void> verifyOtp({required String otp});

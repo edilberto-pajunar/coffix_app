@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:coffix_app/core/errors/auth_exceptions.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
-import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,7 +15,6 @@ part 'auth_cubit.freezed.dart';
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
   final StoreRepository _storeRepository;
-  StreamSubscription<AppUser?>? _userSubscription;
   StreamSubscription<AppUserWithStore?>? _userWithStoreSubscription;
 
   AuthCubit({
@@ -70,11 +69,10 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.loading());
     try {
       await _authRepository.signInWithGoogle();
+    } on UserCancelledSignIn {
+      emit(AuthState.initial());
+      return;
     } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) {
-        emit(AuthState.initial());
-        return;
-      }
       emit(AuthState.error(message: e.code.name));
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
@@ -85,8 +83,15 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.loading());
     try {
       await _authRepository.signInWithApple();
-    } on SignInWithAppleException catch (e) {
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        emit(AuthState.initial());
+        return;
+      }
       emit(AuthState.error(message: e.toString()));
+    } on UserCancelledSignIn catch (_) {
+      emit(AuthState.initial());
+      return;
     } catch (e) {
       emit(AuthState.error(message: e.toString()));
     }

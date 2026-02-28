@@ -24,6 +24,7 @@ class AppUser {
   final bool? allowWinACoffee;
   @DateTimeConverter()
   final DateTime? lastLogin;
+  final bool? disabled;
 
   AppUser({
     this.docId,
@@ -42,6 +43,7 @@ class AppUser {
     this.getPromotions,
     this.allowWinACoffee,
     this.lastLogin,
+    this.disabled,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>
