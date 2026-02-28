@@ -1,10 +1,12 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
+import 'package:coffix_app/presentation/atoms/app_icon.dart';
+import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
@@ -19,6 +21,19 @@ class StoreList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void updateStore(String storeId) async {
+      try {
+        await context.read<StoreCubit>().updatePreferredStore(storeId: storeId);
+        if (context.mounted) {
+          context.goNamed(HomePage.route);
+          AppNotification.show(context, "Preferred store updated");
+        }
+      } catch (e) {
+        if (!context.mounted) return;
+        AppNotification.show(context, "Failed to update store");
+      }
+    }
+
     return SingleChildScrollView(
       padding: AppSizes.defaultPadding,
       child: Column(
@@ -42,45 +57,72 @@ class StoreList extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final store = stores[index];
+              final isOpen = store.isOpenAt(DateTime.now());
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
-                  context.read<StoreCubit>().updatePreferredStore(
-                    storeId: store.docId,
-                  );
-                  context.goNamed(MenuPage.route);
-                  // context.pushNamed(
-                  //   ProductsPage.route,
-                  //   extra: {'storeId': store.docId},
-                  // );
+                  if (isOpen) {
+                    updateStore(store.docId);
+                  }
                 },
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: AppSizes.iconSizeLarge,
-                      backgroundImage: NetworkImage(store.imageUrl ?? ""),
-                    ),
-                    const SizedBox(width: AppSizes.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(store.name ?? "", style: AppTypography.labelS),
-                          Text(
-                            store.address ?? "",
-                            style: AppTypography.body2XS.copyWith(
-                              color: AppColors.lightGrey,
-                            ),
-                          ),
-                        ],
+                child: Opacity(
+                  opacity: isOpen ? 1 : 0.6,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: AppSizes.iconSizeLarge,
+                        backgroundImage: NetworkImage(store.imageUrl ?? ""),
                       ),
-                    ),
-                    AppIconButton.withIconData(
-                      Icons.arrow_forward_ios,
-                      onPressed: () {},
-                      borderColor: Colors.transparent,
-                    ),
-                  ],
+                      const SizedBox(width: AppSizes.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    store.name ?? "",
+                                    style: AppTypography.labelS,
+                                  ),
+                                ),
+                                if (!isOpen)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSizes.sm,
+                                      vertical: AppSizes.xs,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGrey.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        AppSizes.sm,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "Closed",
+                                      style: AppTypography.body2XS.copyWith(
+                                        color: AppColors.lightGrey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            Text(
+                              store.address ?? "",
+                              style: AppTypography.body2XS.copyWith(
+                                color: AppColors.lightGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: AppSizes.md),
+                      if (isOpen) AppIcon.withIconData(Icons.arrow_forward_ios),
+                    ],
+                  ),
                 ),
               );
             },

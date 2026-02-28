@@ -32,6 +32,31 @@ class ProductModifierCubit extends Cubit<ProductModifierState> {
     );
   }
 
+  void initFromCartItem({
+    required Product product,
+    required List<Modifier> allModifiers,
+    required Map<String, String> selectedByGroup,
+  }) {
+    final groupCodes = product.modifierGroupIds?.toSet() ?? {};
+    if (groupCodes.isEmpty || selectedByGroup.isEmpty) {
+      emit(ProductModifierState(modifiers: [], totalPrice: 0));
+      return;
+    }
+    final inScope = allModifiers.where((m) => groupCodes.contains(m.groupId));
+    final selected = <Modifier>[];
+    for (final entry in selectedByGroup.entries) {
+      final matches = inScope
+          .where((m) => m.groupId == entry.key && m.docId == entry.value);
+      if (matches.isNotEmpty) selected.add(matches.first);
+    }
+    emit(
+      ProductModifierState(
+        modifiers: selected,
+        totalPrice: getTotalPrice(selected),
+      ),
+    );
+  }
+
   void selectModifiers({required Modifier modifier}) {
     final current = state.modifiers;
     final updated = [

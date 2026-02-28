@@ -27,7 +27,7 @@ class StoreCubit extends Cubit<StoreState> {
     );
   }
 
-  void updatePreferredStore({required String storeId}) async {
+  Future<void> updatePreferredStore({required String storeId}) async {
     await _storeRepository.updatePreferredStore(storeId: storeId);
   }
 }

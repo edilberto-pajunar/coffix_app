@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coffix_app/features/auth/presentation/pages/create_account_page.dart';
 import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/features/auth/presentation/pages/verify_email_page.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
@@ -64,9 +65,10 @@ class AppRouter {
       return null;
     },
     routes: [
-      GoRoute(path: "/",
-      name: WrapperPage.route,
-      builder: (context, state) => const WrapperPage(),
+      GoRoute(
+        path: "/",
+        name: WrapperPage.route,
+        builder: (context, state) => const WrapperPage(),
       ),
       GoRoute(
         path: "/auth",
@@ -170,29 +172,15 @@ class AppRouter {
                   GoRoute(
                     path: "add",
                     name: AddProductPage.route,
-                    pageBuilder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
-                      final product = extra['product'] as Product;
-                      final storeId = extra['storeId'] as String;
-                      return CustomTransitionPage(
-                        child: AddProductPage(
-                          product: product,
-                          storeId: storeId,
-                        ),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                              final scale = Tween<double>(begin: 0.3, end: 1.0)
-                                  .animate(
-                                    CurvedAnimation(
-                                      parent: animation,
-                                      curve: Curves.easeInOut,
-                                    ),
-                                  );
-                              return ScaleTransition(
-                                scale: scale,
-                                child: child,
-                              );
-                            },
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final product = extra?['product'] as Product;
+                      final storeId = extra?['storeId'] as String;
+                      final cartItem = extra?['cartItem'] as CartItem?;
+                      return AddProductPage(
+                        product: product,
+                        storeId: storeId,
+                        cartItem: cartItem,
                       );
                     },
                   ),

@@ -31,7 +31,14 @@ class _StoresViewState extends State<StoresView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocConsumer<StoreCubit, StoreState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          state.whenOrNull(
+            loaded: (stores) {
+              if (stores.isNotEmpty) {
+              }
+            },
+          );
+        },
         builder: (context, state) {
           return state.when(
             initial: () => const SizedBox.shrink(),

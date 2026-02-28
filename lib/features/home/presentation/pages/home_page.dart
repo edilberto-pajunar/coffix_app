@@ -76,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
               AppLocation(),
               const SizedBox(height: AppSizes.xxxxl),
               Text(
-                "Welcome ${user?.nickName ?? ""}",
+                "Welcome ${user?.firstName ?? user?.nickName ?? ""}",
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleLarge!.copyWith(
                   fontWeight: FontWeight.bold,
@@ -100,6 +100,7 @@ class _HomeViewState extends State<HomeView> {
                   Expanded(
                     child: AppButton.primary(
                       onPressed: () {},
+                      disabled: true,
                       label: "ReOrder",
                     ),
                   ),
@@ -107,6 +108,7 @@ class _HomeViewState extends State<HomeView> {
                   Expanded(
                     child: AppButton.primary(
                       onPressed: () {},
+                      disabled: true,
                       label: "My Drafts",
                     ),
                   ),

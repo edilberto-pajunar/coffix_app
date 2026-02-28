@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -19,15 +20,13 @@ class InfoCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            width: _avatarSize,
-            height: _avatarSize,
-            child: CircleAvatar(
-              child: SvgPicture.asset(
-                image,
-                width: AppSizes.iconSizeLarge,
-                height: AppSizes.iconSizeLarge,
-              ),
+          CircleAvatar(
+            backgroundColor: AppColors.white,
+            radius: 40,
+            child: SvgPicture.asset(
+              image,
+              width: AppSizes.iconSizeLarge,
+              height: AppSizes.iconSizeLarge,
             ),
           ),
           const SizedBox(height: AppSizes.md),

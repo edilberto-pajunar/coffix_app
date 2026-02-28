@@ -4,6 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/tier_card.dart';
+import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 
@@ -75,6 +76,8 @@ class CreditView extends StatelessWidget {
               TierCard(amount: 250, percent: '15%'),
               const SizedBox(height: AppSizes.sm),
               TierCard(amount: 500, percent: '20%'),
+              const SizedBox(height: AppSizes.xl),
+              AppButton(onPressed: () {}, label: "Top Up Your Coffix Credit"),
             ],
           ),
         ),

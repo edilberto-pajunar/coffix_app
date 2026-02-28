@@ -56,6 +56,20 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(cart: currentCart.copyWith(items: updatedItems)));
   }
 
+  void updateProduct({
+    required String cartItemId,
+    required CartItem updatedItem,
+  }) {
+    final Cart? currentCart = state.cart;
+    if (currentCart == null) return;
+    final index = currentCart.items.indexWhere((item) => item.id == cartItemId);
+    if (index == -1) return;
+    final updatedItems = [...currentCart.items]..[index] = updatedItem;
+    emit(state.copyWith(
+      cart: currentCart.copyWith(items: updatedItems),
+    ));
+  }
+
   void removeProduct({required String cartItemId}) {
     final Cart? currentCart = state.cart;
     if (currentCart == null) return;

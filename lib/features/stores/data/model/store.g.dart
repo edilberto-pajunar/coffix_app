@@ -15,7 +15,9 @@ Store _$StoreFromJson(Map<String, dynamic> json) => Store(
   invoiceText: json['invoiceText'] as String?,
   location: json['location'] as String?,
   name: json['name'] as String?,
-  openingHours: json['openingHours'] as String?,
+  openingHours: (json['openingHours'] as Map<String, dynamic>?)?.map(
+    (k, e) => MapEntry(k, DayHours.fromJson(e as Map<String, dynamic>)),
+  ),
   storeCode: json['storeCode'] as String?,
 );
 
@@ -30,4 +32,16 @@ Map<String, dynamic> _$StoreToJson(Store instance) => <String, dynamic>{
   'name': instance.name,
   'openingHours': instance.openingHours,
   'storeCode': instance.storeCode,
+};
+
+DayHours _$DayHoursFromJson(Map<String, dynamic> json) => DayHours(
+  isOpen: json['isOpen'] as bool?,
+  open: json['open'] as String?,
+  close: json['close'] as String?,
+);
+
+Map<String, dynamic> _$DayHoursToJson(DayHours instance) => <String, dynamic>{
+  'isOpen': instance.isOpen,
+  'open': instance.open,
+  'close': instance.close,
 };
