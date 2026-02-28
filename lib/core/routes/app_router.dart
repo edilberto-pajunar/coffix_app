@@ -5,6 +5,9 @@ import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_successful_page.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_topup_page.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payment_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
@@ -143,6 +146,28 @@ class AppRouter {
                 path: "/coffix-credit",
                 name: CreditPage.route,
                 builder: (context, state) => const CreditPage(),
+              ),
+              GoRoute(
+                path: "/credit-topup",
+                name: CreditTopupPage.route,
+                builder: (context, state) => const CreditTopupPage(),
+              ),
+              GoRoute(
+                path: "/credit-topup-payment",
+                name: CreditTopupPaymentPage.route,
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final paymentSessionUrl =
+                      extra['paymentSessionUrl'] as String;
+                  return CreditTopupPaymentPage(
+                    paymentSessionUrl: paymentSessionUrl,
+                  );
+                },
+              ),
+              GoRoute(
+                path: "/credit-success",
+                name: CreditSuccessfulPage.route,
+                builder: (context, state) => const CreditSuccessfulPage(),
               ),
             ],
           ),

@@ -4,4 +4,6 @@ abstract class PaymentRepository {
   Future<Map<String, dynamic>> createPaymentSession({
     required PaymentRequest request,
   });
+
+  Future<String> topupCredit({required double amount});
 }

@@ -33,4 +33,28 @@ class PaymentRepositoryImpl implements PaymentRepository {
     }
     return url;
   }
+
+  @override
+  Future<String> topupCredit({required double amount}) async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) throw Exception('No token found');
+
+    final response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}/v1/credit/topup'),
+      body: jsonEncode({'amount': amount}),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>?;
+    final paymentSessionUrl = data?['data']?['paymentSessionUrl'] as String?;
+    if (paymentSessionUrl == null || paymentSessionUrl.isEmpty) {
+      throw Exception(
+        'No paymentSessionUrl in response (${response.statusCode}): ${response.body}',
+      );
+    }
+    return paymentSessionUrl;
+  }
 }

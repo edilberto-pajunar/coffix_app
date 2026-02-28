@@ -13,6 +13,7 @@ import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/features/modifier/data/modifier_repository_impl.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/payment/data/payment_repository_impl.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:coffix_app/features/products/data/product_repository_impl.dart';
@@ -75,6 +76,11 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<OtpCubit>(
     () => OtpCubit(authRepository: getIt<AuthRepository>()),
   );
+  // Credit Cubit
+  getIt.registerLazySingleton<CreditCubit>(
+    () => CreditCubit(paymentRepository: getIt<PaymentRepository>()),
+  );
+
   // Payment Cubit
   getIt.registerLazySingleton<PaymentCubit>(
     () => PaymentCubit(paymentRepository: getIt<PaymentRepository>()),

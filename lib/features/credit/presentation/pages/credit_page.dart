@@ -2,11 +2,13 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_topup_page.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/tier_card.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CreditPage extends StatelessWidget {
   static String route = 'credit_route';
@@ -77,7 +79,12 @@ class CreditView extends StatelessWidget {
               const SizedBox(height: AppSizes.sm),
               TierCard(amount: 500, percent: '20%'),
               const SizedBox(height: AppSizes.xl),
-              AppButton(onPressed: () {}, label: "Top Up Your Coffix Credit"),
+              AppButton(
+                onPressed: () {
+                  context.pushNamed(CreditTopupPage.route);
+                },
+                label: "Top Up Your Coffix Credit",
+              ),
             ],
           ),
         ),
