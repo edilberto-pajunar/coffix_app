@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createPaymentSessionBodySchema = z.object({
   storeId: z.string().trim(),
-  scheduledAt: z.coerce.date(),
+  duration: z.number(),
   items: z.array(
     z.object({
       productId: z.string().trim(),
@@ -10,6 +10,7 @@ export const createPaymentSessionBodySchema = z.object({
       selectedModifiers: z.record(z.string(), z.string()),
     }),
   ),
+  paymentMethod: z.enum(["coffixCredit", "card"]),
 });
 
 // {

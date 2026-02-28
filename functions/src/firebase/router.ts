@@ -1,11 +1,12 @@
 import express from "express";
 import { requirePost } from "../middleware/method";
 import { createTokenBodySchema } from "./schema";
+import { logger } from "firebase-functions";
 
 const router = express.Router();
 
-
 router.post("/token", requirePost, async (request, response) => {
+  logger.info(process.env.FUNCTIONS_EMULATOR);
   const tokenEndpointEnabled =
     process.env.FUNCTIONS_EMULATOR === "true" ||
     process.env.FIREBASE_TOKEN_ENDPOINT_ENABLED === "true";

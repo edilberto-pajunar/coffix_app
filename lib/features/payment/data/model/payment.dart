@@ -3,17 +3,26 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payment.g.dart';
 
+enum PaymentMethod {
+  @JsonValue("coffixCredit")
+  coffixCredit,
+  @JsonValue("card")
+  card,
+}
+
 @JsonSerializable()
 class PaymentRequest {
   final String storeId;
   final List<PaymentItem> items;
   @DateTimeConverter()
-  final DateTime scheduledAt;
+  final double duration;
+  final PaymentMethod paymentMethod;
 
   PaymentRequest({
     required this.storeId,
     required this.items,
-    required this.scheduledAt,
+    required this.duration,
+    required this.paymentMethod,
   });
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) =>

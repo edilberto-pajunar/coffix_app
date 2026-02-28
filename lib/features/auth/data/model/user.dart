@@ -5,6 +5,7 @@ part 'user.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AppUser {
+  final double? creditAvailable;
   final String? docId;
   final String? email;
   final String? firstName;
@@ -27,6 +28,7 @@ class AppUser {
   final bool? disabled;
 
   AppUser({
+    this.creditAvailable,
     this.docId,
     this.email,
     this.firstName,

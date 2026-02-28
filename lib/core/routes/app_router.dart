@@ -10,6 +10,8 @@ import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
+import 'package:coffix_app/features/payment/data/model/payment.dart';
+import 'package:coffix_app/features/payment/presentation/pages/payment_options_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_successful_page.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
@@ -210,15 +212,28 @@ class AppRouter {
                 builder: (context, state) => const OrderPage(),
               ),
               GoRoute(
+                path: "/payment-options",
+                name: PaymentOptionsPage.route,
+                builder: (context, state) => const PaymentOptionsPage(),
+              ),
+              GoRoute(
                 path: "/payment",
                 name: PaymentPage.route,
-                builder: (context, state) => const PaymentPage(),
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final paymentRequest =
+                      extra['paymentRequest'] as PaymentRequest;
+                  return PaymentPage(paymentRequest: paymentRequest);
+                },
               ),
               GoRoute(
                 path: "/payment-successful",
                 name: PaymentSuccessfulPage.route,
-                builder: (context, state) =>
-                    PaymentSuccessfulPage(pickupAt: state.extra as DateTime?),
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  final pickupAt = extra["pickupAt"] as DateTime;
+                  return PaymentSuccessfulPage(pickupAt: pickupAt);
+                },
               ),
 
               GoRoute(

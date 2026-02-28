@@ -7,6 +7,11 @@ import { WindcaveService } from "./service";
 import { logger } from "firebase-functions";
 import { WindcaveError } from "../utils/windcave.error";
 import FirebaseService from "../firebase/service";
+import {
+  CoffixCreditService,
+  InsufficientCreditError,
+} from "../coffixCredit/service";
+import { serializeForJson } from "../utils/serialize";
 
 const router = express.Router();
 
@@ -17,6 +22,7 @@ router.post(
   async (request: AuthenticatedRequest, response: Response) => {
     const firebaseService = new FirebaseService();
     const windcaveService = new WindcaveService();
+    const coffixCreditService = new CoffixCreditService();
     const customerId = request.user?.uid;
 
     if (!customerId) {
@@ -27,33 +33,79 @@ router.post(
 
     try {
       const validation = createPaymentSessionBodySchema.safeParse(request.body);
-      let totalAmount = 0;
       if (!validation.success) {
         const errors = validation.error.issues
           .map((i) => `${i.path.join(".")}: ${i.message}`)
           .join(", ");
         return response.status(400).json({ success: false, errors });
       }
-      totalAmount = await windcaveService.computeOrderTotal({
+
+      const totalAmount = await windcaveService.computeOrderTotal({
         items: validation.data.items,
       });
+
+      if (validation.data.paymentMethod === "coffixCredit") {
+        const creditAvailable =
+          await coffixCreditService.getCreditAvailable(customerId);
+        if (creditAvailable < totalAmount) {
+          return response.status(400).json({
+            success: false,
+            message: "Insufficient credit",
+            data: { creditAvailable, required: totalAmount },
+          });
+        }
+
+        const orderId = await firebaseService.createNewOrder({
+          amount: totalAmount,
+          customerId,
+          storeId: validation.data.storeId,
+          items: validation.data.items,
+          duration: validation.data.duration,
+        });
+
+        await coffixCreditService.deductCredit(customerId, totalAmount);
+
+        const transactionId = await firebaseService.createNewTransaction({
+          customerId,
+          orderId,
+          amount: totalAmount,
+          sessionId: "coffixCredit",
+        });
+        await firebaseService.updateTransaction(transactionId, {
+          status: "approved",
+          paymentTime: new Date(),
+          paymentMethod: "coffixCredit",
+        });
+
+        const duration = validation.data.duration ?? 0;
+        await firebaseService.updateOrder(orderId, {
+          status: "paid",
+          paidAt: new Date(),
+          scheduledAt: new Date(Date.now() + duration * 60_000),
+        });
+
+        const orderData = await firebaseService.findOrderByOrderId(orderId);
+        return response.status(200).json({
+          success: true,
+          data: { order: serializeForJson(orderData) },
+        });
+      }
 
       const orderId = await firebaseService.createNewOrder({
         amount: totalAmount,
         customerId,
         storeId: validation.data.storeId,
         items: validation.data.items,
-        scheduledAt: validation.data.scheduledAt,
+        duration: validation.data.duration,
       });
 
       logger.info("Total amount:", totalAmount);
 
-      const { paymentSessionUrl, sessionId } = await windcaveService.createPaymentSession(
-        {
+      const { paymentSessionUrl, sessionId } =
+        await windcaveService.createPaymentSession({
           amount: totalAmount,
           orderId,
-        },
-      );
+        });
 
       await firebaseService.createNewTransaction({
         customerId,
@@ -62,8 +114,20 @@ router.post(
         sessionId,
       });
 
-      return response.status(200).json({ success: true, data: { paymentSessionUrl } });
+      return response
+        .status(200)
+        .json({ success: true, data: { paymentSessionUrl } });
     } catch (error) {
+      if (error instanceof InsufficientCreditError) {
+        return response.status(400).json({
+          success: false,
+          message: error.message,
+          data: {
+            creditAvailable: error.creditAvailable,
+            required: error.required,
+          },
+        });
+      }
       if (error instanceof WindcaveError) {
         return response
           .status(error.status)

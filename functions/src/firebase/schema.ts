@@ -19,7 +19,7 @@ export const createOrderBodySchema = z
         selectedModifiers: z.record(z.string(), z.string()),
       }),
     ),
-    scheduledAt: z.date().optional(),
+    duration: z.number().min(0),
   })
   .strict();
 

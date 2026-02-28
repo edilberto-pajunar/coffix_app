@@ -11,7 +11,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
-  Future<String> createPaymentSession({required PaymentRequest request}) async {
+  Future<Map<String, dynamic>> createPaymentSession({required PaymentRequest request}) async {
     final token = await _auth.currentUser?.getIdToken();
     if (token == null) throw Exception('No token found');
 
@@ -25,7 +25,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     );
 
     final data = jsonDecode(response.body) as Map<String, dynamic>?;
-    final url = data?["data"]['paymentSessionUrl'] as String?;
+    final url = data?["data"];
     if (url == null || url.isEmpty) {
       throw Exception(
         'No payment URL in response (${response.statusCode}): ${response.body}',

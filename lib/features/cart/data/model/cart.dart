@@ -1,5 +1,6 @@
 import 'package:coffix_app/core/utils/date_time_converter.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'cart.g.dart';
@@ -9,12 +10,14 @@ class Cart {
   final String storeId;
   final List<CartItem> items;
   @DateTimeConverter()
-  final DateTime scheduledAt;
+  final double duration;
+  final PaymentMethod? paymentMethod;
 
   Cart({
     required this.storeId,
     this.items = const [],
-    required this.scheduledAt,
+    required this.duration,
+    this.paymentMethod,
   });
 
   factory Cart.fromJson(Map<String, dynamic> json) => _$CartFromJson(json);
@@ -26,10 +29,12 @@ class Cart {
   Cart copyWith({
     String? storeId,
     List<CartItem>? items,
-    DateTime? scheduledAt,
+    double? duration,
+    PaymentMethod? paymentMethod,
   }) => Cart(
     storeId: storeId ?? this.storeId,
     items: items ?? this.items,
-    scheduledAt: scheduledAt ?? this.scheduledAt,
+    duration: duration ?? this.duration,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
   );
 }

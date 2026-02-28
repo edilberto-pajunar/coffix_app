@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:coffix_app/features/cart/data/model/cart.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'cart_cubit.freezed.dart';
@@ -17,11 +18,7 @@ class CartCubit extends Cubit<CartState> {
     if (currentCart == null) {
       emit(
         state.copyWith(
-          cart: Cart(
-            storeId: newItem.storeId,
-            items: [newItem],
-            scheduledAt: DateTime.now(),
-          ),
+          cart: Cart(storeId: newItem.storeId, items: [newItem], duration: 0),
         ),
       );
       return;
@@ -65,9 +62,7 @@ class CartCubit extends Cubit<CartState> {
     final index = currentCart.items.indexWhere((item) => item.id == cartItemId);
     if (index == -1) return;
     final updatedItems = [...currentCart.items]..[index] = updatedItem;
-    emit(state.copyWith(
-      cart: currentCart.copyWith(items: updatedItems),
-    ));
+    emit(state.copyWith(cart: currentCart.copyWith(items: updatedItems)));
   }
 
   void removeProduct({required String cartItemId}) {
@@ -87,7 +82,13 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(cart: null));
   }
 
-  void pickTime(DateTime dateTime) {
-    emit(state.copyWith(cart: state.cart?.copyWith(scheduledAt: dateTime)));
+  void pickTime(double duration) {
+    emit(state.copyWith(cart: state.cart?.copyWith(duration: duration)));
+  }
+
+  void setPaymentMethod(PaymentMethod paymentMethod) {
+    emit(
+      state.copyWith(cart: state.cart?.copyWith(paymentMethod: paymentMethod)),
+    );
   }
 }

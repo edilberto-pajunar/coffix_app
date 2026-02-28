@@ -71,7 +71,10 @@ class _LayoutViewState extends State<LayoutView> {
   @override
   initState() {
     super.initState();
-
+    context.read<AppCubit>().getGlobal();
+    context.read<AuthCubit>().getUserWithStore();
+    context.read<StoreCubit>().getStores();
+    context.read<ProductCubit>().getProducts();
     // context.read<ModifierCubit>().getModifiers();
   }
 
@@ -84,17 +87,9 @@ class _LayoutViewState extends State<LayoutView> {
     );
     final isEmailVerified = user?.emailVerified ?? false;
 
-    const topLevelTabPaths = [
-      '/home',
-      '/coffix-credit',
-      '/menu',
-      '/stores',
-      '/my-order',
-    ];
-    final isOnHomeBranchNested =
-        widget.shell.currentIndex == 0 && location != '/home';
-    final showBottomNav =
-        isEmailVerified &&
+    const topLevelTabPaths = ['/home', '/coffix-credit', '/menu', '/stores', '/my-order'];
+    final isOnHomeBranchNested = widget.shell.currentIndex == 0 && location != '/home';
+    final showBottomNav = isEmailVerified &&
         !isOnHomeBranchNested &&
         topLevelTabPaths.contains(location);
 

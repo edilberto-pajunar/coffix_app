@@ -12,15 +12,22 @@ PaymentRequest _$PaymentRequestFromJson(Map<String, dynamic> json) =>
       items: (json['items'] as List<dynamic>)
           .map((e) => PaymentItem.fromJson(e as Map<String, dynamic>))
           .toList(),
-      scheduledAt: DateTime.parse(json['scheduledAt'] as String),
+      duration: (json['duration'] as num).toDouble(),
+      paymentMethod: $enumDecode(_$PaymentMethodEnumMap, json['paymentMethod']),
     );
 
 Map<String, dynamic> _$PaymentRequestToJson(PaymentRequest instance) =>
     <String, dynamic>{
       'storeId': instance.storeId,
       'items': instance.items,
-      'scheduledAt': instance.scheduledAt.toIso8601String(),
+      'duration': instance.duration,
+      'paymentMethod': _$PaymentMethodEnumMap[instance.paymentMethod]!,
     };
+
+const _$PaymentMethodEnumMap = {
+  PaymentMethod.coffixCredit: 'coffixCredit',
+  PaymentMethod.card: 'card',
+};
 
 PaymentItem _$PaymentItemFromJson(Map<String, dynamic> json) => PaymentItem(
   productId: json['productId'] as String,

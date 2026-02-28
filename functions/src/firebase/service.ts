@@ -58,7 +58,7 @@ class FirebaseService {
       items: validation.data.items,
       createdAt: new Date(),
       status: "pending_payment",
-      scheduledAt: validation.data.scheduledAt,
+      duration: validation.data.duration,
     });
 
     return orderRef.id;
@@ -102,6 +102,28 @@ class FirebaseService {
     await transactionRef.set(data, { merge: true });
   }
 
+  async createTopupTransaction({
+    customerId,
+    amount,
+    sessionId,
+  }: {
+    customerId: string;
+    amount: number;
+    sessionId: string;
+  }): Promise<string> {
+    const transactionRef = firestore.collection("transactions").doc();
+    await transactionRef.set({
+      docId: transactionRef.id,
+      customerId,
+      amount,
+      status: "created",
+      createdAt: new Date(),
+      sessionId,
+      type: "topup",
+    });
+    return transactionRef.id;
+  }
+
   async findTransactionBySessionId(sessionId: string) {
     const transactionRef = await firestore
       .collection("transactions")
@@ -111,6 +133,14 @@ class FirebaseService {
       return null;
     }
     return transactionRef.docs[0].data();
+  }
+
+  async findOrderByOrderId(orderId: string) {
+    const orderRef = await firestore.collection("orders").doc(orderId).get();
+    if (!orderRef.exists) {
+      return null;
+    }
+    return orderRef.data();
   }
 }
 

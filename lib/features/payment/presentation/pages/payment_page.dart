@@ -12,7 +12,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentPage extends StatelessWidget {
   static String route = 'payment_route';
-  const PaymentPage({super.key});
+  const PaymentPage({super.key, required this.paymentRequest});
+
+  final PaymentRequest paymentRequest;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +23,15 @@ class PaymentPage extends StatelessWidget {
         BlocProvider.value(value: getIt<CartCubit>()),
         BlocProvider.value(value: getIt<PaymentCubit>()),
       ],
-      child: const PaymentView(),
+      child: PaymentView(paymentRequest: paymentRequest),
     );
   }
 }
 
 class PaymentView extends StatefulWidget {
-  const PaymentView({super.key});
+  const PaymentView({super.key, required this.paymentRequest});
+
+  final PaymentRequest paymentRequest;
 
   @override
   State<PaymentView> createState() => _PaymentViewState();
@@ -61,7 +65,14 @@ class _PaymentViewState extends State<PaymentView> {
             if (isSuccess) {
               // IMPORTANT: prevent first
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.goNamed(PaymentSuccessfulPage.route);
+                context.goNamed(
+                  PaymentSuccessfulPage.route,
+                  extra: {
+                    "pickupAt": DateTime.now().add(
+                      Duration(minutes: widget.paymentRequest.duration.toInt()),
+                    ),
+                  },
+                );
                 context.read<CartCubit>().resetCart();
               });
               return NavigationDecision.prevent;
@@ -77,21 +88,7 @@ class _PaymentViewState extends State<PaymentView> {
   void initPayment() {
     final cart = context.read<CartCubit>().state.cart;
     if (cart == null) return;
-    context.read<PaymentCubit>().createPayment(
-      request: PaymentRequest(
-        storeId: cart.storeId,
-        items: cart.items
-            .map(
-              (item) => PaymentItem(
-                productId: item.productId,
-                quantity: item.quantity,
-                selectedModifiers: item.selectedByGroup,
-              ),
-            )
-            .toList(),
-        scheduledAt: cart.scheduledAt,
-      ),
-    );
+    context.read<PaymentCubit>().createPayment(request: widget.paymentRequest);
   }
 
   @override
@@ -111,12 +108,15 @@ class _PaymentViewState extends State<PaymentView> {
         },
         child: BlocBuilder<PaymentCubit, PaymentState>(
           builder: (context, state) {
-            return state.when(
-              initial: () => const SizedBox.shrink(),
-              loading: () => AppLoading(),
+            return state.maybeMap(
+              initial: (_) => const SizedBox.shrink(),
+              loading: (_) => AppLoading(),
               loaded: (_) => WebViewWidget(controller: _webViewController),
-              error: (message) =>
-                  AppError(title: "Failed to load payment", subtitle: message),
+              error: (error) => AppError(
+                title: "Failed to load payment",
+                subtitle: error.message,
+              ),
+              orElse: () => const SizedBox.shrink(),
             );
           },
         ),
