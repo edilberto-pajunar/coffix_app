@@ -4,7 +4,9 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
+import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
+import 'package:coffix_app/features/order/presentation/widgets/order_activity.dart';
 import 'package:coffix_app/features/order/presentation/widgets/order_item.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
@@ -24,15 +26,29 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<CartCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<CartCubit>()),
+        BlocProvider.value(value: getIt<OrderCubit>()),
+      ],
       child: const OrderView(),
     );
   }
 }
 
-class OrderView extends StatelessWidget {
+class OrderView extends StatefulWidget {
   const OrderView({super.key});
+
+  @override
+  State<OrderView> createState() => _OrderViewState();
+}
+
+class _OrderViewState extends State<OrderView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<OrderCubit>().getOrders();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +99,34 @@ class OrderView extends StatelessWidget {
                               ),
                             ),
                             Expanded(
-                              child: EmptyState(
-                                title: 'No items in order',
-                                subtitle:
-                                    'Add items from the menu to get started',
-                                icon: Icons.shopping_cart_outlined,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    EmptyState(
+                                      title: 'No items in order',
+                                      subtitle:
+                                          'Add items from the menu to get started',
+                                      icon: Icons.shopping_cart_outlined,
+                                    ),
+                                    BlocBuilder<OrderCubit, OrderState>(
+                                      builder: (context, orderState) {
+                                        return orderState.maybeWhen(
+                                          loaded: (orders) => Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: AppSizes.xxl,
+                                            ),
+                                            child: OrderActivity(
+                                              orders: orders,
+                                            ),
+                                          ),
+                                          orElse: () => const SizedBox.shrink(),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -174,6 +213,19 @@ class OrderView extends StatelessWidget {
                               },
                               separatorBuilder: (_, _) => const Divider(),
                               itemCount: state.cart?.items.length ?? 0,
+                            ),
+                            BlocBuilder<OrderCubit, OrderState>(
+                              builder: (context, orderState) {
+                                return orderState.maybeWhen(
+                                  loaded: (orders) => Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: AppSizes.xxl,
+                                    ),
+                                    child: OrderActivity(orders: orders),
+                                  ),
+                                  orElse: () => const SizedBox.shrink(),
+                                );
+                              },
                             ),
                           ],
                         ),

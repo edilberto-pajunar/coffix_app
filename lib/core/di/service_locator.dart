@@ -1,6 +1,7 @@
 import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/modifier_repository.dart';
+import 'package:coffix_app/data/repositories/order_repository.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
@@ -14,6 +15,8 @@ import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/features/modifier/data/modifier_repository_impl.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
+import 'package:coffix_app/features/order/data/order_repository_impl.dart';
+import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/payment/data/payment_repository_impl.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:coffix_app/features/products/data/product_repository_impl.dart';
@@ -52,6 +55,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(),
   );
+  getIt.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl());
   // App Cubit
   getIt.registerLazySingleton<AppCubit>(
     () => AppCubit(appRepository: getIt<AppRepository>()),
@@ -70,6 +74,11 @@ Future<void> setupServiceLocator() async {
   // Modifier Cubit
   getIt.registerLazySingleton<ModifierCubit>(
     () => ModifierCubit(modifierRepository: getIt<ModifierRepository>()),
+  );
+
+  // Order Cubit
+  getIt.registerLazySingleton<OrderCubit>(
+    () => OrderCubit(orderRepository: getIt<OrderRepository>()),
   );
 
   // Otp Cubit

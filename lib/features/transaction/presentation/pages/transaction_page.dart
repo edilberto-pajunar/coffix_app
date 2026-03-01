@@ -9,6 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+(String, Color) _transactionStatusStyle(TransactionStatus? s) {
+  return switch (s) {
+    TransactionStatus.paid => ('Paid', AppColors.success),
+    TransactionStatus.created => ('Created', AppColors.primary),
+    TransactionStatus.approved => ('Approved', AppColors.success),
+    TransactionStatus.failed => ('Failed', AppColors.error),
+    _ => ('—', AppColors.lightGrey),
+  };
+}
+
 Map<DateTime, List<Transaction>> _groupByDay(List<Transaction> transactions) {
   final map = <DateTime, List<Transaction>>{};
   for (final t in transactions) {
@@ -116,6 +126,8 @@ class _TransactionViewState extends State<TransactionView> {
                     );
                   }
                   final t = item.transaction!;
+                  final (statusLabel, statusColor) =
+                      _transactionStatusStyle(t.status);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSizes.sm),
                     child: AppCard(
@@ -152,7 +164,7 @@ class _TransactionViewState extends State<TransactionView> {
                           const SizedBox(height: AppSizes.xs),
                           Row(
                             children: [
-                              StatusChip(status: t.status),
+                              StatusChip(label: statusLabel, color: statusColor),
                               const SizedBox(width: AppSizes.sm),
                               if (t.paymentMethod != null &&
                                   t.paymentMethod!.isNotEmpty)

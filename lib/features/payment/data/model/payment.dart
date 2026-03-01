@@ -10,6 +10,19 @@ enum PaymentMethod {
   card,
 }
 
+enum PaymentStatus {
+  @JsonValue('unpaid')
+  unpaid,
+  @JsonValue('pending')
+  pending,
+  @JsonValue('paid')
+  paid,
+  @JsonValue('failed')
+  failed,
+  @JsonValue('refunded')
+  refunded
+}
+
 @JsonSerializable()
 class PaymentRequest {
   final String storeId;

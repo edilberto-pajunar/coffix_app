@@ -1,10 +1,37 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffix_app/data/repositories/order_repository.dart';
+import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order_state.dart';
 part 'order_cubit.freezed.dart';
 
 class OrderCubit extends Cubit<OrderState> {
-  OrderCubit() : super(OrderState.initial());
+  final OrderRepository _orderRepository;
+  StreamSubscription<List<Order>>? _ordersSubscription;
+
+  OrderCubit({required OrderRepository orderRepository})
+    : _orderRepository = orderRepository,
+      super(OrderState.initial());
+
+  void getOrders() {
+    _ordersSubscription?.cancel();
+    emit(OrderState.loading());
+    _ordersSubscription = _orderRepository.getOrders().listen(
+      (orders) {
+        if (!isClosed) emit(OrderState.loaded(orders: orders));
+      },
+      onError: (e) {
+        if (!isClosed) emit(OrderState.error(message: e.toString()));
+      },
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _ordersSubscription?.cancel();
+    return super.close();
+  }
 }

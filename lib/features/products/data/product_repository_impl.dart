@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
-import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
-import 'package:coffix_app/features/products/data/model/product_override.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,9 +15,13 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Stream<List<Product>> getProducts() {
-    return _firestore.collection('products').snapshots().map((event) {
-      return event.docs.map((doc) => Product.fromJson(doc.data())).toList();
-    });
+    return _firestore
+        .collection('products')
+        .orderBy('order', descending: false)
+        .snapshots()
+        .map((event) {
+          return event.docs.map((doc) => Product.fromJson(doc.data())).toList();
+        });
   }
 
   @override

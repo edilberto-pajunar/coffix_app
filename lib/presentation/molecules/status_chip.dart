@@ -1,23 +1,20 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
-import 'package:coffix_app/features/transaction/data/model/transaction.dart';
 import 'package:flutter/material.dart';
 
 class StatusChip extends StatelessWidget {
-  final TransactionStatus? status;
+  const StatusChip({
+    super.key,
+    required this.label,
+    this.color = AppColors.lightGrey,
+  });
 
-  const StatusChip({super.key, this.status});
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final (label, color) = switch (status) {
-      TransactionStatus.paid => ('Paid', AppColors.success),
-      TransactionStatus.created => ('Created', AppColors.primary),
-      TransactionStatus.approved => ('Approved', AppColors.success),
-      TransactionStatus.failed => ('Failed', AppColors.error),
-      _ => ('—', AppColors.lightGrey),
-    };
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.sm,
@@ -29,7 +26,7 @@ class StatusChip extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
-        label,
+        label.isEmpty ? '—' : label,
         style: theme.textTheme.labelSmall?.copyWith(
           color: color,
           fontWeight: FontWeight.w600,
