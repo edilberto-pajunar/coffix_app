@@ -5,6 +5,7 @@ import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
@@ -90,7 +91,12 @@ class ProfileView extends StatelessWidget {
                 context.pushNamed(TransactionPage.route);
               },
             ),
-            ProfileTile(label: 'Share your balance', onTap: () {}),
+            ProfileTile(
+              label: 'Share your balance',
+              onTap: () {
+                context.pushNamed(ShareYourBalancePage.route);
+              },
+            ),
             ProfileTile(label: 'Specials', onTap: () {}),
             ProfileTile(
               label: 'Coffix QR ID',

@@ -4,7 +4,7 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
-import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +81,7 @@ class PaymentSuccessfulView extends StatelessWidget {
               AppButton.primary(
                 onPressed: () {
                   context.read<CartCubit>().resetCart();
-                  context.goNamed(OrderPage.route);
+                  context.goNamed(CartPage.route);
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (context.mounted) context.goNamed(HomePage.route);
                   });

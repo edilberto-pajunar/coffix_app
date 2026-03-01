@@ -4,7 +4,7 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
@@ -358,7 +358,7 @@ class _AddProductViewState extends State<AddProductView> {
                             newItem: newItem,
                           );
                         }
-                        context.goNamed(OrderPage.route);
+                        context.goNamed(CartPage.route);
                       },
                       label: widget.cartItem != null
                           ? "Update Order"

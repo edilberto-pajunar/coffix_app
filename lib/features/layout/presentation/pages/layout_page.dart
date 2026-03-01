@@ -87,9 +87,17 @@ class _LayoutViewState extends State<LayoutView> {
     );
     final isEmailVerified = user?.emailVerified ?? false;
 
-    const topLevelTabPaths = ['/home', '/coffix-credit', '/menu', '/stores', '/my-order'];
-    final isOnHomeBranchNested = widget.shell.currentIndex == 0 && location != '/home';
-    final showBottomNav = isEmailVerified &&
+    const topLevelTabPaths = [
+      '/home',
+      '/coffix-credit',
+      '/menu',
+      '/stores',
+      '/cart',
+    ];
+    final isOnHomeBranchNested =
+        widget.shell.currentIndex == 0 && location != '/home';
+    final showBottomNav =
+        isEmailVerified &&
         !isOnHomeBranchNested &&
         topLevelTabPaths.contains(location);
 

@@ -1,6 +1,6 @@
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +16,7 @@ class AppCart extends StatelessWidget {
       padding: EdgeInsets.only(bottom: AppSizes.lg, right: AppSizes.lg),
       child: FloatingActionButton(
         onPressed: () {
-          context.goNamed(OrderPage.route);
+          context.goNamed(CartPage.route);
         },
         child: Badge(
           label: Text('${cartItems?.length ?? 0}'),

@@ -4,6 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
+import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
@@ -99,8 +100,9 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   Expanded(
                     child: AppButton.primary(
-                      onPressed: () {},
-                      disabled: true,
+                      onPressed: () {
+                        context.pushNamed(OrderPage.route);
+                      },
                       label: "ReOrder",
                     ),
                   ),

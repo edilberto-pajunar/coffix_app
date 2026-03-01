@@ -11,6 +11,7 @@ import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payme
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
@@ -25,6 +26,7 @@ import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:coffix_app/features/wrapper/presentation/pages/wrapper_page.dart';
@@ -114,6 +116,12 @@ class AppRouter {
                           return PersonalInfoPage(canBack: canBack);
                         },
                         routes: [],
+                      ),
+                      GoRoute(
+                        path: "/share-your-balance",
+                        name: ShareYourBalancePage.route,
+                        builder: (context, state) =>
+                            const ShareYourBalancePage(),
                       ),
                       GoRoute(
                         path: "/about",
@@ -232,7 +240,12 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: "/my-order",
+                path: "/cart",
+                name: CartPage.route,
+                builder: (context, state) => const CartPage(),
+              ),
+              GoRoute(
+                path: "/order",
                 name: OrderPage.route,
                 builder: (context, state) => const OrderPage(),
               ),
