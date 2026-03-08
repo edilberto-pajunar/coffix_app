@@ -1,37 +1,25 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:coffix_app/core/api/endpoints.dart';
+import 'package:coffix_app/core/api/api_client.dart';
+import 'package:coffix_app/core/api/model/endpoints.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-class PaymentRepositoryImpl implements PaymentRepository {
+class PaymentRepositoryImpl extends ApiClient implements PaymentRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  PaymentRepositoryImpl() : super(dio: Dio());
 
   @override
-  Future<Map<String, dynamic>> createPaymentSession({required PaymentRequest request}) async {
-    final token = await _auth.currentUser?.getIdToken();
-    if (token == null) throw Exception('No token found');
+  Future<Map<String, dynamic>> createPaymentSession({
+    required PaymentRequest request,
+  }) async {
+    final response = await post("/payment/session", data: request.toJson());
 
-    final response = await http.post(
-      Uri.parse('${ApiEndpoints.baseUrl}/v1/payment/session'),
-      body: jsonEncode(request.toJson()),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    final data = jsonDecode(response.body) as Map<String, dynamic>?;
-    final url = data?["data"];
-    if (url == null || url.isEmpty) {
-      throw Exception(
-        'No payment URL in response (${response.statusCode}): ${response.body}',
-      );
-    }
-    return url;
+    return response.data as Map<String, dynamic>;
   }
 
   @override

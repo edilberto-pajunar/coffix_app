@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:math' hide log;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coffix_app/core/api/endpoints.dart';
+import 'package:coffix_app/core/api/model/endpoints.dart';
 import 'package:coffix_app/core/errors/auth_exceptions.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
@@ -297,5 +297,26 @@ class AuthRepositoryImpl implements AuthRepository {
         .doc(credential.user?.uid)
         .get();
     return user.exists && user.data()?["disabled"] == true;
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      throw Exception('No user found');
+    }
+    await _firestore.collection("customers").doc(uid).set({
+      "disabled": true,
+    }, SetOptions(merge: true));
+    await signOut();
+  }
+
+  @override
+  Future<String> getFirebaseToken() async {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) {
+      throw Exception('No token found');
+    }
+    return token;
   }
 }

@@ -7,7 +7,11 @@ class AppNotification extends StatelessWidget {
 
   final String message;
 
-  static void show(BuildContext context, String message) {
+  static void show(
+    BuildContext context,
+    String message, {
+    FlushbarPosition? position,
+  }) {
     final rootContext = Navigator.of(context, rootNavigator: true).context;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -16,7 +20,7 @@ class AppNotification extends StatelessWidget {
         duration: const Duration(seconds: 2),
         margin: const EdgeInsets.symmetric(horizontal: 12),
         borderRadius: BorderRadius.circular(12),
-        flushbarPosition: FlushbarPosition.TOP,
+        flushbarPosition: position ?? FlushbarPosition.TOP,
         backgroundColor: AppColors.success,
       ).show(rootContext);
     });

@@ -20,4 +20,6 @@ abstract class AuthRepository {
   Future<void> sendEmailVerification({required String email});
   Future<void> verifyOtp({required String otp});
   Future<void> updateLastLogin();
+  Future<void> deleteAccount();
+  Future<String> getFirebaseToken();
 }

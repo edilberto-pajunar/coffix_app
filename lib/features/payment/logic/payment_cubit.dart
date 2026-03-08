@@ -19,12 +19,11 @@ class PaymentCubit extends Cubit<PaymentState> {
       final response = await _paymentRepository.createPaymentSession(
         request: request,
       );
-      print(response);
       if (request.paymentMethod == PaymentMethod.coffixCredit) {
         final order = Order.fromJson(response["order"]);
         emit(PaymentState.success(order: order));
       } else {
-        emit(PaymentState.loaded(paymentUrl: response["paymentUrl"]));
+        emit(PaymentState.loaded(paymentUrl: response["paymentSessionUrl"]));
       }
     } catch (e) {
       emit(PaymentState.error(message: e.toString()));

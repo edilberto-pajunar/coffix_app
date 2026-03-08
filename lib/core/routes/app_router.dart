@@ -26,7 +26,9 @@ import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/referral_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/special_url_page.dart';
 import 'package:coffix_app/features/stores/presentation/pages/stores_page.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:coffix_app/features/wrapper/presentation/pages/wrapper_page.dart';
@@ -132,6 +134,16 @@ class AppRouter {
                         path: "/qr-id",
                         name: QrIdPage.route,
                         builder: (context, state) => const QrIdPage(),
+                      ),
+                      GoRoute(
+                        path: "/special-url",
+                        name: SpecialUrlPage.route,
+                        builder: (context, state) => const SpecialUrlPage(),
+                      ),
+                      GoRoute(
+                        path: "/referral",
+                        name: ReferralPage.route,
+                        builder: (context, state) => const ReferralPage(),
                       ),
                     ],
                   ),

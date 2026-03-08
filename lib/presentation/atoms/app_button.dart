@@ -16,6 +16,7 @@ class AppButton extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.disabled = false,
+    this.color,
   });
 
   final AppButtonVariant variant;
@@ -26,6 +27,7 @@ class AppButton extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool disabled;
+  final Color? color;
 
   factory AppButton.primary({
     required VoidCallback onPressed,
@@ -33,6 +35,7 @@ class AppButton extends StatelessWidget {
     Widget? prefixIcon,
     Widget? suffixIcon,
     bool disabled = false,
+    Color? color,
   }) {
     return AppButton(
       variant: AppButtonVariant.primary,
@@ -41,6 +44,7 @@ class AppButton extends StatelessWidget {
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       disabled: disabled,
+      color: color,
     );
   }
 
@@ -90,7 +94,7 @@ class AppButton extends StatelessWidget {
     final BoxDecoration decoration = switch (variant) {
       AppButtonVariant.primary => BoxDecoration(
         borderRadius: BorderRadius.circular(AppSizes.md),
-        color: disabled ? AppColors.lightGrey : AppColors.primary,
+        color: disabled ? AppColors.lightGrey : color ?? AppColors.primary,
         boxShadow: [AppColors.shadow],
       ),
       AppButtonVariant.secondary => BoxDecoration(

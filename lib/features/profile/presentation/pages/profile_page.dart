@@ -2,10 +2,13 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_topup_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/special_url_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
@@ -34,6 +37,10 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final creditBalance = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user.user.creditAvailable,
+      orElse: () => 0,
+    );
     return Scaffold(
       appBar: AppBar(title: Text("Profile", style: theme.textTheme.titleLarge)),
       body: SingleChildScrollView(
@@ -53,14 +60,19 @@ class ProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSizes.xs),
                   Text(
-                    '\$0.00',
+                    '\$${creditBalance?.toStringAsFixed(2) ?? '0.00'}',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: AppSizes.md),
-                  AppButton.primary(onPressed: () {}, label: 'Top up'),
+                  AppButton.primary(
+                    onPressed: () {
+                      context.goNamed(CreditPage.route);
+                    },
+                    label: 'Top up',
+                  ),
                 ],
               ),
             ),
@@ -97,7 +109,12 @@ class ProfileView extends StatelessWidget {
                 context.pushNamed(ShareYourBalancePage.route);
               },
             ),
-            ProfileTile(label: 'Specials', onTap: () {}),
+            ProfileTile(
+              label: 'Specials',
+              onTap: () {
+                context.pushNamed(SpecialUrlPage.route);
+              },
+            ),
             ProfileTile(
               label: 'Coffix QR ID',
               onTap: () {
