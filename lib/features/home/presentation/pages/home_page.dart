@@ -82,139 +82,163 @@ class _HomeViewState extends State<HomeView> {
           });
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: AppSizes.defaultPadding,
-              child: BlocListener<OtpCubit, OtpState>(
-                listenWhen: (prev, curr) => curr.maybeWhen(
-                  verified: () => !prev.maybeWhen(
-                    verified: () => true,
-                    orElse: () => false,
-                  ),
-                  orElse: () => false,
-                ),
-                listener: (context, _) {
-                  context.goNamed(
-                    PersonalInfoPage.route,
-                    extra: {"canBack": true},
-                  );
-                },
-                child: BlocConsumer<AuthCubit, AuthState>(
-                  listenWhen: (previous, current) => previous != current,
-                  listener: (context, state) {
-                    state.whenOrNull(
-                      authenticated: (user) {
-                        context.read<StoreCubit>().getStores();
-                        context.read<ProductCubit>().getProducts();
-                      },
-                      passwordResetEmailSent: () {
-                        AppNotification.show(
-                          context,
-                          'Password reset email sent. Please check your email.',
-                        );
-                      },
-                      unauthenticated: () => context.goNamed(HomePage.route),
-                      error: (message) =>
-                          AppNotification.error(context, message),
-                    );
-                  },
-                  builder: (context, state) {
-                    final Widget mainContent = state.when(
-                      emailNotVerified: () => EmailVerificationForm(),
-                      hasAccount: (hasAccount) => LoginForm(formKey: formKey),
-                      otpSent: (email) => LoginForm(formKey: formKey),
-                      forgotPassword: () => ForgotPassword(),
-                      passwordResetEmailSent: () => ForgotPassword(),
-                      initial: () => AppLoading(),
-                      loading: () => const Center(child: AppLoading()),
-                      authenticated: (userWithStore) =>
-                          userWithStore.user.emailVerified == true
-                          ? _HomeContent(user: userWithStore)
-                          : EmailVerificationForm(),
-                      unauthenticated: () => LoginForm(formKey: formKey),
-                      error: (message) => LoginForm(formKey: formKey),
-                    );
-
-                    return state == AuthState.loading()
-                        ? const Center(child: AppLoading())
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Opacity(
-                                        opacity: isAuthenticated ? 1 : 0.3,
-                                        child: SvgPicture.asset(
-                                          AppImages.nameLogo,
-                                          width: 124.0,
-                                          height: 64.0,
-                                        ),
-                                      ),
-                                      if (isAuthenticated) const AppLocation(),
-                                    ],
-                                  ),
-                                  if (isAuthenticated)
-                                    Positioned(
-                                      right: 0,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          context.goNamed(ProfilePage.route);
-                                        },
-                                        icon: Icon(Icons.person),
-                                      ),
-                                    ),
-                                ],
-                              ),
-
-                              mainContent,
-                              SizedBox(height: AppSizes.xl),
-                              Opacity(
-                                opacity: isAuthenticated ? 1 : 0.6,
-                                child: Column(
-                                  children: [
-                                    AppButton.primary(
-                                      onPressed: () {
-                                        context.goNamed(MenuPage.route);
-                                      },
-                                      label: "New Order",
-                                      disabled: isAuthenticated ? false : true,
-                                    ),
-                                    const SizedBox(height: AppSizes.md),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: AppButton.primary(
-                                            onPressed: () async {
-                                              context.pushNamed(
-                                                OrderPage.route,
-                                              );
-                                              // await FirebaseAuth.instance
-                                              // .signOut();
-                                            },
-                                            label: "ReOrder",
-                                          ),
-                                        ),
-                                        const SizedBox(width: AppSizes.md),
-                                        Expanded(
-                                          child: AppButton.primary(
-                                            onPressed: () {},
-                                            label: "My Drafts",
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: AppSizes.defaultPadding,
+                      child: BlocListener<OtpCubit, OtpState>(
+                        listenWhen: (prev, curr) => curr.maybeWhen(
+                          verified: () => !prev.maybeWhen(
+                            verified: () => true,
+                            orElse: () => false,
+                          ),
+                          orElse: () => false,
+                        ),
+                        listener: (context, _) {
+                          context.goNamed(
+                            PersonalInfoPage.route,
+                            extra: {"canBack": true},
                           );
-                  },
+                        },
+                        child: BlocConsumer<AuthCubit, AuthState>(
+                          listenWhen: (previous, current) =>
+                              previous != current,
+                          listener: (context, state) {
+                            state.whenOrNull(
+                              authenticated: (user) {
+                                context.read<StoreCubit>().getStores();
+                                context.read<ProductCubit>().getProducts();
+                              },
+                              passwordResetEmailSent: () {
+                                AppNotification.show(
+                                  context,
+                                  'Password reset email sent. Please check your email.',
+                                );
+                              },
+                              unauthenticated: () =>
+                                  context.goNamed(HomePage.route),
+                              error: (message) =>
+                                  AppNotification.error(context, message),
+                            );
+                          },
+                          builder: (context, state) {
+                            final Widget mainContent = state.when(
+                              emailNotVerified: () => EmailVerificationForm(),
+                              hasAccount: (hasAccount) =>
+                                  LoginForm(formKey: formKey),
+                              otpSent: (email) => LoginForm(formKey: formKey),
+                              forgotPassword: () => ForgotPassword(),
+                              passwordResetEmailSent: () => ForgotPassword(),
+                              initial: () => AppLoading(),
+                              loading: () => const Center(child: AppLoading()),
+                              authenticated: (userWithStore) =>
+                                  userWithStore.user.emailVerified == true
+                                  ? _HomeContent(user: userWithStore)
+                                  : EmailVerificationForm(),
+                              unauthenticated: () =>
+                                  LoginForm(formKey: formKey),
+                              error: (message) => LoginForm(formKey: formKey),
+                            );
+
+                            return state == AuthState.loading()
+                                ? const Center(child: AppLoading())
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Column(
+                                            children: [
+                                              Opacity(
+                                                opacity: isAuthenticated
+                                                    ? 1
+                                                    : 0.3,
+                                                child: SvgPicture.asset(
+                                                  AppImages.nameLogo,
+                                                  width: 124.0,
+                                                  height: 64.0,
+                                                ),
+                                              ),
+                                              if (isAuthenticated)
+                                                const AppLocation(),
+                                            ],
+                                          ),
+                                          if (isAuthenticated)
+                                            Positioned(
+                                              right: 0,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  context.goNamed(
+                                                    ProfilePage.route,
+                                                  );
+                                                },
+                                                icon: Icon(Icons.person),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+
+                                      mainContent,
+                                      SizedBox(height: AppSizes.xl),
+                                      Spacer(),
+                                      Opacity(
+                                        opacity: isAuthenticated ? 1 : 0.6,
+                                        child: Column(
+                                          children: [
+                                            AppButton.primary(
+                                              onPressed: () {
+                                                context.goNamed(MenuPage.route);
+                                              },
+                                              label: "New Order",
+                                              disabled: isAuthenticated
+                                                  ? false
+                                                  : true,
+                                            ),
+                                            const SizedBox(height: AppSizes.md),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: AppButton.primary(
+                                                    onPressed: () async {
+                                                      context.pushNamed(
+                                                        OrderPage.route,
+                                                      );
+                                                      // await FirebaseAuth.instance
+                                                      // .signOut();
+                                                    },
+                                                    label: "ReOrder",
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: AppSizes.md,
+                                                ),
+                                                Expanded(
+                                                  child: AppButton.primary(
+                                                    onPressed: () {},
+                                                    label: "My Drafts",
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),

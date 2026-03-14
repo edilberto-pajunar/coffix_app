@@ -19,6 +19,9 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
     _$PaymentStatusEnumMap,
     json['paymentStatus'],
   ),
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => Item.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
@@ -29,6 +32,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'createdAt': const DateTimeConverter().toJson(instance.createdAt),
   'scheduledAt': const DateTimeConverter().toJson(instance.scheduledAt),
   'orderNumber': instance.orderNumber,
+  'items': instance.items?.map((e) => e.toJson()).toList(),
   'status': _$OrderStatusEnumMap[instance.status],
   'paymentStatus': _$PaymentStatusEnumMap[instance.paymentStatus],
 };
@@ -51,4 +55,18 @@ const _$PaymentStatusEnumMap = {
   PaymentStatus.paid: 'paid',
   PaymentStatus.failed: 'failed',
   PaymentStatus.refunded: 'refunded',
+};
+
+Item _$ItemFromJson(Map<String, dynamic> json) => Item(
+  productId: json['productId'] as String?,
+  quantity: (json['quantity'] as num?)?.toInt(),
+  selectedModifiers: (json['selectedModifiers'] as Map<String, dynamic>?)?.map(
+    (k, e) => MapEntry(k, e as String),
+  ),
+);
+
+Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
+  'productId': instance.productId,
+  'quantity': instance.quantity,
+  'selectedModifiers': instance.selectedModifiers,
 };

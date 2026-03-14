@@ -36,6 +36,7 @@ class Order {
   @DateTimeConverter()
   final DateTime? scheduledAt;
   final String? orderNumber;
+  final List<Item>? items;
   final OrderStatus? status;
   final PaymentStatus? paymentStatus;
 
@@ -49,8 +50,21 @@ class Order {
     this.orderNumber,
     this.status,
     this.paymentStatus,
+    this.items,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
   Map<String, dynamic> toJson() => _$OrderToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class Item {
+  final String? productId;
+  final int? quantity;
+  final Map<String, String>? selectedModifiers;
+
+  Item({this.productId, this.quantity, this.selectedModifiers});
+
+  factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
+  Map<String, dynamic> toJson() => _$ItemToJson(this);
 }

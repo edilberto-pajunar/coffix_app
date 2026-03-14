@@ -3,13 +3,20 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/features/cart/domain/helper.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
+import 'package:coffix_app/features/products/logic/product_cubit.dart';
+import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/molecules/empty_state.dart';
 import 'package:coffix_app/presentation/molecules/status_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class OrderPage extends StatelessWidget {
@@ -18,8 +25,12 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<OrderCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<OrderCubit>()),
+        BlocProvider.value(value: getIt<CartCubit>()),
+        BlocProvider.value(value: getIt<ProductCubit>()),
+      ],
       child: const OrderView(),
     );
   }
@@ -41,7 +52,6 @@ class _OrderViewState extends State<OrderView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: const AppBackHeader(title: 'Orders'),
       body: BlocBuilder<OrderCubit, OrderState>(
@@ -56,7 +66,16 @@ class _OrderViewState extends State<OrderView> {
               ),
             ),
             loaded: (orders) {
-              if (orders.isEmpty) {
+              final filtered = orders
+                  .where(
+                    (o) => ![
+                      OrderStatus.draft,
+                      OrderStatus.pendingPayment,
+                      OrderStatus.pending,
+                    ].contains(o.status),
+                  )
+                  .toList();
+              if (filtered.isEmpty) {
                 return Padding(
                   padding: AppSizes.defaultPadding,
                   child: Column(
@@ -74,91 +93,14 @@ class _OrderViewState extends State<OrderView> {
                 );
               }
               return SafeArea(
-                child: Padding(
+                child: ListView.separated(
                   padding: AppSizes.defaultPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: ListView.separated(
-                          itemCount: orders.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(height: AppSizes.sm),
-                          itemBuilder: (context, index) {
-                            final order = orders[index];
-                            final date = order.scheduledAt ?? order.createdAt;
-                            final dateStr = date != null
-                                ? DateFormat(
-                                    'MMM d, yyyy · h:mm a',
-                                  ).format(date)
-                                : '—';
-                            final (statusLabel, statusColor) =
-                                _orderStatusStyle(order.status);
-
-                            return Container(
-                              padding: const EdgeInsets.all(AppSizes.md),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(
-                                  AppSizes.md,
-                                ),
-                                border: Border.all(
-                                  color: AppColors.borderColor,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Order ${order.orderNumber ?? '—'}',
-                                              style: theme.textTheme.titleSmall
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: AppSizes.xs),
-                                            Text(
-                                              dateStr,
-                                              style: theme.textTheme.bodySmall
-                                                  ?.copyWith(
-                                                    color: AppColors.lightGrey,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: AppSizes.sm),
-                                            StatusChip(
-                                              label: statusLabel,
-                                              color: statusColor,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Text.rich(
-                                        order.total?.toCurrencySuperscript(
-                                              style: AppTypography.titleS,
-                                            ) ??
-                                            0.00.toCurrencySuperscript(
-                                              style: AppTypography.titleS,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(height: AppSizes.sm),
+                  itemBuilder: (context, index) {
+                    return _OrderCard(order: filtered[index]);
+                  },
                 ),
               );
             },
@@ -169,8 +111,238 @@ class _OrderViewState extends State<OrderView> {
   }
 }
 
+class _OrderCard extends StatelessWidget {
+  const _OrderCard({required this.order});
+
+  final Order order;
+
+  void _reorder(BuildContext context) {
+    final productState = context.read<ProductCubit>().state;
+    final products = productState.maybeWhen(
+      loaded: (products, _) => products,
+      orElse: () => null,
+    );
+
+    if (products == null || order.items == null || order.items!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to reorder at this time')),
+      );
+      return;
+    }
+
+    if (order.storeId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Store information missing')),
+      );
+      return;
+    }
+
+    final cartCubit = context.read<CartCubit>();
+    cartCubit.resetCart();
+
+    final helper = CartHelper();
+
+    for (final item in order.items!) {
+      if (item.productId == null) continue;
+
+      final match = products.firstWhere(
+        (p) => p.product.docId == item.productId,
+        orElse: () => products.first,
+      );
+
+      if (match.product.docId != item.productId) continue;
+
+      final product = match.product;
+      final selectedByGroup = item.selectedModifiers ?? {};
+      final modifierPriceSnapshot = helper.buildModifierPriceSnapshot(
+        selectedByGroup: selectedByGroup,
+        modifierMap: {},
+      );
+      final basePrice = product.price ?? 0;
+      final unitTotal = helper.computeUnitTotal(
+        basePrice: basePrice,
+        modifierPriceSnapshot: modifierPriceSnapshot,
+      );
+      final quantity = item.quantity ?? 1;
+      final id = helper.buildCartItemIdHashed(
+        storeId: order.storeId!,
+        productId: product.docId ?? '',
+        selectedByGroup: selectedByGroup,
+      );
+
+      final cartItem = CartItem(
+        id: id,
+        storeId: order.storeId!,
+        productId: product.docId ?? '',
+        productName: product.name ?? '',
+        productImageUrl: product.imageUrl ?? '',
+        quantity: quantity,
+        selectedByGroup: selectedByGroup,
+        basePrice: basePrice,
+        modifierPriceSnapshot: modifierPriceSnapshot,
+        unitTotal: unitTotal,
+        lineTotal: unitTotal * quantity,
+        createdAt: DateTime.now(),
+      );
+
+      try {
+        cartCubit.addProduct(newItem: cartItem);
+      } catch (_) {}
+    }
+
+    context.goNamed(CartPage.route);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final date = order.scheduledAt ?? order.createdAt;
+    final dateStr = date != null
+        ? DateFormat('MMM d, yyyy · h:mm a').format(date)
+        : '—';
+    final (statusLabel, statusColor) = _orderStatusStyle(order.status);
+    final items = order.items ?? [];
+
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.md),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.md),
+        border: Border.all(color: AppColors.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order ${order.orderNumber ?? '—'}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: AppSizes.xs),
+                    Text(
+                      dateStr,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.lightGrey,
+                      ),
+                    ),
+                    const SizedBox(height: AppSizes.sm),
+                    StatusChip(label: statusLabel, color: statusColor),
+                  ],
+                ),
+              ),
+              Text.rich(
+                order.total?.toCurrencySuperscript(
+                      style: AppTypography.titleS,
+                    ) ??
+                    0.00.toCurrencySuperscript(style: AppTypography.titleS),
+              ),
+            ],
+          ),
+          if (items.isNotEmpty) ...[
+            const SizedBox(height: AppSizes.md),
+            const Divider(height: 1),
+            const SizedBox(height: AppSizes.md),
+            ...items.map((item) => _OrderItemRow(item: item)),
+          ],
+          const SizedBox(height: AppSizes.md),
+          AppButton.outlined(
+            onPressed: () => _reorder(context),
+            label: 'Reorder',
+            prefixIcon: const Icon(Icons.refresh, size: AppSizes.iconSizeSmall),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OrderItemRow extends StatelessWidget {
+  const _OrderItemRow({required this.item});
+
+  final Item item;
+
+  @override
+  Widget build(BuildContext context) {
+    final productState = context.watch<ProductCubit>().state;
+    final product = productState.maybeWhen(
+      loaded: (products, _) => products
+          .firstWhere(
+            (p) => p.product.docId == item.productId,
+            orElse: () => products.first,
+          )
+          .product,
+      orElse: () => null,
+    );
+
+    final hasValidProduct = product?.docId == item.productId;
+    final imageUrl = hasValidProduct ? (product?.imageUrl ?? '') : '';
+    final name = hasValidProduct
+        ? (product?.name ?? '—')
+        : (item.productId ?? '—');
+    final modifiers = item.selectedModifiers?.values.toList() ?? [];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSizes.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (imageUrl.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppSizes.sm),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Image.network(imageUrl, fit: BoxFit.cover),
+              ),
+            )
+          else
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.softGrey,
+                borderRadius: BorderRadius.circular(AppSizes.sm),
+              ),
+              child: const Icon(
+                Icons.coffee,
+                color: AppColors.lightGrey,
+                size: AppSizes.iconSizeSmall,
+              ),
+            ),
+          const SizedBox(width: AppSizes.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$name x${item.quantity ?? 1}',
+                  style: AppTypography.bodyM600,
+                ),
+                if (modifiers.isNotEmpty)
+                  Text(
+                    modifiers.join(', '),
+                    style: AppTypography.body2XS.copyWith(
+                      color: AppColors.lightGrey,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 (String, Color) _orderStatusStyle(OrderStatus? status) {
-  print(status);
   const config = [
     (OrderStatus.draft, 'Draft', AppColors.lightGrey),
     (OrderStatus.pendingPayment, 'Pending', AppColors.lightGrey),
