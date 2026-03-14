@@ -180,7 +180,7 @@ class _HomeViewState extends State<HomeView> {
                                         context.goNamed(MenuPage.route);
                                       },
                                       label: "New Order",
-                                      disabled: true,
+                                      disabled: isAuthenticated ? false : true,
                                     ),
                                     const SizedBox(height: AppSizes.md),
                                     Row(

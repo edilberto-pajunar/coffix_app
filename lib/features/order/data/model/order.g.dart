@@ -14,7 +14,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   createdAt: const DateTimeConverter().fromJson(json['createdAt']),
   scheduledAt: const DateTimeConverter().fromJson(json['scheduledAt']),
   orderNumber: json['orderNumber'] as String?,
-  orderStatus: $enumDecodeNullable(_$OrderStatusEnumMap, json['orderStatus']),
+  status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']),
   paymentStatus: $enumDecodeNullable(
     _$PaymentStatusEnumMap,
     json['paymentStatus'],
@@ -29,18 +29,20 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'createdAt': const DateTimeConverter().toJson(instance.createdAt),
   'scheduledAt': const DateTimeConverter().toJson(instance.scheduledAt),
   'orderNumber': instance.orderNumber,
-  'orderStatus': _$OrderStatusEnumMap[instance.orderStatus],
+  'status': _$OrderStatusEnumMap[instance.status],
   'paymentStatus': _$PaymentStatusEnumMap[instance.paymentStatus],
 };
 
 const _$OrderStatusEnumMap = {
   OrderStatus.draft: 'draft',
-  OrderStatus.pendingPayment: 'placed',
+  OrderStatus.pendingPayment: 'pending_payment',
   OrderStatus.confirmed: 'confirmed',
   OrderStatus.preparing: 'preparing',
   OrderStatus.ready: 'ready',
+  OrderStatus.paid: 'paid',
   OrderStatus.completed: 'completed',
   OrderStatus.cancelled: 'cancelled',
+  OrderStatus.pending: 'pending',
 };
 
 const _$PaymentStatusEnumMap = {

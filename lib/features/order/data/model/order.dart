@@ -1,6 +1,5 @@
 import 'package:coffix_app/core/utils/date_time_converter.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
-import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.g.dart';
@@ -8,7 +7,7 @@ part 'order.g.dart';
 enum OrderStatus {
   @JsonValue('draft')
   draft,
-  @JsonValue('placed')
+  @JsonValue('pending_payment')
   pendingPayment,
   @JsonValue('confirmed')
   confirmed,
@@ -16,10 +15,14 @@ enum OrderStatus {
   preparing,
   @JsonValue('ready')
   ready,
+  @JsonValue('paid')
+  paid,
   @JsonValue('completed')
   completed,
   @JsonValue('cancelled')
   cancelled,
+  @JsonValue('pending')
+  pending,
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -33,7 +36,7 @@ class Order {
   @DateTimeConverter()
   final DateTime? scheduledAt;
   final String? orderNumber;
-  final OrderStatus? orderStatus;
+  final OrderStatus? status;
   final PaymentStatus? paymentStatus;
 
   Order({
@@ -44,7 +47,7 @@ class Order {
     this.createdAt,
     this.scheduledAt,
     this.orderNumber,
-    this.orderStatus,
+    this.status,
     this.paymentStatus,
   });
 

@@ -1,6 +1,8 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/extensions/price_extensions.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
@@ -77,8 +79,6 @@ class _OrderViewState extends State<OrderView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const AppBackHeader(title: 'Orders'),
-                      const SizedBox(height: AppSizes.lg),
                       Expanded(
                         child: ListView.separated(
                           itemCount: orders.length,
@@ -93,7 +93,7 @@ class _OrderViewState extends State<OrderView> {
                                   ).format(date)
                                 : '—';
                             final (statusLabel, statusColor) =
-                                _orderStatusStyle(order.orderStatus);
+                                _orderStatusStyle(order.status);
 
                             return Container(
                               padding: const EdgeInsets.all(AppSizes.md),
@@ -141,12 +141,12 @@ class _OrderViewState extends State<OrderView> {
                                           ],
                                         ),
                                       ),
-                                      Text(
-                                        '\$${order.total?.toStringAsFixed(2) ?? '0.00'}',
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: AppColors.primary,
+                                      Text.rich(
+                                        order.total?.toCurrencySuperscript(
+                                              style: AppTypography.titleS,
+                                            ) ??
+                                            0.00.toCurrencySuperscript(
+                                              style: AppTypography.titleS,
                                             ),
                                       ),
                                     ],
@@ -170,12 +170,14 @@ class _OrderViewState extends State<OrderView> {
 }
 
 (String, Color) _orderStatusStyle(OrderStatus? status) {
+  print(status);
   const config = [
     (OrderStatus.draft, 'Draft', AppColors.lightGrey),
     (OrderStatus.pendingPayment, 'Pending', AppColors.lightGrey),
     (OrderStatus.confirmed, 'Confirmed', AppColors.primary),
     (OrderStatus.preparing, 'Preparing', AppColors.primary),
     (OrderStatus.ready, 'Ready', AppColors.success),
+    (OrderStatus.paid, 'Paid', AppColors.success),
     (OrderStatus.completed, 'Completed', AppColors.success),
     (OrderStatus.cancelled, 'Cancelled', AppColors.error),
   ];

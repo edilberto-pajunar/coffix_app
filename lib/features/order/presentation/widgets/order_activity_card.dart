@@ -36,7 +36,7 @@ class OrderActivityCard extends StatelessWidget {
     final dateStr = date != null
         ? DateFormat('MMM d, h:mm a').format(date)
         : '—';
-    final (statusLabel, statusColor) = orderStatusStyle(order.orderStatus);
+    final (statusLabel, statusColor) = orderStatusStyle(order.status);
 
     String getLast6(String? value) {
       if (value == null || value.isEmpty) return '—';
@@ -52,7 +52,7 @@ class OrderActivityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Order: ${getLast6(order.orderNumber)}",
+                  "Order: ${getLast6(order.orderNumber ?? '—')}",
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),

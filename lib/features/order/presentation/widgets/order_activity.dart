@@ -14,7 +14,7 @@ class OrderActivity extends StatelessWidget {
 
   static List<Order> _filterNeeded(List<Order> orders, int max) {
     return orders
-        .where((o) => o.orderStatus != OrderStatus.cancelled)
+        .where((o) => o.status != OrderStatus.cancelled)
         .take(max)
         .toList();
   }
