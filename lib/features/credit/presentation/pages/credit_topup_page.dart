@@ -57,7 +57,7 @@ class _CreditTopupViewState extends State<CreditTopupView> {
               );
             },
             error: (message, _) {
-              AppNotification.error(context, 'Top up failed: $message');
+              AppNotification.error(context, 'TopUp failed: $message');
             },
           );
         },
@@ -70,7 +70,7 @@ class _CreditTopupViewState extends State<CreditTopupView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    AppBackHeader(title: "Top Up Coffix Credit"),
+                    AppBackHeader(title: "TopUp Coffix Credit"),
                     const SizedBox(height: AppSizes.xxl),
                     Text('Enter amount', style: theme.textTheme.titleMedium),
                     const SizedBox(height: AppSizes.md),

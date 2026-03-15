@@ -37,7 +37,7 @@ class CreditSuccessfulView extends StatelessWidget {
           padding: AppSizes.defaultPadding,
           child: Column(
             children: [
-              AppBackHeader(title: "Top Up Successful", showBackButton: false),
+              AppBackHeader(title: "TopUp Successful", showBackButton: false),
               const Spacer(),
               Icon(
                 Icons.check_circle_rounded,
@@ -46,7 +46,7 @@ class CreditSuccessfulView extends StatelessWidget {
               ),
               const SizedBox(height: AppSizes.xxl),
               Text(
-                'Credit top up successful',
+                'Credit topUp successful',
                 style: AppTypography.headlineXl,
                 textAlign: TextAlign.center,
               ),

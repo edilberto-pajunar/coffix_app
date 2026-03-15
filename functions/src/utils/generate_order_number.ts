@@ -1,6 +1,6 @@
 import { firestore } from "../config/firebaseAdmin";
 
-// Format: {storeId}{YYMMDD}{runningNumber} e.g. atdqdUXR8HQjRyBUJjEx260224001
+// Format: {storeId}{YYMMDD}{runningNumber} e.g. {atdqdUXR8HQjRyBUJjEx}{260224}{000001}
 export async function generateOrderNumber(storeId: string): Promise<string> {
   const now = new Date();
   const yy = now.getFullYear().toString().slice(-2);
@@ -24,7 +24,7 @@ export async function generateOrderNumber(storeId: string): Promise<string> {
 
     tx.set(counterRef, { lastRunningNumber: nextNumber }, { merge: true });
 
-    const runningNumber = nextNumber.toString().padStart(3, "0");
+    const runningNumber = nextNumber.toString().padStart(6, "0");
     return `${storeId}${dateKey}${runningNumber}`;
   });
 }

@@ -101,7 +101,7 @@ class ProfileView extends StatelessWidget {
                     onPressed: () {
                       context.goNamed(CreditPage.route);
                     },
-                    label: 'Top up',
+                    label: 'TopUp',
                   ),
                 ],
               ),

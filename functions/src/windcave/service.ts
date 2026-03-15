@@ -67,6 +67,8 @@ export class WindcaveService {
         currency: "NZD",
         merchantReference: orderId,
         type: "purchase",
+        
+        // sessionDeliveryMethod: "email",
         callbackUrls: {
           approved: WINDCAVE_SUCCESS_URL,
           declined: WINDCAVE_FAILED_URL,

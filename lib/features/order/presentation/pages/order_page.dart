@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
@@ -197,9 +198,7 @@ class _OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final date = order.scheduledAt ?? order.createdAt;
-    final dateStr = date != null
-        ? DateFormat('MMM d, yyyy · h:mm a').format(date)
-        : '—';
+    final dateStr = date != null ? date.formatDate() : '—';
     final (statusLabel, statusColor) = _orderStatusStyle(order.status);
     final items = order.items ?? [];
 
@@ -221,7 +220,7 @@ class _OrderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Order ${order.orderNumber ?? '—'}',
+                      'Order #${order.orderNumber?.substring(order.orderNumber!.length - 6) ?? '—'}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

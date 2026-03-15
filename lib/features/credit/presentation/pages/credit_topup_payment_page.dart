@@ -34,6 +34,9 @@ class _CreditTopupPaymentViewState extends State<CreditTopupPaymentView> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent(
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (request) {
@@ -66,7 +69,7 @@ class _CreditTopupPaymentViewState extends State<CreditTopupPaymentView> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Top up Coffix Credit', style: theme.textTheme.titleLarge),
+        title: Text('TopUp Coffix Credit', style: theme.textTheme.titleLarge),
       ),
       body: WebViewWidget(controller: _controller),
     );

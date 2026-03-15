@@ -45,9 +45,9 @@ export class CoffixCreditService {
 
     if (amount < 50) {
       return totalAmount;
-    } else if (amount <= 250) {
+    } else if (amount < 250) {
       totalAmount += amount * 0.1;
-    } else if (amount <= 500) {
+    } else if (amount < 500) {
       totalAmount += amount * 0.15;
     } else {
       totalAmount += amount * 0.2;
