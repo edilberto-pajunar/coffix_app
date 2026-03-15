@@ -28,6 +28,8 @@ class AppImages {
   static const String shop = "assets/icons/shop.svg";
 
   static const String profile = "assets/icons/profile.png";
+  static const String profileBlack = "assets/icons/profile-black.png";
+
   static const String transaction = "assets/icons/transaction.png";
   static const String balance = "assets/icons/balance.png";
   static const String special = "assets/icons/special.png";

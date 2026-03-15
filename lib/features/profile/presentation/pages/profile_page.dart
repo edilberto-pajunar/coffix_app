@@ -113,8 +113,9 @@ class ProfileView extends StatelessWidget {
               onTap: () {
                 context.pushNamed(PersonalInfoPage.route);
               },
-              icon: AppImages.profile,
+              icon: AppImages.profileBlack,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
             const SizedBox(height: AppSizes.sm),
             ProfileTile(
               label: 'Transaction history',
@@ -123,6 +124,8 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.transaction,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Share your balance',
               onTap: () {
@@ -130,6 +133,8 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.balance,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Specials',
               onTap: () {
@@ -137,6 +142,8 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.special,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Coffix QR ID',
               onTap: () {
@@ -144,16 +151,22 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.id,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Coffee on US',
               onTap: () {},
               icon: AppImages.coffee,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Coffee for Home',
               onTap: () {},
               icon: AppImages.bag,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             const SizedBox(height: AppSizes.sm),
             ProfileTile(
               label: 'About',
@@ -162,6 +175,8 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.info,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
+
             ProfileTile(
               label: 'Logout',
               onTap: () {
@@ -170,6 +185,7 @@ class ProfileView extends StatelessWidget {
               },
               icon: AppImages.logout,
             ),
+            Divider(height: 0, color: AppColors.textBlackColor),
             const SizedBox(height: AppSizes.xxxl),
             Center(
               child: AppClickable(

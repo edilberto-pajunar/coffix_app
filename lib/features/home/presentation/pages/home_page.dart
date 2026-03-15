@@ -2,6 +2,7 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
@@ -268,7 +269,7 @@ class _HomeContent extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(height: AppSizes.xl),
         Text(
@@ -280,7 +281,6 @@ class _HomeContent extends StatelessWidget {
           ),
         ),
         AppIcon.withSvgPath(AppImages.logo, size: AppSizes.iconSizeXXLarge),
-        SizedBox(height: AppSizes.xl),
       ],
     );
   }

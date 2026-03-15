@@ -14,6 +14,7 @@ import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/organisms/app_layout_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -117,28 +118,18 @@ class _AddProductViewState extends State<AddProductView> {
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          ),
-        ),
+        appBar: AppBackHeader(title: "${widget.product.name}"),
         body: AppLayoutBody(
-          hasSafeArea: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: AppSizes.productImageSize,
-                width: double.infinity,
-                child:
-                    widget.product.imageUrl != null &&
+          child: Padding(
+            padding: AppSizes.defaultPadding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                widget.product.imageUrl != null &&
                         widget.product.imageUrl!.isNotEmpty
                     ? ClipRRect(
-                        borderRadius: BorderRadiusGeometry.vertical(
-                          bottom: Radius.circular(AppSizes.lg),
+                        borderRadius: BorderRadiusGeometry.circular(
+                          AppSizes.md,
                         ),
                         child: Image.network(
                           widget.product.imageUrl!,
@@ -155,10 +146,7 @@ class _AddProductViewState extends State<AddProductView> {
                           ),
                         ),
                       ),
-              ),
-              Padding(
-                padding: AppSizes.defaultPadding,
-                child: Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: AppSizes.lg),
@@ -294,69 +282,69 @@ class _AddProductViewState extends State<AddProductView> {
                     // ),
                   ],
                 ),
-              ),
-              Spacer(),
-              Padding(
-                padding: AppSizes.defaultPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text.rich(
-                      textAlign: TextAlign.center,
-                      widget.product.price != null
-                          ? calculateTotal().toCurrencySuperscript()
-                          : 0.00.toCurrencySuperscript(),
-                      style: AppTypography.bodyL.copyWith(
-                        fontWeight: FontWeight.bold,
+                Spacer(),
+                Padding(
+                  padding: AppSizes.defaultPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text.rich(
+                        textAlign: TextAlign.center,
+                        widget.product.price != null
+                            ? calculateTotal().toCurrencySuperscript()
+                            : 0.00.toCurrencySuperscript(),
+                        style: AppTypography.bodyL.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: AppSizes.lg),
-                    AppButton(
-                      onPressed: () {
-                        final modifierState = context
-                            .read<ProductModifierCubit>()
-                            .state;
-                        final storeId = widget.storeId;
-                        final newItem = CartItem.fromSelection(
-                          product: widget.product,
-                          quantity: quantity,
-                          storeId: storeId,
-                          modifiers: modifierState.modifiers,
-                        );
-                        if (widget.cartItem != null) {
-                          final updated = widget.cartItem!.copyWith(
-                            quantity: newItem.quantity,
-                            selectedByGroup: newItem.selectedByGroup,
-                            basePrice: newItem.basePrice,
-                            modifierPriceSnapshot:
-                                newItem.modifierPriceSnapshot,
-                            unitTotal: newItem.unitTotal,
-                            lineTotal: newItem.lineTotal,
+                      const SizedBox(height: AppSizes.lg),
+                      AppButton(
+                        onPressed: () {
+                          final modifierState = context
+                              .read<ProductModifierCubit>()
+                              .state;
+                          final storeId = widget.storeId;
+                          final newItem = CartItem.fromSelection(
+                            product: widget.product,
+                            quantity: quantity,
+                            storeId: storeId,
+                            modifiers: modifierState.modifiers,
                           );
-                          context.read<CartCubit>().updateProduct(
-                            cartItemId: widget.cartItem!.id,
-                            updatedItem: updated,
-                          );
-                        } else {
-                          context.read<CartCubit>().addProduct(
-                            newItem: newItem,
-                          );
-                        }
-                        context.goNamed(CartPage.route);
-                      },
-                      label: widget.cartItem != null
-                          ? "Update Order"
-                          : "Add to Order",
-                      prefixIcon: AppIcon.withIconData(
-                        Icons.add,
-                        color: AppColors.white,
+                          if (widget.cartItem != null) {
+                            final updated = widget.cartItem!.copyWith(
+                              quantity: newItem.quantity,
+                              selectedByGroup: newItem.selectedByGroup,
+                              basePrice: newItem.basePrice,
+                              modifierPriceSnapshot:
+                                  newItem.modifierPriceSnapshot,
+                              unitTotal: newItem.unitTotal,
+                              lineTotal: newItem.lineTotal,
+                            );
+                            context.read<CartCubit>().updateProduct(
+                              cartItemId: widget.cartItem!.id,
+                              updatedItem: updated,
+                            );
+                          } else {
+                            context.read<CartCubit>().addProduct(
+                              newItem: newItem,
+                            );
+                          }
+                          context.goNamed(CartPage.route);
+                        },
+                        label: widget.cartItem != null
+                            ? "Update Order"
+                            : "Add to Order",
+                        prefixIcon: AppIcon.withIconData(
+                          Icons.add,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSizes.lg),
-            ],
+                const SizedBox(height: AppSizes.lg),
+              ],
+            ),
           ),
         ),
       ),

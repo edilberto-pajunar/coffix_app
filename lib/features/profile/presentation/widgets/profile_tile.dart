@@ -45,11 +45,11 @@ class ProfileTile extends StatelessWidget {
                 ],
               ),
             ),
-            AppIcon.withIconData(
-              Icons.chevron_right_rounded,
-              size: AppSizes.iconSizeSmall,
-              color: AppColors.lightGrey,
-            ),
+            // AppIcon.withIconData(
+            //   Icons.chevron_right_rounded,
+            //   size: AppSizes.iconSizeSmall,
+            //   color: AppColors.lightGrey,
+            // ),
           ],
         ),
       ),

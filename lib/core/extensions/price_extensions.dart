@@ -17,10 +17,10 @@ extension PriceExtensions on double {
           alignment: PlaceholderAlignment.baseline,
           baseline: TextBaseline.alphabetic,
           child: Transform.translate(
-            offset: Offset(0, -fontSize * 0.35),
+            offset: Offset(0, -fontSize * 0.50),
             child: Text(
               decimal,
-              style: baseStyle.copyWith(fontSize: fontSize * 0.65),
+              style: baseStyle.copyWith(fontSize: fontSize * 0.50),
             ),
           ),
         ),

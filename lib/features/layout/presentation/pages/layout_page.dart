@@ -13,6 +13,7 @@ import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
+import 'package:coffix_app/presentation/atoms/app_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -87,6 +88,7 @@ class LayoutView extends StatefulWidget {
 }
 
 class _LayoutViewState extends State<LayoutView> {
+  bool showSplashScreen = true;
   @override
   initState() {
     super.initState();
@@ -95,6 +97,11 @@ class _LayoutViewState extends State<LayoutView> {
     // context.read<StoreCubit>().getStores();
     // context.read<ProductCubit>().getProducts();
     // context.read<ModifierCubit>().getModifiers();
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        showSplashScreen = false;
+      });
+    });
   }
 
   @override
@@ -129,6 +136,7 @@ class _LayoutViewState extends State<LayoutView> {
         }
       },
       child: Scaffold(
+        backgroundColor: showSplashScreen ? AppColors.black : null,
         body: widget.shell,
         bottomNavigationBar: Theme(
           data: ThemeData(
@@ -141,82 +149,89 @@ class _LayoutViewState extends State<LayoutView> {
               enableFeedback: false,
             ),
           ),
-          child: SizedBox(
-            child: isHidden
-                ? const SizedBox.shrink()
-                : BlocBuilder<AuthCubit, AuthState>(
-                    builder: (context, state) {
-                      return BottomNavigationBar(
-                        currentIndex: widget.shell.currentIndex,
-                        onTap: (index) {
-                          state.maybeWhen(
-                            authenticated: (user) {
-                              if (index == LayoutPageTab.coffixCredit.index) {
-                                context.read<CreditCubit>().showTopUpField(
-                                  false,
+          child: showSplashScreen
+              ? AppSplashScreen()
+              : SizedBox(
+                  child: isHidden
+                      ? const SizedBox.shrink()
+                      : BlocBuilder<AuthCubit, AuthState>(
+                          builder: (context, state) {
+                            return BottomNavigationBar(
+                              currentIndex: widget.shell.currentIndex,
+                              onTap: (index) {
+                                state.maybeWhen(
+                                  authenticated: (user) {
+                                    if (index ==
+                                        LayoutPageTab.coffixCredit.index) {
+                                      context
+                                          .read<CreditCubit>()
+                                          .showTopUpField(false);
+                                    }
+                                    widget.shell.goBranch(
+                                      index,
+                                      initialLocation: true,
+                                    );
+                                  },
+                                  orElse: () => null,
                                 );
-                              }
-                              widget.shell.goBranch(
-                                index,
-                                initialLocation: true,
-                              );
-                            },
-                            orElse: () => null,
-                          );
-                        },
-                        type: BottomNavigationBarType.fixed,
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        selectedLabelStyle: AppTypography.body2XS.copyWith(
-                          color: AppColors.textBlackColor,
-                        ),
-                        unselectedLabelStyle: AppTypography.body2XS.copyWith(
-                          color: AppColors.textBlackColor,
-                        ),
-                        items: LayoutPageTab.values.map((tab) {
-                          final orderCount =
-                              context
-                                  .watch<CartCubit>()
-                                  .state
-                                  .cart
-                                  ?.items
-                                  .length ??
-                              0;
-                          return BottomNavigationBarItem(
-                            icon: tab == LayoutPageTab.order
-                                ? widget.shell.currentIndex ==
-                                          LayoutPageTab.values.indexOf(tab)
-                                      ? Badge.count(
-                                          count: orderCount,
-                                          child: Image.asset(
-                                            tab.selectedIcon,
-                                            width: 24,
-                                            height: 24,
-                                          ),
+                              },
+                              type: BottomNavigationBarType.fixed,
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              selectedLabelStyle: AppTypography.body2XS
+                                  .copyWith(color: AppColors.textBlackColor),
+                              unselectedLabelStyle: AppTypography.body2XS
+                                  .copyWith(color: AppColors.textBlackColor),
+                              items: LayoutPageTab.values.map((tab) {
+                                final orderCount =
+                                    context
+                                        .watch<CartCubit>()
+                                        .state
+                                        .cart
+                                        ?.items
+                                        .length ??
+                                    0;
+                                return BottomNavigationBarItem(
+                                  icon: tab == LayoutPageTab.order
+                                      ? widget.shell.currentIndex ==
+                                                LayoutPageTab.values.indexOf(
+                                                  tab,
+                                                )
+                                            ? Badge.count(
+                                                count: orderCount,
+                                                child: Image.asset(
+                                                  tab.selectedIcon,
+                                                  width: 24,
+                                                  height: 24,
+                                                ),
+                                              )
+                                            : Badge.count(
+                                                count: orderCount,
+                                                child: Image.asset(
+                                                  tab.icon,
+                                                  width: 24,
+                                                  height: 24,
+                                                ),
+                                              )
+                                      : widget.shell.currentIndex ==
+                                            LayoutPageTab.values.indexOf(tab)
+                                      ? Image.asset(
+                                          tab.selectedIcon,
+                                          width: 24,
+                                          height: 24,
                                         )
-                                      : Badge.count(
-                                          count: orderCount,
-                                          child: Image.asset(
-                                            tab.icon,
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                        )
-                                : widget.shell.currentIndex ==
-                                      LayoutPageTab.values.indexOf(tab)
-                                ? Image.asset(
-                                    tab.selectedIcon,
-                                    width: 24,
-                                    height: 24,
-                                  )
-                                : Image.asset(tab.icon, width: 24, height: 24),
-                            label: tab.title,
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-          ),
+                                      : Image.asset(
+                                          tab.icon,
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                  label: tab.title,
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                ),
         ),
       ),
     );

@@ -90,17 +90,6 @@ class ProductList extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSizes.md),
-              if (categoryFilter != null) ...[
-                AppTextButton(
-                  textStyle: AppTypography.labelS.copyWith(
-                    color: AppColors.primary,
-                  ),
-                  text: "Clear Filter",
-                  onPressed: () {
-                    context.read<ProductCubit>().clearFilter();
-                  },
-                ),
-              ],
             ],
           ),
           const SizedBox(height: AppSizes.lg),
