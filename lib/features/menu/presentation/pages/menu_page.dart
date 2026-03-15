@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/widgets/product_list.dart';
@@ -10,6 +11,7 @@ import 'package:coffix_app/presentation/molecules/app_cart.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class MenuPage extends StatelessWidget {
   static String route = 'menu_route';
@@ -35,9 +37,14 @@ class MenuView extends StatelessWidget {
     final user = context.watch<AuthCubit>().state.maybeWhen(
       authenticated: (user) => user,
       orElse: () => null,
-    );
+  );
     return Scaffold(
-      appBar: AppBackHeader(title: "Products", showBackButton: false),
+      appBar: AppBackHeader(
+        title: "Products",
+        onBack: () {
+          context.goNamed(HomePage.route);
+        },
+      ),
       // floatingActionButton: AppCart(),
       body: BlocBuilder<ProductCubit, ProductState>(
         builder: (context, state) {

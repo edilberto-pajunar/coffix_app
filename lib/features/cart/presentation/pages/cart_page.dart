@@ -4,6 +4,7 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/schedule_order_page.dart';
@@ -50,7 +51,12 @@ class _CartViewState extends State<CartView> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBackHeader(title: "My Order", showBackButton: false),
+      appBar: AppBackHeader(
+        title: "My Order",
+        onBack: () {
+          context.goNamed(HomePage.route);
+        },
+      ),
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
           return Column(
@@ -62,25 +68,16 @@ class _CartViewState extends State<CartView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SizedBox(height: AppSizes.lg),
                             Align(
                               alignment: Alignment.centerRight,
                               child: AppClickable(
                                 showSplash: false,
                                 onPressed: () =>
                                     context.goNamed(MenuPage.route),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    CircleAvatar(
-                                      child: Icon(
-                                        Icons.add,
-                                        size: AppSizes.iconSizeSmall,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                    const SizedBox(width: AppSizes.xs),
-                                  ],
+                                child: Icon(
+                                  Icons.add_circle,
+                                  size: AppSizes.iconSizeXXXLarge,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ),
@@ -110,16 +107,10 @@ class _CartViewState extends State<CartView> {
                                 showSplash: false,
                                 onPressed: () =>
                                     context.goNamed(MenuPage.route),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.add_circle,
-                                      size: AppSizes.iconSizeLarge,
-                                      color: AppColors.primary,
-                                    ),
-                                    const SizedBox(width: AppSizes.xs),
-                                  ],
+                                child: Icon(
+                                  Icons.add_circle,
+                                  size: AppSizes.iconSizeXXXLarge,
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ),

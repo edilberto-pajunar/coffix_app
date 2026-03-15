@@ -87,8 +87,8 @@ class StoreList extends StatelessWidget {
                 start: DateTime.now(),
                 end: DateTime.now().add(const Duration(hours: 1)),
               );
-              // final isOpen = store.isOpenAt();
-              final isOpen = true;
+              final isOpen = store.isOpenAt();
+              // final isOpen = true;
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
@@ -145,6 +145,19 @@ class StoreList extends StatelessWidget {
                               store.address ?? "",
                               style: AppTypography.body2XS.copyWith(
                                 color: AppColors.lightGrey,
+                              ),
+                            ),
+                            Text(
+                              isOpen
+                                  ? "Closes at ${store.todayCloseFormatted() ?? ''}"
+                                  : () {
+                                      final next = store.nextOpeningFormatted();
+                                      return next != null
+                                          ? "Closed. Opens on ${next.day} ${next.time}"
+                                          : "Closed";
+                                    }(),
+                              style: AppTypography.body2XS.copyWith(
+                                color: AppColors.primary,
                               ),
                             ),
                           ],

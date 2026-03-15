@@ -12,38 +12,27 @@ class TierCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.lg,
-        vertical: AppSizes.md,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: 'TopUp '),
-                amount.toCurrencySuperscript(
-                  style: AppTypography.bodyM500.copyWith(
-                    color: AppColors.black,
-                  ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: 'TopUp '),
+              amount.toCurrencySuperscript(
+                style: AppTypography.bodyM500.copyWith(
+                  color: AppColors.textBlackColor,
                 ),
-                TextSpan(text: "+"),
-              ],
-            ),
+              ),
+              TextSpan(text: "+"),
+            ],
           ),
-          Text(
-            'Get $percent more credit',
-            style: AppTypography.labelS.copyWith(color: AppColors.primary),
-          ),
-        ],
-      ),
+        ),
+        Text(
+          'and get $percent more credit',
+          style: AppTypography.labelS.copyWith(),
+        ),
+      ],
     );
   }
 }

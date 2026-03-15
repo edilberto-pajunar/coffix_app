@@ -8,10 +8,12 @@ import 'package:coffix_app/features/credit/presentation/pages/credit_topup_page.
 import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payment_page.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/tier_card.dart';
+import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_layout_builder.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
+import 'package:coffix_app/presentation/atoms/app_money_field.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/organisms/app_layout_body.dart';
@@ -65,7 +67,12 @@ class _CreditViewState extends State<CreditView> {
     final amount = formKey.currentState?.fields['amount']?.value;
 
     return Scaffold(
-      appBar: AppBackHeader(title: "Coffix Credit", showBackButton: false),
+      appBar: AppBackHeader(
+        title: "Coffix Credit",
+        onBack: () {
+          context.goNamed(HomePage.route);
+        },
+      ),
       backgroundColor: AppColors.background,
 
       body: FormBuilder(
@@ -154,15 +161,22 @@ class _CreditViewState extends State<CreditView> {
                         ),
                       ),
                     const SizedBox(height: AppSizes.xl),
-                    Column(
-                      children: [
-                        TierCard(amount: 50, percent: '10%'),
-                        const SizedBox(height: AppSizes.sm),
-                        TierCard(amount: 250, percent: '15%'),
-                        const SizedBox(height: AppSizes.sm),
-                        TierCard(amount: 500, percent: '20%'),
-                        const SizedBox(height: AppSizes.xl),
-                      ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.lg,
+                        vertical: AppSizes.md,
+                      ),
+                      decoration: BoxDecoration(border: Border.all()),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: AppSizes.lg),
+                          TierCard(amount: 50, percent: '10%'),
+                          const SizedBox(height: AppSizes.sm),
+                          TierCard(amount: 250, percent: '15%'),
+                          const SizedBox(height: AppSizes.sm),
+                          TierCard(amount: 500, percent: '20%'),
+                        ],
+                      ),
                     ),
                     if (showTopUpField)
                       Padding(
@@ -171,18 +185,19 @@ class _CreditViewState extends State<CreditView> {
                           children: [
                             Text("Please enter the amount you wish to TopUp"),
                             SizedBox(height: AppSizes.md),
+                            AppMoneyField(),
 
-                            AppField<String>(
-                              label: "\$",
-                              isHorizontalAlign: true,
-                              hintText: "\$50+",
-                              name: "amount",
-                              keyboardType: TextInputType.number,
-                              validators: [
-                                FormBuilderValidators.required(),
-                                FormBuilderValidators.min(0),
-                              ],
-                            ),
+                            // AppField<String>(
+                            //   label: "\$",
+                            //   isHorizontalAlign: true,
+                            //   hintText: "\$50+",
+                            //   name: "amount",
+                            //   keyboardType: TextInputType.number,
+                            //   validators: [
+                            //     FormBuilderValidators.required(),
+                            //     FormBuilderValidators.min(0),
+                            //   ],
+                            // ),
                             SizedBox(height: AppSizes.sm),
                             if (amount != null && amount.isNotEmpty)
                               Text(

@@ -42,6 +42,52 @@ class Store {
     return hours.contains(dt);
   }
 
+  /// Returns today's closing time as a formatted string, e.g. "2:30pm".
+  /// Returns null if no closing time is available.
+  String? todayCloseFormatted() {
+    final key = _weekdayKey(DateTime.now().weekday);
+    final close = openingHours?[key]?.close;
+    return close != null ? _formatHhmm(close) : null;
+  }
+
+  /// Returns the next open day + time, e.g. ("Mon", "8:00am").
+  /// Looks up to 7 days ahead.
+  ({String day, String time})? nextOpeningFormatted() {
+    const dayAbbr = {
+      1: 'Mon',
+      2: 'Tue',
+      3: 'Wed',
+      4: 'Thu',
+      5: 'Fri',
+      6: 'Sat',
+      7: 'Sun',
+    };
+    final now = DateTime.now();
+    for (int offset = 1; offset <= 7; offset++) {
+      final candidate = now.add(Duration(days: offset));
+      final key = _weekdayKey(candidate.weekday);
+      final hours = openingHours?[key];
+      if (hours != null && hours.isOpen == true && hours.open != null) {
+        return (
+          day: dayAbbr[candidate.weekday]!,
+          time: _formatHhmm(hours.open!),
+        );
+      }
+    }
+    return null;
+  }
+
+  static String _formatHhmm(String hhmm) {
+    final parts = hhmm.split(':');
+    var hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    final period = hour < 12 ? 'am' : 'pm';
+    if (hour == 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+    final minStr = minute == 0 ? '' : ':${minute.toString().padLeft(2, '0')}';
+    return '$hour$minStr$period';
+  }
+
   static String _weekdayKey(int weekday) {
     const map = {
       1: 'monday',

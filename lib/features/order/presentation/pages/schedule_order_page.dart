@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
@@ -59,7 +60,6 @@ class _ScheduleOrderViewState extends State<ScheduleOrderView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final AppUserWithStore? user = context.watch<AuthCubit>().state.maybeWhen(
       authenticated: (user) => user,
       orElse: () => null,
@@ -74,9 +74,21 @@ class _ScheduleOrderViewState extends State<ScheduleOrderView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'At what time do you want to collect your order from ${user?.store?.name}?',
-                    style: theme.textTheme.bodyMedium,
+                  RichText(
+                    text: TextSpan(
+                      style: AppTypography.bodyXS,
+                      text:
+                          "At what time do you want to collect your order from ",
+                      children: [
+                        TextSpan(
+                          text: "${user?.store?.name}?",
+                          style: AppTypography.bodyXS.copyWith(
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: AppSizes.lg),
                   for (final option in PickupOption.values) ...[
@@ -105,10 +117,7 @@ class _ScheduleOrderViewState extends State<ScheduleOrderView> {
                                 size: AppSizes.iconSizeMedium,
                               ),
                               const SizedBox(width: AppSizes.md),
-                              Text(
-                                _label(option),
-                                style: theme.textTheme.bodyLarge,
-                              ),
+                              Text(_label(option), style: AppTypography.labelS),
                             ],
                           ),
                         ),

@@ -1,5 +1,8 @@
 import 'package:coffix_app/core/constants/colors.dart';
+import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_location.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +26,7 @@ class AppBackHeader extends StatefulWidget implements PreferredSizeWidget {
   State<AppBackHeader> createState() => _AppBackHeaderState();
 
   @override
-  Size get preferredSize => Size.fromHeight(showLocation ? 70 : 56);
+  Size get preferredSize => Size.fromHeight(showLocation ? 90 : 56);
 }
 
 class _AppBackHeaderState extends State<AppBackHeader> {
@@ -66,7 +69,11 @@ class _AppBackHeaderState extends State<AppBackHeader> {
                                     context.pop();
                                   }
                                 },
-                                child: Icon(Icons.arrow_back_ios),
+                                child: Image.asset(
+                                  AppImages.backButton,
+                                  width: AppSizes.iconSizeMedium,
+                                  height: AppSizes.iconSizeMedium,
+                                ),
                               ),
                             ),
                         ],
@@ -78,7 +85,9 @@ class _AppBackHeaderState extends State<AppBackHeader> {
                         Center(
                           child: Text(
                             widget.title,
-                            style: theme.textTheme.titleLarge,
+                            style: AppTypography.headlineXxl.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

@@ -1,8 +1,10 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_page.dart';
@@ -11,6 +13,7 @@ import 'package:coffix_app/features/payment/presentation/pages/payment_successfu
 import 'package:coffix_app/features/payment/presentation/widgets/payment_option.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
+import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/atoms/app_snackbar.dart';
@@ -105,10 +108,9 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                     'Order total',
                                     style: theme.textTheme.bodyLarge,
                                   ),
-                                  Text(
-                                    '\$${total.toStringAsFixed(2)}',
-                                    style: AppTypography.labelL.copyWith(
-                                      color: AppColors.primary,
+                                  Text.rich(
+                                    total.toCurrencySuperscript(
+                                      style: AppTypography.labelL,
                                     ),
                                   ),
                                 ],
@@ -131,11 +133,27 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                               icon: Icons.account_balance_wallet_outlined,
                               title: 'Coffix Credit',
                               subtitle: 'Save 10–20% on your order',
-                              trailing: Text(
-                                '\$${creditAvailable.toStringAsFixed(2)}',
-                                style: AppTypography.labelM.copyWith(
-                                  color: AppColors.primary,
-                                ),
+                              trailing: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text.rich(
+                                    creditAvailable.toCurrencySuperscript(
+                                      style: AppTypography.labelM,
+                                    ),
+                                  ),
+                                  AppClickable(
+                                    showSplash: false,
+                                    onPressed: () {
+                                      context.pushNamed(CreditPage.route);
+                                    },
+                                    child: Text(
+                                      "TopUp credit",
+                                      style: AppTypography.labelS.copyWith(
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             if (insufficientCredit)
