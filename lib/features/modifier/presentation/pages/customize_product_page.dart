@@ -83,7 +83,7 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        ...modifiersGroups.map((bundle) {
+                        ...modifiersGroups.where((b) => b.modifiers.isNotEmpty).map((bundle) {
                           final groupTitle =
                               bundle.group.name ??
                               bundle.group.docId ??

@@ -45,8 +45,9 @@ class PaymentSuccessfulView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeText = DateFormat.jm().format(pickupAt);
-    final Order? orderCreated = context.watch<PaymentCubit>().state.maybeWhen(
+    final Order? orderCreated = context.read<PaymentCubit>().state.maybeWhen(
       loaded: (_, order) => order,
+      success: (order) => order,
       orElse: () => null,
     );
     final Store? store = orderCreated?.storeId != null
@@ -69,49 +70,53 @@ class PaymentSuccessfulView extends StatelessWidget {
                 color: AppColors.beige,
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'THANK YOU!',
-                    style: AppTypography.headlineXl,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-                  Text(
-                    orderCreated != null
-                        ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from ${store?.name ?? '—'} at'
-                        : 'Your order will be ready for pick up from ${store?.name ?? '—'} at',
-                    style: AppTypography.bodyM,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSizes.sm),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.xl,
-                      vertical: AppSizes.md,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(AppSizes.md),
-                    ),
-                    child: Text(
-                      timeText,
-                      style: AppTypography.titleM.copyWith(
-                        fontWeight: FontWeight.bold,
+              child: BlocBuilder<PaymentCubit, PaymentState>(
+                builder: (context, state) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'THANK YOU!',
+                        style: AppTypography.headlineXl,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSizes.xl),
-                  AppButton.primary(
-                    onPressed: () {
-                      context.read<CartCubit>().resetCart();
-                      context.goNamed(HomePage.route);
-                    },
-                    label: 'OK',
-                  ),
-                  const SizedBox(height: AppSizes.md),
-                ],
+                      const SizedBox(height: AppSizes.lg),
+                      Text(
+                        orderCreated != null
+                            ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from ${store?.name ?? '—'} at'
+                            : 'Your order will be ready for pick up from ${store?.name ?? '—'} at',
+                        style: AppTypography.bodyM,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSizes.sm),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSizes.xl,
+                          vertical: AppSizes.md,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(AppSizes.md),
+                        ),
+                        child: Text(
+                          timeText,
+                          style: AppTypography.titleM.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.xl),
+                      AppButton.primary(
+                        onPressed: () {
+                          context.read<CartCubit>().resetCart();
+                          context.goNamed(HomePage.route);
+                        },
+                        label: 'OK',
+                      ),
+                      const SizedBox(height: AppSizes.md),
+                    ],
+                  );
+                },
               ),
             ),
           ),

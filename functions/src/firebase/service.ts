@@ -73,11 +73,13 @@ class FirebaseService {
     orderId,
     amount,
     duration,
+    orderNumber,
   }: {
     customerId: string;
     orderId: string;
     amount: number;
     duration: number;
+    orderNumber: string;
   }): Promise<string> {
     const transactionRef = firestore.collection("transactions").doc();
     const orderRef = firestore.collection("orders").doc(orderId);
@@ -95,6 +97,7 @@ class FirebaseService {
       paymentTime: paidAt,
       paymentMethod: "coffixCredit",
       sessionId: "coffixCredit",
+      orderNumber,
     });
     batch.set(
       orderRef,

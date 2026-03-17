@@ -2,6 +2,7 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
@@ -49,6 +50,11 @@ class _CartViewState extends State<CartView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final store = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) => user.store,
+      orElse: () => null,
+    );
+    final storeIsOpen = store?.isOpenAt() ?? false;
 
     return Scaffold(
       appBar: AppBackHeader(
@@ -172,11 +178,13 @@ class _CartViewState extends State<CartView> {
                         children: [
                           Expanded(
                             child: AppButton.primary(
-                              disabled: state.cart?.items.isEmpty ?? true,
+                              disabled:
+                                  (state.cart?.items.isEmpty ?? true) ||
+                                  !storeIsOpen,
                               onPressed: () {
                                 context.pushNamed(ScheduleOrderPage.route);
                               },
-                              label: 'Pay',
+                              label: storeIsOpen ? 'Pay' : 'Store is closed',
                             ),
                           ),
                           const SizedBox(width: AppSizes.md),

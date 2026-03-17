@@ -33,6 +33,26 @@ class Store {
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);
   Map<String, dynamic> toJson() => _$StoreToJson(this);
 
+  /// Returns how many minutes remain until closing, or null if closed/no hours.
+  int? minutesUntilClose() {
+    if (!isOpenAt()) return null;
+    final dt = TimeUtils.now();
+    final key = _weekdayKey(dt.weekday);
+    final hours = openingHours?[key];
+    if (hours == null || hours.close == null) return null;
+    final nowMinutes = dt.hour * 60 + dt.minute;
+    final closeMinutes = _parseMinutes(hours.close!);
+    int diff = closeMinutes - nowMinutes;
+    // Overnight shift: close is next day
+    if (diff < 0) diff += 1440;
+    return diff;
+  }
+
+  int _parseMinutes(String hhmm) {
+    final parts = hhmm.split(':');
+    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+  }
+
   // Simple open check
   bool isOpenAt() {
     final dt = TimeUtils.now();

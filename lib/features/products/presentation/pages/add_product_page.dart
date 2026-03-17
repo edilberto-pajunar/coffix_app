@@ -89,6 +89,7 @@ class _AddProductViewState extends State<AddProductView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final productModifierState = context.watch<ProductModifierCubit>().state;
+    final hasModifiers = widget.product.modifierGroupIds?.isNotEmpty ?? false;
 
     return BlocListener<ModifierCubit, ModifierState>(
       listenWhen: (prev, curr) =>
@@ -157,6 +158,7 @@ class _AddProductViewState extends State<AddProductView> {
                       children: [
                         AppClickable(
                           showSplash: false,
+                          disabled: !hasModifiers,
                           onPressed: () {
                             context.pushNamed(
                               CustomizeProductPage.route,
@@ -173,7 +175,7 @@ class _AddProductViewState extends State<AddProductView> {
                             children: [
                               Icon(
                                 Icons.settings,
-                                color: AppColors.primary,
+                                color: hasModifiers ? AppColors.primary : AppColors.lightGrey,
                                 size: AppSizes.iconSizeLarge,
                               ),
                               const SizedBox(height: AppSizes.xs),
@@ -181,6 +183,7 @@ class _AddProductViewState extends State<AddProductView> {
                                 "Customise",
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w500,
+                                  color: hasModifiers ? null : AppColors.lightGrey,
                                 ),
                               ),
                             ],

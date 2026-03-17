@@ -47,6 +47,12 @@ class ScheduleOrderView extends StatefulWidget {
 class _ScheduleOrderViewState extends State<ScheduleOrderView> {
   PickupOption _selected = PickupOption.now;
 
+  List<PickupOption> _availableOptions(int? minsLeft) {
+    if (minsLeft == null || minsLeft <= 30) return [PickupOption.now];
+    if (minsLeft <= 45) return [PickupOption.now, PickupOption.fifteenMinutes];
+    return PickupOption.values;
+  }
+
   String _label(PickupOption option) {
     switch (option) {
       case PickupOption.now:
@@ -64,6 +70,11 @@ class _ScheduleOrderViewState extends State<ScheduleOrderView> {
       authenticated: (user) => user,
       orElse: () => null,
     );
+    final minsLeft = user?.store?.minutesUntilClose();
+    final availableOptions = _availableOptions(minsLeft);
+    if (!availableOptions.contains(_selected)) {
+      _selected = PickupOption.now;
+    }
     return Scaffold(
       appBar: AppBackHeader(title: "Pickup time"),
       body: Column(
@@ -95,7 +106,7 @@ class _ScheduleOrderViewState extends State<ScheduleOrderView> {
                     ),
                   ),
                   const SizedBox(height: AppSizes.lg),
-                  for (final option in PickupOption.values) ...[
+                  for (final option in availableOptions) ...[
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSizes.sm),
                       child: AppClickable(

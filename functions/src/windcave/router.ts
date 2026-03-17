@@ -65,6 +65,7 @@ router.post(
           orderId,
           amount: totalAmount,
           duration,
+          orderNumber: orderData.orderNumber,
         });
 
         const paidAt = new Date();
