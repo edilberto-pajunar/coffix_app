@@ -69,19 +69,6 @@ class _CartViewState extends State<CartView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: AppClickable(
-                                showSplash: false,
-                                onPressed: () =>
-                                    context.goNamed(MenuPage.route),
-                                child: Icon(
-                                  Icons.add_circle,
-                                  size: AppSizes.iconSizeXXXLarge,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -126,6 +113,7 @@ class _CartViewState extends State<CartView> {
                                 return OrderItemRow(
                                   cartItem: cartItem,
                                   price: cartItem.lineTotal,
+                                  basePrice: cartItem.basePrice,
                                   onRemove: () {
                                     context.read<CartCubit>().removeProduct(
                                       cartItemId: cartItem.id,

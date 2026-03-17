@@ -16,6 +16,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
   paymentMethod: json['paymentMethod'] as String?,
   paymentId: json['paymentId'] as String?,
   paymentTime: const DateTimeConverter().fromJson(json['paymentTime']),
+  orderNumber: json['orderNumber'] as String?,
 );
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
@@ -29,6 +30,7 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'paymentMethod': instance.paymentMethod,
       'paymentId': instance.paymentId,
       'paymentTime': const DateTimeConverter().toJson(instance.paymentTime),
+      'orderNumber': instance.orderNumber,
     };
 
 const _$TransactionStatusEnumMap = {

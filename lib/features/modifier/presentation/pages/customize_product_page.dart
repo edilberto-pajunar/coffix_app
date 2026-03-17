@@ -55,9 +55,13 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
   @override
   void initState() {
     super.initState();
-    context.read<ModifierCubit>().getModifiers(
-      product: widget.product,
-      storeId: widget.storeId,
+    final modifierState = context.read<ModifierCubit>().state;
+    modifierState.maybeWhen(
+      loaded: (_) => null,
+      orElse: () => context.read<ModifierCubit>().getModifiers(
+        product: widget.product,
+        storeId: widget.storeId,
+      ),
     );
   }
 
@@ -106,7 +110,7 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                                     shrinkWrap: true,
                                     itemCount: bundle.modifiers.length,
                                     itemBuilder: (context, index) {
-                                      final mod = bundle.modifiers[0];
+                                      final mod = bundle.modifiers[index];
                                       final isSelected = productModifierState
                                           .modifiers
                                           .any((m) => m.docId == mod.docId);

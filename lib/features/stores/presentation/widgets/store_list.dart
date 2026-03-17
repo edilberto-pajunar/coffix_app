@@ -4,6 +4,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/location_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
@@ -84,8 +85,8 @@ class StoreList extends StatelessWidget {
             itemBuilder: (context, index) {
               final store = stores[index];
               final dateRange = DateTimeRange(
-                start: DateTime.now(),
-                end: DateTime.now().add(const Duration(hours: 1)),
+                start: TimeUtils.now(),
+                end: TimeUtils.now().add(const Duration(hours: 1)),
               );
               final isOpen = store.isOpenAt();
               // final isOpen = true;

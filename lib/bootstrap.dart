@@ -8,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -34,6 +36,7 @@ class AppBlocObserver extends BlocObserver {
 
 Future<void> bootstrap(Widget Function() builder) async {
   WidgetsFlutterBinding.ensureInitialized();
+
   if (FlavorConfig.isDev()) {
     debugPrint('Dev flavor');
     await dotenv.load(fileName: '.env.dev');
@@ -47,6 +50,10 @@ Future<void> bootstrap(Widget Function() builder) async {
       options: prodConfig.DefaultFirebaseOptions.currentPlatform,
     );
   }
+
+  tz.initializeTimeZones();
+  final location = tz.getLocation('Pacific/Auckland');
+  tz.setLocalLocation(location);
 
   Bloc.observer = const AppBlocObserver();
 

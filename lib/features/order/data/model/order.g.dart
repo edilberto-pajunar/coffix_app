@@ -22,7 +22,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   items: (json['items'] as List<dynamic>?)
       ?.map((e) => Item.fromJson(e as Map<String, dynamic>))
       .toList(),
-  paymentMethod: json['paymentMethod'] as String?,
+  paymentMethod: const PaymentMethodConverter().fromJson(json['paymentMethod']),
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
@@ -36,7 +36,9 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'items': instance.items?.map((e) => e.toJson()).toList(),
   'status': _$OrderStatusEnumMap[instance.status],
   'paymentStatus': _$PaymentStatusEnumMap[instance.paymentStatus],
-  'paymentMethod': instance.paymentMethod,
+  'paymentMethod': const PaymentMethodConverter().toJson(
+    instance.paymentMethod,
+  ),
 };
 
 const _$OrderStatusEnumMap = {

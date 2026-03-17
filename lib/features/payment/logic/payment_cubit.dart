@@ -25,7 +25,12 @@ class PaymentCubit extends Cubit<PaymentState> {
         final order = Order.fromJson(response["order"]);
         emit(PaymentState.success(order: order));
       } else {
-        emit(PaymentState.loaded(paymentUrl: response["paymentSessionUrl"]));
+        emit(
+          PaymentState.loaded(
+            paymentUrl: response["paymentSessionUrl"],
+            order: Order.fromJson(response["order"]),
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentState.error(message: e.toString()));

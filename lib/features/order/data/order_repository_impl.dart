@@ -15,6 +15,7 @@ class OrderRepositoryImpl implements OrderRepository {
     if (userId == null) {
       throw Exception('User not found');
     }
+    print(userId);
     return _firestore
         .collection('orders')
         .where('customerId', isEqualTo: userId)

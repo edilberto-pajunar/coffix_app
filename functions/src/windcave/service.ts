@@ -107,112 +107,89 @@ export class WindcaveService {
       selectedModifiers: Record<string, string>;
     }>;
   }) {
-    let total = 0;
-
-    for (const item of items) {
-      if (item.quantity <= 0) {
-        throw new Error("Quantity must be greater than 0");
-      }
-
-      // 1. Fetch product
-      const productSnap = await firestore
-        .collection("products")
-        .doc(item.productId)
-        .get();
-      if (!productSnap.exists) {
-        throw new Error("Product not found");
-      }
-
-      const product = productSnap.data() as Product;
-      const basePrice = product.price;
-      logger.info("Product:", product);
-
-      // OPTIONAL: validate product availability for store here if you store that on product
-      // e.g. productData.availableToStores includes storeId
-
-      // 2) Validate modifier groups are allowed by the product
-      // This depends on how you store it. If productData.modifiers is list of allowed group IDs/codes:
-      //   const allowedGroups = new Set<string>(productData.modifiers ?? []);
-      //   for (const groupId of Object.keys(item.selectedModifiers ?? {})) {
-      //     if (allowedGroups.size > 0 && !allowedGroups.has(groupId)) {
-      //       throw new Error(
-      //         `Modifier group not allowed for product ${item.productId}: ${groupId}`,
-      //       );
-      //     }
-      //   }
-
-      // 3. Fetch modifiers selected by the customer (batched)
-      const modifierIds = Object.values(item.selectedModifiers ?? {}).filter(
-        Boolean,
-      );
-
-      console.log(modifierIds);
-
-      let extra = 0;
-
-      if (modifierIds.length > 0) {
-        // Firestore "in" supports up to 10 values
-        // If you can exceed 10, chunk it
-        const chunks: string[][] = [];
-        for (let i = 0; i < modifierIds.length; i += 10) {
-          chunks.push(modifierIds.slice(i, i + 10));
+    const lineTotals = await Promise.all(
+      items.map(async (item) => {
+        if (item.quantity <= 0) {
+          throw new Error("Quantity must be greater than 0");
         }
 
-        console.log("Chunks", chunks);
-
-        const modifierDocs: FirebaseFirestore.QueryDocumentSnapshot[] = [];
-
-        for (const chunk of chunks) {
-          const qSnap = await firestore
-            .collection("modifiers")
-            .where("docId", "in", chunk)
-            .get();
-
-          modifierDocs.push(...qSnap.docs);
+        // 1. Fetch product
+        const productSnap = await firestore
+          .collection("products")
+          .doc(item.productId)
+          .get();
+        if (!productSnap.exists) {
+          throw new Error("Product not found");
         }
 
-        // 4. Validate all requested modifier IDs exist
-        const found = new Map(
-          modifierDocs.map((doc) => [doc.id, doc.data() as any]),
+        const product = productSnap.data() as Product;
+        const basePrice = product.price;
+        logger.info("Product:", product);
+
+        // 2. Fetch modifiers selected by the customer (batched, parallel chunks)
+        const modifierIds = Object.values(item.selectedModifiers ?? {}).filter(
+          Boolean,
         );
-        for (const modifierId of modifierIds) {
-          if (!found.has(modifierId)) {
-            throw new Error(`Modifier not found: ${modifierId}`);
+
+        let extra = 0;
+
+        if (modifierIds.length > 0) {
+          const chunks: string[][] = [];
+          for (let i = 0; i < modifierIds.length; i += 10) {
+            chunks.push(modifierIds.slice(i, i + 10));
           }
+
+          const chunkSnaps = await Promise.all(
+            chunks.map((chunk) =>
+              firestore
+                .collection("modifiers")
+                .where("docId", "in", chunk)
+                .get(),
+            ),
+          );
+
+          const modifierDocs = chunkSnaps.flatMap((snap) => snap.docs);
+
+          // 3. Validate all requested modifier IDs exist
+          const found = new Map(
+            modifierDocs.map((doc) => [doc.id, doc.data() as any]),
+          );
+          for (const modifierId of modifierIds) {
+            if (!found.has(modifierId)) {
+              throw new Error(`Modifier not found: ${modifierId}`);
+            }
+          }
+
+          // 4. Validate each modifier matched the group it claims to be in
+          for (const [groupId, modifierId] of Object.entries(
+            item.selectedModifiers ?? {},
+          )) {
+            const m = found.get(modifierId);
+            const mGroupdId = String(m.modifierGroupIds ?? "");
+            if (mGroupdId && groupId && mGroupdId !== groupId) {
+              throw new Error(
+                `Modifier ${modifierId} does not match group ${groupId}`,
+              );
+            }
+
+            const extraPrice = Number(m.priceDelta ?? 0);
+            if (!Number.isFinite(extraPrice)) {
+              throw new Error(`Invalid modifier price: ${modifierId}`);
+            }
+
+            extra += extraPrice;
+          }
+
+          logger.info("Extra:", extra);
         }
 
-        console.log("Found", found);
+        // 5. Line total
+        const unitPrice = basePrice + extra;
+        return unitPrice * item.quantity;
+      }),
+    );
 
-        // 5. Validate each modifier matched the group it claims to be in
-        for (const [groupId, modifierId] of Object.entries(
-          item.selectedModifiers ?? {},
-        )) {
-          const m = found.get(modifierId);
-          const mGroupdId = String(m.modifierGroupIds ?? "");
-          if (mGroupdId && groupId && mGroupdId !== groupId) {
-            throw new Error(
-              `Modifier ${modifierId} does not match group ${groupId}`,
-            );
-          }
-
-          const extraPrice = Number(m.priceDelta ?? 0);
-          if (!Number.isFinite(extraPrice)) {
-            throw new Error(`Invalid modifier price: ${modifierId}`);
-          }
-
-          extra += extraPrice;
-        }
-
-        logger.info("Extra:", extra);
-      }
-
-      // 6. Line total
-      const unitPrice = basePrice + extra;
-      const lineTotal = unitPrice * item.quantity;
-
-      total += lineTotal;
-    }
-    return total;
+    return lineTotals.reduce((sum, line) => sum + line, 0);
   }
 
   async getSession(sessionId: string) {

@@ -13,17 +13,18 @@ class OrderItemRow extends StatelessWidget {
     required this.cartItem,
     required this.price,
     required this.onRemove,
+    required this.basePrice,
     required this.onEdit,
   });
 
   final CartItem cartItem;
   final double price;
+  final double basePrice;
   final VoidCallback onRemove;
   final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -92,7 +93,7 @@ class OrderItemRow extends StatelessWidget {
             Column(
               children: [
                 Text.rich(
-                  price.toCurrencySuperscript(style: AppTypography.titleS),
+                  basePrice.toCurrencySuperscript(style: AppTypography.titleS),
                 ),
                 Row(
                   children: [

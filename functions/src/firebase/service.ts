@@ -41,7 +41,9 @@ class FirebaseService {
   // cancelled	Cancelled
   // expired	Payment not completed in time
 
-  async createNewOrder(body: CreateOrderBodySchema): Promise<string> {
+  async createNewOrder(
+    body: CreateOrderBodySchema,
+  ): Promise<{ orderId: string; orderData: Record<string, any> }> {
     const validation = createOrderBodySchema.safeParse(body);
     if (!validation.success) {
       throw new Error("Invalid body");
@@ -49,7 +51,7 @@ class FirebaseService {
     const orderRef = firestore.collection("orders").doc();
     // [StoreCode][YYMMDD][RunningNumber]
     const orderNumber = await generateOrderNumber(validation.data.storeId);
-    await orderRef.set({
+    const orderData: Record<string, any> = {
       docId: orderRef.id,
       orderNumber,
       amount: validation.data.amount,
@@ -60,9 +62,48 @@ class FirebaseService {
       status: "pending_payment",
       duration: validation.data.duration,
       paymentMethod: validation.data.paymentMethod,
-    });
+    };
+    await orderRef.set(orderData);
 
-    return orderRef.id;
+    return { orderId: orderRef.id, orderData };
+  }
+
+  async createTransactionAndMarkOrderPaid({
+    customerId,
+    orderId,
+    amount,
+    duration,
+  }: {
+    customerId: string;
+    orderId: string;
+    amount: number;
+    duration: number;
+  }): Promise<string> {
+    const transactionRef = firestore.collection("transactions").doc();
+    const orderRef = firestore.collection("orders").doc(orderId);
+    const paidAt = new Date();
+    const scheduledAt = new Date(Date.now() + duration * 60_000);
+
+    const batch = firestore.batch();
+    batch.set(transactionRef, {
+      docId: transactionRef.id,
+      customerId,
+      orderId,
+      amount,
+      status: "approved",
+      createdAt: paidAt,
+      paymentTime: paidAt,
+      paymentMethod: "coffixCredit",
+      sessionId: "coffixCredit",
+    });
+    batch.set(
+      orderRef,
+      { status: "paid", paidAt, scheduledAt },
+      { merge: true },
+    );
+    await batch.commit();
+
+    return transactionRef.id;
   }
 
   // Transaction Status	Meaning

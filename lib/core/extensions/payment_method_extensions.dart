@@ -1,0 +1,14 @@
+import 'package:coffix_app/features/payment/data/model/payment.dart';
+
+extension PaymentMethodExtensions on PaymentMethod {
+  String get label {
+    switch (this) {
+      case PaymentMethod.card:
+        return 'Card';
+      case PaymentMethod.coffixCredit:
+        return 'Coffix Credit';
+      case PaymentMethod.wallet:
+        return 'Wallet';
+    }
+  }
+}

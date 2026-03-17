@@ -1,13 +1,14 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
-import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
-import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/order/data/model/order.dart';
+import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
+import 'package:coffix_app/features/stores/data/model/store.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
-import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,23 +27,35 @@ class PaymentSuccessfulPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PaymentSuccessfulView(pickupAt: pickupAt, orderNumber: orderNumber);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: getIt<PaymentCubit>()),
+        BlocProvider.value(value: getIt<StoreCubit>()),
+      ],
+      child: PaymentSuccessfulView(pickupAt: pickupAt),
+    );
   }
 }
 
 class PaymentSuccessfulView extends StatelessWidget {
-  const PaymentSuccessfulView({
-    super.key,
-    required this.pickupAt,
-    this.orderNumber,
-  });
+  const PaymentSuccessfulView({super.key, required this.pickupAt});
 
   final DateTime pickupAt;
-  final String? orderNumber;
 
   @override
   Widget build(BuildContext context) {
     final timeText = DateFormat.jm().format(pickupAt);
+    final Order? orderCreated = context.watch<PaymentCubit>().state.maybeWhen(
+      loaded: (_, order) => order,
+      orElse: () => null,
+    );
+    final Store? store = orderCreated?.storeId != null
+        ? context.watch<StoreCubit>().state.maybeWhen(
+            loaded: (stores) =>
+                stores.firstWhere((s) => s.docId == orderCreated?.storeId),
+            orElse: () => null,
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: AppColors.black,
@@ -66,9 +79,9 @@ class PaymentSuccessfulView extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSizes.lg),
                   Text(
-                    orderNumber != null
-                        ? 'Order #$orderNumber will be ready for pick up at'
-                        : 'Your order will be ready for pick up at',
+                    orderCreated != null
+                        ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from ${store?.name ?? '—'} at'
+                        : 'Your order will be ready for pick up from ${store?.name ?? '—'} at',
                     style: AppTypography.bodyM,
                     textAlign: TextAlign.center,
                   ),

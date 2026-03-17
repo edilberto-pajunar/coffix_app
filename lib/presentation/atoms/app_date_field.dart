@@ -1,6 +1,7 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -68,9 +69,9 @@ class _AppDateFieldState extends State<AppDateField> {
           onTap: () async {
             final result = await showDatePicker(
               context: context,
-              initialDate: _selectedDate ?? DateTime.now(),
-              firstDate: widget.firstDate ?? DateTime.now(),
-              lastDate: widget.lastDate ?? DateTime.now(),
+              initialDate: _selectedDate ?? TimeUtils.now(),
+              firstDate: widget.firstDate ?? TimeUtils.now(),
+              lastDate: widget.lastDate ?? TimeUtils.now(),
               initialDatePickerMode: DatePickerMode.day,
               initialEntryMode: DatePickerEntryMode.calendarOnly,
             );

@@ -1,3 +1,4 @@
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'store.g.dart';
@@ -34,7 +35,7 @@ class Store {
 
   // Simple open check
   bool isOpenAt() {
-    final dt = DateTime.now();
+    final dt = TimeUtils.now();
     final key = _weekdayKey(dt.weekday);
     final hours = openingHours?[key];
     print(hours?.toJson());
@@ -45,7 +46,7 @@ class Store {
   /// Returns today's closing time as a formatted string, e.g. "2:30pm".
   /// Returns null if no closing time is available.
   String? todayCloseFormatted() {
-    final key = _weekdayKey(DateTime.now().weekday);
+    final key = _weekdayKey(TimeUtils.now().weekday);
     final close = openingHours?[key]?.close;
     return close != null ? _formatHhmm(close) : null;
   }
@@ -62,7 +63,7 @@ class Store {
       6: 'Sat',
       7: 'Sun',
     };
-    final now = DateTime.now();
+    final now = TimeUtils.now();
     for (int offset = 1; offset <= 7; offset++) {
       final candidate = now.add(Duration(days: offset));
       final key = _weekdayKey(candidate.weekday);

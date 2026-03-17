@@ -202,9 +202,10 @@ export class WebhookService {
       return;
     }
 
+    // if the user buys a product this function will be called
     const orderId = merchantReference;
     const orderDoc = await this.firebaseService.findOrderByOrderId(orderId);
-    // if the user buys a product this function will be called
+
     if (authorised) {
       if (!orderDoc) {
         throw new WindcaveError(400, {
@@ -226,6 +227,7 @@ export class WebhookService {
         sessionId,
         paymentId: transaction.id,
         responseText: transaction.responseText,
+        orderNumber: orderDoc?.orderNumber,
       });
     } else {
       await this.firebaseService.updateTransaction(transactionDoc.docId, {
@@ -234,6 +236,7 @@ export class WebhookService {
         paymentMethod,
         sessionId,
         responseText: transaction.responseText,
+        orderNumber: orderDoc?.orderNumber,
       });
 
       await this.firebaseService.updateOrder(orderId, {

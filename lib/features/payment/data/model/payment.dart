@@ -3,11 +3,37 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payment.g.dart';
 
+class PaymentMethodConverter implements JsonConverter<PaymentMethod?, dynamic> {
+  const PaymentMethodConverter();
+
+  @override
+  PaymentMethod? fromJson(dynamic json) {
+    if (json == null || json == '') return PaymentMethod.card;
+    final s = json is String ? json : json.toString();
+    switch (s) {
+      case 'coffixCredit':
+        return PaymentMethod.coffixCredit;
+      case 'card':
+        return PaymentMethod.card;
+      case 'wallet':
+        return PaymentMethod.wallet;
+      default:
+        return PaymentMethod.card;
+    }
+  }
+
+  @override
+  String? toJson(PaymentMethod? object) =>
+      object != null ? _$PaymentMethodEnumMap[object] : null;
+}
+
 enum PaymentMethod {
   @JsonValue("coffixCredit")
   coffixCredit,
   @JsonValue("card")
   card,
+  @JsonValue("wallet")
+  wallet,
 }
 
 enum PaymentStatus {
@@ -20,16 +46,17 @@ enum PaymentStatus {
   @JsonValue('failed')
   failed,
   @JsonValue('refunded')
-  refunded
+  refunded,
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class PaymentRequest {
   final String storeId;
   final List<PaymentItem> items;
   @DateTimeConverter()
   final double duration;
-  final PaymentMethod paymentMethod;
+  @JsonKey(defaultValue: PaymentMethod.card)
+  final PaymentMethod? paymentMethod;
 
   PaymentRequest({
     required this.storeId,

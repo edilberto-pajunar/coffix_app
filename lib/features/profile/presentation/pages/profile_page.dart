@@ -89,13 +89,17 @@ class ProfileView extends StatelessWidget {
                           style: AppTypography.headlineXl,
                         ),
                         // TODO: IMPLEMENT THE COUPON SYSTEM
-                        if (false)
+                        // Single condition for coupon block
+                        if (false) ...[
                           TextSpan(text: "+ ", style: AppTypography.headlineXl),
-                        if (false)
                           0.00.toCurrencySuperscript(
                             style: AppTypography.headlineXl,
                           ),
-                        TextSpan(text: " Coupon", style: AppTypography.bodyXS),
+                          TextSpan(
+                            text: " Coupon",
+                            style: AppTypography.bodyXS,
+                          ),
+                        ],
                       ],
                     ),
                   ),

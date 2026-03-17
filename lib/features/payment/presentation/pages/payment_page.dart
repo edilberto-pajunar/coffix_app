@@ -1,4 +1,5 @@
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
@@ -69,7 +70,7 @@ class _PaymentViewState extends State<PaymentView> {
                 context.goNamed(
                   PaymentSuccessfulPage.route,
                   extra: {
-                    "pickupAt": DateTime.now().add(
+                    "pickupAt": TimeUtils.now().add(
                       Duration(minutes: widget.paymentRequest.duration.toInt()),
                     ),
                   },
@@ -105,7 +106,7 @@ class _PaymentViewState extends State<PaymentView> {
             curr.mapOrNull(loaded: (_) => true) ?? false,
         listener: (context, state) {
           state.maybeWhen(
-            loaded: (paymentUrl) =>
+            loaded: (paymentUrl, _) =>
                 _webViewController.loadRequest(Uri.parse(paymentUrl)),
             orElse: () {},
           );

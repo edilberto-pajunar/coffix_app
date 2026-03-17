@@ -5,7 +5,7 @@ class PaymentState with _$PaymentState {
   const factory PaymentState.initial() = _Initial;
   const factory PaymentState.loading() = _Loading;
   // Payment URL was created since they payment method is card
-  const factory PaymentState.loaded({required String paymentUrl}) = _Loaded;
+  const factory PaymentState.loaded({required String paymentUrl, required Order order}) = _Loaded;
 
   // Payment was successful and throws Order
   const factory PaymentState.success({required Order order}) = _Success;

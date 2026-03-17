@@ -28,7 +28,13 @@ class AppBackHeader extends StatefulWidget implements PreferredSizeWidget {
   State<AppBackHeader> createState() => _AppBackHeaderState();
 
   @override
-  Size get preferredSize => Size.fromHeight(showLocation ? 90 : 56);
+  Size get preferredSize => Size.fromHeight(
+    showAddButton
+        ? 154
+        : showLocation
+        ? 90
+        : 56,
+  );
 }
 
 class _AppBackHeaderState extends State<AppBackHeader> {
@@ -95,18 +101,24 @@ class _AppBackHeaderState extends State<AppBackHeader> {
             ),
           ),
           widget.showAddButton
-              ? Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Divider(height: 1, color: AppColors.borderColor),
-                    Positioned(
-                      right: AppSizes.md,
-                      top: -AppSizes.iconSizeXXXLarge / 2,
-                      child: Align(
-                        alignment: Alignment.centerRight,
+              ? SizedBox(
+                  height: AppSizes.iconSizeXXXLarge,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: AppSizes.iconSizeXXXLarge / 2,
+                        left: 0,
+                        right: 0,
+                        child: Divider(height: 1, color: AppColors.borderColor),
+                      ),
+                      Positioned(
+                        right: AppSizes.md,
+                        top: 0,
                         child: AppClickable(
                           showSplash: false,
-                          onPressed: () => context.goNamed(MenuPage.route),
+                          onPressed: () {
+                            context.goNamed(MenuPage.route);
+                          },
                           child: Icon(
                             Icons.add_circle,
                             size: AppSizes.iconSizeXXXLarge,
@@ -114,8 +126,8 @@ class _AppBackHeaderState extends State<AppBackHeader> {
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 )
               : Divider(height: 1, color: AppColors.borderColor),
           if (widget.showLocation) AppLocation(),

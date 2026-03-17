@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/core/api/api_client.dart';
 import 'package:coffix_app/core/api/model/endpoints.dart';
 import 'package:coffix_app/core/errors/auth_exceptions.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:crypto/crypto.dart';
@@ -234,7 +235,7 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
     final third = randomGroup();
 
     // Last group based on timestamp
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = TimeUtils.now().millisecondsSinceEpoch;
     final fourth = (now % 10000).toString().padLeft(4, '0');
 
     return '$first-$second-$third-$fourth';
@@ -251,7 +252,7 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
       await ref.set({
         'docId': docId,
         'email': email,
-        'createdAt': DateTime.now(),
+        'createdAt': TimeUtils.now(),
         'qrId': generateQrId(docId),
       });
     }
@@ -308,7 +309,7 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
       throw Exception('No user found');
     }
     await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
-      {"lastLogin": DateTime.now()},
+      {"lastLogin": TimeUtils.now()},
     );
   }
 

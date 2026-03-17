@@ -2,6 +2,7 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
@@ -123,7 +124,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
           name: "birthDate",
           label: "Date of Birth",
           firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
+          lastDate: TimeUtils.now(),
           initialDate: user?.birthday,
           isHorizontalAlign: true,
         ),

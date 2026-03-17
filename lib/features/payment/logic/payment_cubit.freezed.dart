@@ -131,12 +131,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String paymentUrl)?  loaded,TResult Function( Order order)?  success,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String paymentUrl,  Order order)?  loaded,TResult Function( Order order)?  success,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.paymentUrl);case _Success() when success != null:
+return loaded(_that.paymentUrl,_that.order);case _Success() when success != null:
 return success(_that.order);case _Error() when error != null:
 return error(_that.message);case _:
   return orElse();
@@ -156,12 +156,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String paymentUrl)  loaded,required TResult Function( Order order)  success,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String paymentUrl,  Order order)  loaded,required TResult Function( Order order)  success,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.paymentUrl);case _Success():
+return loaded(_that.paymentUrl,_that.order);case _Success():
 return success(_that.order);case _Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
@@ -180,12 +180,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String paymentUrl)?  loaded,TResult? Function( Order order)?  success,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String paymentUrl,  Order order)?  loaded,TResult? Function( Order order)?  success,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.paymentUrl);case _Success() when success != null:
+return loaded(_that.paymentUrl,_that.order);case _Success() when success != null:
 return success(_that.order);case _Error() when error != null:
 return error(_that.message);case _:
   return null;
@@ -263,10 +263,11 @@ String toString() {
 
 
 class _Loaded implements PaymentState {
-  const _Loaded({required this.paymentUrl});
+  const _Loaded({required this.paymentUrl, required this.order});
   
 
  final  String paymentUrl;
+ final  Order order;
 
 /// Create a copy of PaymentState
 /// with the given fields replaced by the non-null parameter values.
@@ -278,16 +279,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.paymentUrl, paymentUrl) || other.paymentUrl == paymentUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.paymentUrl, paymentUrl) || other.paymentUrl == paymentUrl)&&(identical(other.order, order) || other.order == order));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,paymentUrl);
+int get hashCode => Object.hash(runtimeType,paymentUrl,order);
 
 @override
 String toString() {
-  return 'PaymentState.loaded(paymentUrl: $paymentUrl)';
+  return 'PaymentState.loaded(paymentUrl: $paymentUrl, order: $order)';
 }
 
 
@@ -298,7 +299,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $PaymentStateCopyWith<$Re
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- String paymentUrl
+ String paymentUrl, Order order
 });
 
 
@@ -315,10 +316,11 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of PaymentState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? paymentUrl = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? paymentUrl = null,Object? order = null,}) {
   return _then(_Loaded(
 paymentUrl: null == paymentUrl ? _self.paymentUrl : paymentUrl // ignore: cast_nullable_to_non_nullable
-as String,
+as String,order: null == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as Order,
   ));
 }
 

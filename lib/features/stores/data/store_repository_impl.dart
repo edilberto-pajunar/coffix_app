@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
@@ -84,7 +85,7 @@ class StoreRepositoryImpl implements StoreRepository {
     final storeRef = _firestore.collection('customers').doc(user.uid);
     await storeRef.set({
       'preferredStoreId': storeId,
-      'updatedAt': DateTime.now(),
+      'updatedAt': TimeUtils.now(),
     }, SetOptions(merge: true));
   }
 

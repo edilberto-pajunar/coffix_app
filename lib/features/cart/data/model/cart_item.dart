@@ -1,3 +1,4 @@
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/features/cart/domain/helper.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
@@ -52,7 +53,7 @@ class CartItem extends Equatable {
     final productId = product.docId ?? '';
     final selectedByGroup = {
       for (final m in modifiers)
-        if (m.groupId != null && m.docId != null) m.groupId!: m.docId!
+        if (m.groupId != null && m.docId != null) m.groupId!: m.docId!,
     };
     final helper = CartHelper();
     final id = helper.buildCartItemIdHashed(
@@ -60,14 +61,17 @@ class CartItem extends Equatable {
       productId: productId,
       selectedByGroup: selectedByGroup,
     );
-    final modifierMap = {for (final m in modifiers) if (m.docId != null) m.docId!: m};
+    final modifierMap = {
+      for (final m in modifiers)
+        if (m.docId != null) m.docId!: m,
+    };
     final modifierPriceSnapshot = helper.buildModifierPriceSnapshot(
       selectedByGroup: selectedByGroup,
       modifierMap: modifierMap,
     );
     final modifierLabelSnapshot = {
       for (final m in modifiers)
-        if (m.docId != null && m.label != null) m.docId!: m.label!
+        if (m.docId != null && m.label != null) m.docId!: m.label!,
     };
     final basePrice = product.price ?? 0;
     final unitTotal = helper.computeUnitTotal(
@@ -75,7 +79,7 @@ class CartItem extends Equatable {
       modifierPriceSnapshot: modifierPriceSnapshot,
     );
     final lineTotal = unitTotal * quantity;
-    final now = DateTime.now();
+    final now = TimeUtils.now();
     return CartItem(
       id: id,
       storeId: storeId,

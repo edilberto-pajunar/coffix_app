@@ -14,6 +14,9 @@ export function serializeForJson<T>(data: T): T {
   if (isFirestoreTimestamp(data)) {
     return data.toDate().toISOString() as unknown as T;
   }
+  if (data instanceof Date) {
+    return data.toISOString() as unknown as T;
+  }
   if (Array.isArray(data)) {
     return data.map(serializeForJson) as unknown as T;
   }

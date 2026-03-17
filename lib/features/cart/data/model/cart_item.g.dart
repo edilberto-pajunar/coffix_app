@@ -17,8 +17,10 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
   basePrice: (json['basePrice'] as num).toDouble(),
   modifierPriceSnapshot: (json['modifierPriceSnapshot'] as Map<String, dynamic>)
       .map((k, e) => MapEntry(k, (e as num).toDouble())),
-  modifierLabelSnapshot: (json['modifierLabelSnapshot'] as Map<String, dynamic>?)
-          ?.map((k, e) => MapEntry(k, e as String)) ??
+  modifierLabelSnapshot:
+      (json['modifierLabelSnapshot'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ) ??
       const {},
   unitTotal: (json['unitTotal'] as num).toDouble(),
   lineTotal: (json['lineTotal'] as num).toDouble(),

@@ -39,8 +39,9 @@ class Order {
   final List<Item>? items;
   final OrderStatus? status;
   final PaymentStatus? paymentStatus;
-  final String? paymentMethod;
-  
+  @PaymentMethodConverter()
+  final PaymentMethod? paymentMethod;
+
   Order({
     this.docId,
     this.customerId,

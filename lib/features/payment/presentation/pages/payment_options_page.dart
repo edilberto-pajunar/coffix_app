@@ -115,7 +115,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Order total',
+                                    'You are paying',
                                     style: theme.textTheme.bodyLarge,
                                   ),
                                   Text.rich(
@@ -176,17 +176,6 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(color: AppColors.error),
                                     ),
-                                    // GestureDetector(
-                                    //   onTap: () =>
-                                    //       context.pushNamed(CreditPage.route),
-                                    //   child: Text(
-                                    //     'Top up',
-                                    //     style: theme.textTheme.bodySmall?.copyWith(
-                                    //       color: AppColors.primary,
-                                    //       fontWeight: FontWeight.w600,
-                                    //     ),
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                               ),

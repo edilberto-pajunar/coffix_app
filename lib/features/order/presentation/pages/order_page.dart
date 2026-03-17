@@ -3,8 +3,10 @@ import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
+import 'package:coffix_app/core/extensions/payment_method_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/domain/helper.dart';
@@ -184,7 +186,7 @@ class _OrderCard extends StatelessWidget {
         modifierPriceSnapshot: modifierPriceSnapshot,
         unitTotal: unitTotal,
         lineTotal: unitTotal * quantity,
-        createdAt: DateTime.now(),
+        createdAt: TimeUtils.now(),
       );
 
       try {
@@ -244,7 +246,7 @@ class _OrderCard extends StatelessWidget {
                         ) ??
                         0.00.toCurrencySuperscript(style: AppTypography.titleS),
                   ),
-                  Text(order.paymentMethod ?? '—'),
+                  Text(order.paymentMethod?.label ?? '—'),
                 ],
               ),
             ],

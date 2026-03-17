@@ -45,55 +45,8 @@ router.post(
         items: validation.data.items,
       });
 
-      if (validation.data.paymentMethod === "coffixCredit") {
-        const creditAvailable =
-          await coffixCreditService.getCreditAvailable(customerId);
-        if (creditAvailable < totalAmount) {
-          return response.status(400).json({
-            success: false,
-            message: "Insufficient credit",
-            data: { creditAvailable, required: totalAmount },
-          });
-        }
-
-        const orderId = await firebaseService.createNewOrder({
-          amount: totalAmount,
-          customerId,
-          storeId: validation.data.storeId,
-          items: validation.data.items,
-          duration: validation.data.duration,
-          paymentMethod: validation.data.paymentMethod,
-        });
-
-        await coffixCreditService.deductCredit(customerId, totalAmount);
-
-        const transactionId = await firebaseService.createNewTransaction({
-          customerId,
-          orderId,
-          amount: totalAmount,
-          sessionId: "coffixCredit",
-        });
-        await firebaseService.updateTransaction(transactionId, {
-          status: "approved",
-          paymentTime: new Date(),
-          paymentMethod: "coffixCredit",
-        });
-
-        const duration = validation.data.duration ?? 0;
-        await firebaseService.updateOrder(orderId, {
-          status: "paid",
-          paidAt: new Date(),
-          scheduledAt: new Date(Date.now() + duration * 60_000),
-        });
-
-        const orderData = await firebaseService.findOrderByOrderId(orderId);
-        return response.status(200).json({
-          success: true,
-          data: { order: serializeForJson(orderData) },
-        });
-      }
-
-      const orderId = await firebaseService.createNewOrder({
+      // create order
+      const { orderId, orderData } = await firebaseService.createNewOrder({
         amount: totalAmount,
         customerId,
         storeId: validation.data.storeId,
@@ -102,6 +55,35 @@ router.post(
         paymentMethod: validation.data.paymentMethod,
       });
 
+      // handle coffix credit payment
+      if (validation.data.paymentMethod === "coffixCredit") {
+        await coffixCreditService.deductCredit(customerId, totalAmount);
+
+        const duration = validation.data.duration ?? 0;
+        await firebaseService.createTransactionAndMarkOrderPaid({
+          customerId,
+          orderId,
+          amount: totalAmount,
+          duration,
+        });
+
+        const paidAt = new Date();
+        const finalOrderData = {
+          ...orderData,
+          status: "paid",
+          paidAt,
+          scheduledAt: new Date(Date.now() + duration * 60_000),
+        };
+        return response.status(200).json({
+          success: true,
+          data: {
+            order: serializeForJson(finalOrderData),
+            paymentSessionUrl: null,
+          },
+        });
+      }
+
+      // handle card payment
       logger.info("Total amount:", totalAmount);
 
       const { paymentSessionUrl, sessionId } =
@@ -118,9 +100,10 @@ router.post(
         sessionId,
       });
 
-      return response
-        .status(200)
-        .json({ success: true, data: { paymentSessionUrl } });
+      return response.status(200).json({
+        success: true,
+        data: { order: serializeForJson(orderData), paymentSessionUrl },
+      });
     } catch (error) {
       if (error instanceof InsufficientCreditError) {
         return response.status(400).json({

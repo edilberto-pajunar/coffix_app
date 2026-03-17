@@ -1,6 +1,9 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/core/extensions/date_extensions.dart';
+import 'package:coffix_app/core/extensions/order_extensions.dart';
+import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/transaction/data/model/transaction.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
@@ -117,7 +120,7 @@ class _TransactionViewState extends State<TransactionView> {
                         bottom: AppSizes.sm,
                       ),
                       child: Text(
-                        DateFormat('EEEE, MMM d').format(item.date!),
+                        item.date?.formatDate() ?? '—',
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: AppColors.lightGrey,
                           fontWeight: FontWeight.w600,
@@ -126,8 +129,9 @@ class _TransactionViewState extends State<TransactionView> {
                     );
                   }
                   final t = item.transaction!;
-                  final (statusLabel, statusColor) =
-                      _transactionStatusStyle(t.status);
+                  final (statusLabel, statusColor) = _transactionStatusStyle(
+                    t.status,
+                  );
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSizes.sm),
                     child: AppCard(
@@ -139,16 +143,19 @@ class _TransactionViewState extends State<TransactionView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '#${t.orderId ?? '—'}',
+                                '#${t.orderNumber?.last6 ?? '—'}',
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Text(
-                                '\$${t.amount?.toStringAsFixed(2) ?? '0.00'}',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    t.amount?.toCurrencySuperscript(
+                                          style: theme.textTheme.titleSmall,
+                                        ) ??
+                                        TextSpan(text: '0.00'),
+                                  ],
                                 ),
                               ),
                             ],
@@ -156,7 +163,7 @@ class _TransactionViewState extends State<TransactionView> {
                           const SizedBox(height: AppSizes.xs),
                           if (t.createdAt != null)
                             Text(
-                              DateFormat.jm().format(t.createdAt!),
+                              t.createdAt?.formatDate() ?? '—',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: AppColors.lightGrey,
                               ),
@@ -164,7 +171,10 @@ class _TransactionViewState extends State<TransactionView> {
                           const SizedBox(height: AppSizes.xs),
                           Row(
                             children: [
-                              StatusChip(label: statusLabel, color: statusColor),
+                              StatusChip(
+                                label: statusLabel,
+                                color: statusColor,
+                              ),
                               const SizedBox(width: AppSizes.sm),
                               if (t.paymentMethod != null &&
                                   t.paymentMethod!.isNotEmpty)
