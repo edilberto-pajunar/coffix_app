@@ -7,6 +7,7 @@ import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
+import 'package:coffix_app/features/drafts/presentation/pages/drafts_page.dart';
 import 'package:coffix_app/features/home/presentation/widgets/email_forgot_password_sent.dart';
 import 'package:coffix_app/features/home/presentation/widgets/email_verification_form.dart';
 import 'package:coffix_app/features/home/presentation/widgets/forgot_password.dart';
@@ -235,7 +236,11 @@ class _HomeViewState extends State<HomeView> {
                                                 ),
                                                 Expanded(
                                                   child: AppButton.primary(
-                                                    onPressed: () {},
+                                                    onPressed: () {
+                                                      context.pushNamed(
+                                                        DraftsPage.route,
+                                                      );
+                                                    },
                                                     label: "My Drafts",
                                                   ),
                                                 ),

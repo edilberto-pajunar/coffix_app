@@ -5,6 +5,8 @@ import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/drafts/logic/draft_cubit.dart';
+import 'package:coffix_app/features/drafts/presentation/pages/drafts_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
@@ -33,6 +35,7 @@ class CartPage extends StatelessWidget {
       providers: [
         BlocProvider.value(value: getIt<CartCubit>()),
         BlocProvider.value(value: getIt<OrderCubit>()),
+        BlocProvider.value(value: getIt<DraftCubit>()),
       ],
       child: const CartView(),
     );
@@ -192,7 +195,12 @@ class _CartViewState extends State<CartView> {
                           Expanded(
                             child: AppButton.outlined(
                               disabled: state.cart?.items.isEmpty ?? true,
-                              onPressed: () {},
+                              onPressed: () {
+                                context.read<DraftCubit>().createDraft(
+                                  cart: state.cart!,
+                                );
+                                context.goNamed(DraftsPage.route);
+                              },
                               label: 'Save as draft',
                             ),
                           ),

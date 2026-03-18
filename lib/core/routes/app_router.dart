@@ -6,6 +6,7 @@ import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_successful_page.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_topup_page.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payment_page.dart';
+import 'package:coffix_app/features/drafts/presentation/pages/drafts_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/layout/presentation/pages/layout_page.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
@@ -144,6 +145,11 @@ class AppRouter {
                         builder: (context, state) => const ReferralPage(),
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: "/drafts",
+                    name: DraftsPage.route,
+                    builder: (context, state) => const DraftsPage(),
                   ),
                 ],
               ),
