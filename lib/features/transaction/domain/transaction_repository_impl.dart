@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/transaction_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:coffix_app/features/transaction/data/model/transaction.dart'
@@ -18,6 +17,14 @@ class TransactionRepositoryImpl implements TransactionRepository {
     final snapshot = await _firestore
         .collection('transactions')
         .where("customerId", isEqualTo: userId)
+        .where(
+          "status",
+          whereIn: [
+            ts.TransactionStatus.paid.name,
+            ts.TransactionStatus.approved.name,
+            ts.TransactionStatus.failed.name,
+          ],
+        )
         .orderBy("createdAt", descending: true)
         .get();
     if (snapshot.docs.isEmpty) {

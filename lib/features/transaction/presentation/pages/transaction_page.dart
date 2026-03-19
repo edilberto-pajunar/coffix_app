@@ -8,6 +8,8 @@ import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/transaction/data/model/transaction.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
+import 'package:coffix_app/presentation/molecules/app_back_header.dart';
+import 'package:coffix_app/presentation/molecules/empty_state.dart';
 import 'package:coffix_app/presentation/molecules/status_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,9 +92,7 @@ class _TransactionViewState extends State<TransactionView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Transactions', style: theme.textTheme.titleLarge),
-      ),
+      appBar: AppBackHeader(title: "Transactions"),
       body: BlocBuilder<TransactionCubit, TransactionState>(
         builder: (context, state) {
           return state.when(
@@ -100,11 +100,10 @@ class _TransactionViewState extends State<TransactionView> {
             loading: () => const Center(child: CircularProgressIndicator()),
             loaded: (transactions) {
               if (transactions.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No transactions yet',
-                    style: theme.textTheme.bodyLarge,
-                  ),
+                return EmptyState(
+                  title: "No transactions yet",
+                  subtitle: "Your transactions will appear here",
+                  icon: Icons.receipt_long_outlined,
                 );
               }
               final grouped = _groupByDay(transactions);

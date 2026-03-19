@@ -29,6 +29,14 @@ class OrderCubit extends Cubit<OrderState> {
     );
   }
 
+  void updateOrderTime({required String orderId, required DateTime scheduledAt}) async {
+    // we are going to call this after the payment was successful
+    // not on the webhook
+    await _orderRepository.updateOrder(
+      data: {"id": orderId, "scheduledAt": scheduledAt},
+    );
+  }
+
   @override
   Future<void> close() {
     _ordersSubscription?.cancel();

@@ -106,7 +106,7 @@ class _AppBackHeaderState extends State<AppBackHeader> {
                   child: Stack(
                     children: [
                       Positioned(
-                        top: AppSizes.iconSizeXXXLarge / 2,
+                        top: 0,
                         left: 0,
                         right: 0,
                         child: Divider(height: 1, color: AppColors.borderColor),
@@ -126,11 +126,21 @@ class _AppBackHeaderState extends State<AppBackHeader> {
                           ),
                         ),
                       ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        left: 0,
+                        child: AppLocation(),
+                      ),
                     ],
                   ),
                 )
-              : Divider(height: 1, color: AppColors.borderColor),
-          if (widget.showLocation) AppLocation(),
+              : Column(
+                  children: [
+                    Divider(height: 1, color: AppColors.borderColor),
+                    if (widget.showLocation) AppLocation(),
+                  ],
+                ),
         ],
       ),
     );

@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
+import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
 import 'package:coffix_app/features/payment/presentation/pages/payment_successful_page.dart';
@@ -23,6 +27,7 @@ class PaymentPage extends StatelessWidget {
       providers: [
         BlocProvider.value(value: getIt<CartCubit>()),
         BlocProvider.value(value: getIt<PaymentCubit>()),
+        BlocProvider.value(value: getIt<OrderCubit>()),
       ],
       child: PaymentView(paymentRequest: paymentRequest),
     );
@@ -40,10 +45,16 @@ class PaymentView extends StatefulWidget {
 
 class _PaymentViewState extends State<PaymentView> {
   late WebViewController _webViewController;
+  late final StreamController<VoidCallback> _navController;
+  late final StreamSubscription<VoidCallback> _navSubscription;
 
   @override
   initState() {
     super.initState();
+    _navController = StreamController<VoidCallback>();
+    _navSubscription = _navController.stream.listen((action) {
+      if (mounted) action();
+    });
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent(
@@ -61,20 +72,34 @@ class _PaymentViewState extends State<PaymentView> {
             final uri = Uri.parse(request.url);
             // Use path match, ignore query params
             final isSuccess = uri.path == '/payment/successful';
+            final isCancelled = uri.path == '/payment/cancelled';
 
             if (isSuccess) {
-              // IMPORTANT: prevent first
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!mounted) return;
+              _navController.add(() {
+                final paymentCubit = context.read<PaymentCubit>();
+                final orderId = paymentCubit.state.maybeWhen(
+                  loaded: (_, order) => order.docId,
+                  success: (order) => order.docId,
+                  orElse: () => null,
+                );
+                if (orderId == null) return;
+                final scheduledAt = TimeUtils.now().add(
+                  Duration(minutes: widget.paymentRequest.duration.toInt()),
+                );
+                context.read<OrderCubit>().updateOrderTime(
+                  orderId: orderId,
+                  scheduledAt: scheduledAt,
+                );
                 context.read<CartCubit>().resetCart();
                 context.goNamed(
                   PaymentSuccessfulPage.route,
-                  extra: {
-                    "pickupAt": TimeUtils.now().add(
-                      Duration(minutes: widget.paymentRequest.duration.toInt()),
-                    ),
-                  },
+                  extra: {"pickupAt": scheduledAt},
                 );
+              });
+              return NavigationDecision.prevent;
+            } else if (isCancelled) {
+              _navController.add(() {
+                context.goNamed(CartPage.route);
               });
               return NavigationDecision.prevent;
             }
@@ -88,6 +113,13 @@ class _PaymentViewState extends State<PaymentView> {
       context.read<PaymentCubit>().resetPayment();
       initPayment();
     });
+  }
+
+  @override
+  void dispose() {
+    _navSubscription.cancel();
+    _navController.close();
+    super.dispose();
   }
 
   void initPayment() {

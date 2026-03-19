@@ -1,11 +1,12 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:equatable/equatable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'global.g.dart';
 
-@JsonSerializable()
-class AppGlobal {
+@JsonSerializable(explicitToJson: true)
+class AppGlobal extends Equatable {
   final double? GST;
   final String? appVersion;
   final double? basicDiscount;
@@ -21,7 +22,7 @@ class AppGlobal {
   final double? topupLevel3;
   final double? withdrawalFee;
 
-  AppGlobal({
+  const AppGlobal({
     this.GST,
     this.appVersion,
     this.basicDiscount,
@@ -41,4 +42,54 @@ class AppGlobal {
   factory AppGlobal.fromJson(Map<String, dynamic> json) =>
       _$AppGlobalFromJson(json);
   Map<String, dynamic> toJson() => _$AppGlobalToJson(this);
+
+  AppGlobal copyWith({
+    double? GST,
+    String? appVersion,
+    double? basicDiscount,
+    double? discountLevel2,
+    double? discountLevel3,
+    double? maxDayBetweenLogin,
+    double? minCreditToShare,
+    double? minTopUp,
+    String? specialUrl,
+    String? storeUrl,
+    String? tcUrl,
+    double? topupLevel2,
+    double? topupLevel3,
+    double? withdrawalFee,
+  }) => AppGlobal(
+    GST: GST ?? this.GST,
+    appVersion: appVersion ?? this.appVersion,
+    basicDiscount: basicDiscount ?? this.basicDiscount,
+    discountLevel2: discountLevel2 ?? this.discountLevel2,
+    discountLevel3: discountLevel3 ?? this.discountLevel3,
+    maxDayBetweenLogin: maxDayBetweenLogin ?? this.maxDayBetweenLogin,
+    minCreditToShare: minCreditToShare ?? this.minCreditToShare,
+    minTopUp: minTopUp ?? this.minTopUp,
+    specialUrl: specialUrl ?? this.specialUrl,
+    storeUrl: storeUrl ?? this.storeUrl,
+    tcUrl: tcUrl ?? this.tcUrl,
+    topupLevel2: topupLevel2 ?? this.topupLevel2,
+    topupLevel3: topupLevel3 ?? this.topupLevel3,
+    withdrawalFee: withdrawalFee ?? this.withdrawalFee,
+  );
+
+  @override
+  List<Object?> get props => [
+    GST,
+    appVersion,
+    basicDiscount,
+    discountLevel2,
+    discountLevel3,
+    maxDayBetweenLogin,
+    minCreditToShare,
+    minTopUp,
+    specialUrl,
+    storeUrl,
+    tcUrl,
+    topupLevel2,
+    topupLevel3,
+    withdrawalFee,
+  ];
 }

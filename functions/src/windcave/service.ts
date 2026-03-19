@@ -5,7 +5,11 @@ import {
   WINDCAVE_FAILED_URL,
   WINDCAVE_SUCCESS_URL,
 } from "../constant/constant";
-import { EnrichedOrderItem, Product, SnapshotModifier } from "../firebase/interface";
+import {
+  EnrichedOrderItem,
+  Product,
+  SnapshotModifier,
+} from "../firebase/interface";
 import { WindcaveError } from "../utils/windcave.error";
 import { DocumentData } from "firebase-admin/firestore";
 
@@ -192,19 +196,21 @@ export class WindcaveService {
         // 5. Line total
         const unitPrice = basePrice + extra;
 
-        const modifiersSnapshot: SnapshotModifier[] = Object.entries(item.selectedModifiers ?? {})
-          .map(([_groupId, modifierId]) => {
-            const m = found.get(modifierId);
-            return {
-              modifierId,
-              name: m?.name ?? "",
-              priceDelta: Number(m?.priceDelta ?? 0),
-            };
-          });
+        const modifiersSnapshot: SnapshotModifier[] = Object.entries(
+          item.selectedModifiers ?? {},
+        ).map(([_groupId, modifierId]) => {
+          const m = found.get(modifierId);
+          return {
+            modifierId,
+            name: m?.name ?? "",
+            priceDelta: Number(m?.priceDelta ?? 0),
+          };
+        });
 
         const enrichedItem: EnrichedOrderItem = {
           productId: item.productId,
           productName: product.name,
+          productImageUrl: product.imageUrl,
           price: unitPrice,
           quantity: item.quantity,
           selectedModifiers: item.selectedModifiers,
@@ -216,7 +222,7 @@ export class WindcaveService {
     );
 
     const total = results.reduce((sum, r) => sum + r.lineTotal, 0);
-    const enrichedItems = results.map(r => r.enrichedItem);
+    const enrichedItems = results.map((r) => r.enrichedItem);
     return { total, enrichedItems };
   }
 

@@ -240,6 +240,7 @@ export class WebhookService {
       // CREATE RECEIPT PRINT QUEUE
       await this.receiptService.createPrintQueue({
         receiptData: {
+          printerId: storeDoc?.printerId ?? "TRY",
           storeName: storeDoc?.name ?? "",
           storeAddress: storeDoc?.address ?? "",
           orderNumber: orderDoc?.orderNumber.toString() ?? "",

@@ -28,7 +28,7 @@ export class ReceiptService {
       duration > 0 ? new Date(Date.now() + duration * 60_000) : null;
     const gst = validation.data.total * 0.15;
     await printQueueRef.set({
-      printerId: "TRY",
+      printerId: validation.data.printerId,
       status: duration > 0 ? "scheduled" : "pending",
       printTime,
       lines: [

@@ -6,10 +6,13 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/coffee_for_home_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/coffee_on_us_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
@@ -33,6 +36,7 @@ class ProfilePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: getIt<AuthCubit>()),
+        BlocProvider.value(value: getIt<AppCubit>()),
         BlocProvider.value(value: getIt<CartCubit>()),
       ],
       child: const ProfileView(),
@@ -59,6 +63,11 @@ class ProfileView extends StatelessWidget {
       authenticated: (user) => true,
       orElse: () => false,
     );
+    final global = context.watch<AppCubit>().state.maybeWhen(
+      loaded: (global) => global,
+      orElse: () => null,
+    );
+    print(global?.specialUrl);
 
     return Scaffold(
       appBar: AppBackHeader(
@@ -145,7 +154,10 @@ class ProfileView extends StatelessWidget {
             ProfileTile(
               label: 'Specials',
               onTap: () {
-                context.pushNamed(SpecialUrlPage.route);
+                context.pushNamed(
+                  SpecialUrlPage.route,
+                  extra: {'url': global?.specialUrl ?? ''},
+                );
               },
               icon: AppImages.special,
             ),
@@ -162,14 +174,21 @@ class ProfileView extends StatelessWidget {
 
             ProfileTile(
               label: 'Coffee on US',
-              onTap: () {},
+              onTap: () {
+                context.pushNamed(CoffeeOnUsPage.route);
+              },
               icon: AppImages.coffee,
             ),
             Divider(height: 0, color: AppColors.textBlackColor),
 
             ProfileTile(
               label: 'Coffee for Home',
-              onTap: () {},
+              onTap: () {
+                context.pushNamed(
+                  CoffeeForHomePage.route,
+                  extra: {'url': global?.storeUrl ?? ''},
+                );
+              },
               icon: AppImages.bag,
             ),
             Divider(height: 0, color: AppColors.textBlackColor),

@@ -40,4 +40,5 @@ const _$TransactionStatusEnumMap = {
   TransactionStatus.paid: 'paid',
   TransactionStatus.failed: 'failed',
   TransactionStatus.approved: 'approved',
+  TransactionStatus.declined: 'declined',
 };

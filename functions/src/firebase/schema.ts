@@ -18,14 +18,17 @@ export const createOrderBodySchema = z
       z.object({
         productId: z.string().trim(),
         productName: z.string().trim(),
+        productImageUrl: z.string().trim(),
         price: z.number().nonnegative(),
         quantity: z.number().positive(),
         selectedModifiers: z.record(z.string(), z.string()),
-        modifiers: z.array(z.object({
-          modifierId: z.string(),
-          name: z.string(),
-          priceDelta: z.number(),
-        })),
+        modifiers: z.array(
+          z.object({
+            modifierId: z.string(),
+            name: z.string(),
+            priceDelta: z.number(),
+          }),
+        ),
       }),
     ),
     duration: z.number().min(0),

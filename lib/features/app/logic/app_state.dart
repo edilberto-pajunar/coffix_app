@@ -6,4 +6,5 @@ class AppState with _$AppState {
   const factory AppState.loading() = _Loading;
   const factory AppState.loaded({required AppGlobal global}) = _Loaded;
   const factory AppState.error({required String message}) = _Error;
+
 }

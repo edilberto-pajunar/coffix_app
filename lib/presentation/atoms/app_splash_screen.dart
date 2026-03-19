@@ -2,8 +2,10 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class AppSplashScreen extends StatelessWidget {
@@ -11,6 +13,11 @@ class AppSplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final global = context.watch<AppCubit>().state.maybeWhen(
+      loaded: (global) => global,
+      orElse: () => null,
+    );
+
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -31,6 +38,14 @@ class AppSplashScreen extends StatelessWidget {
                   AppImages.logo,
                   size: AppSizes.iconSizeXXLarge,
                 ),
+                if (global?.appVersion != null)
+                  Text(
+                    "Version ${global?.appVersion}",
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyXS.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
               ],
             ),
           ),

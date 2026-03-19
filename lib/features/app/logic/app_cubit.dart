@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/features/app/data/model/global.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 part 'app_state.dart';
 part 'app_cubit.freezed.dart';
@@ -13,10 +14,20 @@ class AppCubit extends Cubit<AppState> {
       super(AppState.initial());
 
   Future<void> getGlobal() async {
-    emit(AppState.loading());
+    emit(const AppState.loading());
+
     try {
-      final global = await _appRepository.getGlobal();
-      emit(AppState.loaded(global: global));
+      final results = await Future.wait([
+        _appRepository.getGlobal(),
+        PackageInfo.fromPlatform(),
+      ]);
+
+      final global = results[0] as AppGlobal;
+      final packageInfo = results[1] as PackageInfo;
+
+      final appVersion = 'v.${packageInfo.version}+${packageInfo.buildNumber}';
+
+      emit(AppState.loaded(global: global.copyWith(appVersion: appVersion)));
     } catch (e) {
       emit(AppState.error(message: e.toString()));
     }

@@ -7,6 +7,7 @@ export const createPrintQueueBodySchema = z.object({
 });
 
 export const createReceiptBodySchema = z.object({
+  printerId: z.string().trim(),
   storeName: z.string().trim(),
   storeAddress: z.string().trim(),
   orderNumber: z.string().trim(),

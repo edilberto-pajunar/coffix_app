@@ -156,7 +156,9 @@ class _CustomizeProductViewState extends State<CustomizeProductView> {
                                                   children: [
                                                     TextSpan(
                                                       text:
-                                                          mod.isDefault == true
+                                                          mod.isDefault ==
+                                                                  true &&
+                                                              !isSelected
                                                           ? '*${mod.label} '
                                                           : '${mod.label} ',
                                                     ),

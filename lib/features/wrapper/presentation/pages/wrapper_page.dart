@@ -56,7 +56,9 @@ class _WrapperViewState extends State<WrapperView> {
   @override
   void initState() {
     super.initState();
-    initWrapper();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initWrapper();
+    });
   }
 
   void initWrapper() async {
@@ -65,6 +67,10 @@ class _WrapperViewState extends State<WrapperView> {
 
   @override
   Widget build(BuildContext context) {
+    final global = context.watch<AppCubit>().state.maybeWhen(
+      loaded: (global) => global,
+      orElse: () => null,
+    );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.black,
@@ -82,6 +88,12 @@ class _WrapperViewState extends State<WrapperView> {
           ),
           const SizedBox(height: AppSizes.xl),
           SvgPicture.asset(AppImages.logo, width: 256, height: 256),
+          const SizedBox(height: AppSizes.xl),
+          Text(
+            "Version ${global?.appVersion ?? '1.0.0'}",
+            textAlign: TextAlign.center,
+            style: AppTypography.bodyXS.copyWith(color: AppColors.white),
+          ),
         ],
       ),
     );

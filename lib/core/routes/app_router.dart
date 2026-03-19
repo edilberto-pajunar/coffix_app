@@ -22,6 +22,7 @@ import 'package:coffix_app/features/products/presentation/pages/add_product_page
 import 'package:coffix_app/features/modifier/presentation/pages/customize_product_page.dart';
 import 'package:coffix_app/features/products/presentation/pages/products_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
+import 'package:coffix_app/features/profile/presentation/pages/coffee_for_home_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
@@ -137,15 +138,29 @@ class AppRouter {
                       GoRoute(
                         path: "/special-url",
                         name: SpecialUrlPage.route,
-                        builder: (context, state) => const SpecialUrlPage(),
+                        builder: (context, state) {
+                          final extra = state.extra as Map<String, dynamic>?;
+                          final url = extra?['url'] as String? ?? '';
+                          return SpecialUrlPage(url: url);
+                        },
                       ),
                       GoRoute(
                         path: "/referral",
                         name: ReferralPage.route,
                         builder: (context, state) => const ReferralPage(),
                       ),
+                      GoRoute(
+                        path: "/coffee-for-home",
+                        name: CoffeeForHomePage.route,
+                        builder: (context, state) {
+                          final extra = state.extra as Map<String, dynamic>?;
+                          final url = extra?['url'] as String? ?? '';
+                          return CoffeeForHomePage(url: url);
+                        },
+                      ),
                     ],
                   ),
+
                   GoRoute(
                     path: "/drafts",
                     name: DraftsPage.route,

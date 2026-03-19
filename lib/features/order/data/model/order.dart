@@ -64,6 +64,7 @@ class Order {
 class Item {
   final String? productId;
   final String? productName;
+  final String? productImageUrl;
   final double? price;
   final int? quantity;
   final Map<String, String>? selectedModifiers;
@@ -72,6 +73,7 @@ class Item {
   Item({
     this.productId,
     this.productName,
+    this.productImageUrl,
     this.price,
     this.quantity,
     this.selectedModifiers,

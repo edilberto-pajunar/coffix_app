@@ -13,6 +13,8 @@ enum TransactionStatus {
   failed,
   @JsonValue('approved')
   approved,
+  @JsonValue('declined')
+  declined,
 }
 
 @JsonSerializable()

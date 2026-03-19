@@ -25,8 +25,9 @@ export interface SnapshotModifier {
 export interface EnrichedOrderItem {
   productId: string;
   productName: string;
-  price: number;          // unit price = basePrice + sum(modifier priceDelta)
+  productImageUrl: string;
+  price: number; // unit price = basePrice + sum(modifier priceDelta)
   quantity: number;
-  selectedModifiers: Record<string, string>;      // groupId -> modifierId
-  modifiers: SnapshotModifier[];                  // snapshot: id + name + priceDelta
+  selectedModifiers: Record<string, string>; // groupId -> modifierId
+  modifiers: SnapshotModifier[]; // snapshot: id + name + priceDelta
 }

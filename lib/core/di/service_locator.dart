@@ -32,7 +32,7 @@ import 'package:coffix_app/features/profile/logic/profile_cubit.dart';
 import 'package:coffix_app/features/stores/data/store_repository_impl.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
-import 'package:coffix_app/features/transaction/transaction_repository_impl.dart';
+import 'package:coffix_app/features/transaction/domain/transaction_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
