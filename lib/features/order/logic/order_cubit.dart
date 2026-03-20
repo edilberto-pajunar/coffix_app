@@ -29,12 +29,30 @@ class OrderCubit extends Cubit<OrderState> {
     );
   }
 
-  void updateOrderTime({required String orderId, required DateTime scheduledAt}) async {
+  void updateOrderTime({
+    required String orderId,
+    required DateTime scheduledAt,
+  }) async {
     // we are going to call this after the payment was successful
     // not on the webhook
     await _orderRepository.updateOrder(
       data: {"id": orderId, "scheduledAt": scheduledAt},
     );
+  }
+
+  void sendOrderToEmail({required String orderId}) async {
+    emit(OrderState.loading(orders: state.orders));
+    try {
+      await _orderRepository.sendOrderToEmail(orderId: orderId);
+      emit(
+        OrderState.emailSent(
+        message: 'Order sent to email',
+          orders: state.orders,
+        ),
+      );
+    } catch (e) {
+      emit(OrderState.error(message: e.toString(), orders: state.orders));
+    }
   }
 
   @override

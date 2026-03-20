@@ -31,10 +31,13 @@ export class ReceiptService {
       printerId: validation.data.printerId,
       status: duration > 0 ? "scheduled" : "pending",
       printTime,
+      label: orderNumber,
+      templateName: "DEFAULT",
       lines: [
         validation.data.storeName,
         validation.data.storeAddress,
         "GST",
+        "",
         `Order #${orderNumber}`,
         "",
         validation.data.orders,

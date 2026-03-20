@@ -26,6 +26,7 @@ class CartCubit extends Cubit<CartState> {
 
     // 2. cart is store-scopred -> block or clear when store changes
     if (currentCart.storeId != newItem.storeId) {
+      print('Cannot add product to different store cart');
       throw Exception('Cannot add product to different store cart');
     }
 

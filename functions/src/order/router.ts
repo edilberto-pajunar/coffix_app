@@ -118,16 +118,14 @@ router.post(
 
       const itemsHtml = buildItemRows(order.items ?? []);
 
+      const rawOrderNumber: string = order.orderNumber ?? orderId;
+      const shortOrderNumber = rawOrderNumber.substring(
+        Math.max(0, rawOrderNumber.length - 6),
+        rawOrderNumber.length,
+      );
+
       html = html
-        .replace(
-          /{{orderNumber}}/g,
-          String(
-            order.orderNumber.substring(
-              order.orderNumber.length - 6,
-              order.orderNumber.length,
-            ) ?? orderId,
-          ),
-        )
+        .replace(/{{orderNumber}}/g, shortOrderNumber)
         .replace(/{{storeName}}/g, String(order.storeName ?? ""))
         .replace(/{{storeAddress}}/g, String(order.storeAddress ?? ""))
         .replace(/{{createdAt}}/g, formatDate(order.createdAt))
@@ -135,7 +133,7 @@ router.post(
         .replace(/{{paymentMethod}}/g, String(order.paymentMethod ?? ""))
         .replace(/{{items}}/g, itemsHtml);
 
-      const orderNumber = String(order.orderNumber ?? orderId);
+      const orderNumber = rawOrderNumber;
 
       const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",

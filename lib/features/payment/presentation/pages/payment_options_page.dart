@@ -79,6 +79,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                       "orderNumber": order.orderNumber,
                     },
                   );
+                  context.read<CartCubit>().resetCart();
                 },
                 error: (message) {
                   AppNotification.error(context, message);

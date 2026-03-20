@@ -92,7 +92,7 @@ class _TransactionViewState extends State<TransactionView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBackHeader(title: "Transactions"),
+      appBar: AppBackHeader(title: "My Transactions"),
       body: BlocBuilder<TransactionCubit, TransactionState>(
         builder: (context, state) {
           return state.when(

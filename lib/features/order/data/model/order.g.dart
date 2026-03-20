@@ -23,6 +23,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
       ?.map((e) => Item.fromJson(e as Map<String, dynamic>))
       .toList(),
   paymentMethod: const PaymentMethodConverter().fromJson(json['paymentMethod']),
+  storeName: json['storeName'] as String?,
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
@@ -39,6 +40,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'paymentMethod': const PaymentMethodConverter().toJson(
     instance.paymentMethod,
   ),
+  'storeName': instance.storeName,
 };
 
 const _$OrderStatusEnumMap = {

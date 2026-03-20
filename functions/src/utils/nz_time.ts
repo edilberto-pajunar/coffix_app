@@ -31,3 +31,26 @@ export function nzDateKey(): string {
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
   return `${get("year")}${get("month")}${get("day")}`;
 }
+
+/**
+ * Returns a future Date object representing `minutes` minutes from now
+ * in New Zealand time. The returned Date has its UTC value shifted to
+ * match the NZ wall-clock time, so it serializes as a NZ local time string.
+ */
+export function scheduledAtNZ(minutes: number): Date {
+  const nowUtc = Date.now();
+  const futureUtc = nowUtc + minutes * 60_000;
+
+  // Get NZ UTC offset in minutes at the future time
+  const formatter = new Intl.DateTimeFormat("en-NZ", {
+    timeZone: NZ_TZ,
+    timeZoneName: "shortOffset",
+  });
+  const parts = formatter.formatToParts(new Date(futureUtc));
+  const offsetStr = parts.find((p) => p.type === "timeZoneName")?.value ?? "GMT+0";
+  // offsetStr e.g. "GMT+13" or "GMT+12"
+  const match = offsetStr.match(/GMT([+-]\d+)/);
+  const offsetHours = match ? parseInt(match[1], 10) : 0;
+
+  return new Date(futureUtc + offsetHours * 60 * 60_000);
+}

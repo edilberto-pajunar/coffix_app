@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
@@ -12,6 +13,7 @@ import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
+import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
@@ -27,14 +29,13 @@ class OrderCard extends StatelessWidget {
 
   final Order order;
 
-  void _reorder(BuildContext context) {
-    final productState = context.read<ProductCubit>().state;
-    final products = productState.maybeWhen(
-      loaded: (products, _, _) => products,
-      orElse: () => null,
-    );
+  void _reorder(BuildContext context, {required Order order}) {
+    final productCubit = context.read<ProductCubit>();
+    final products = productCubit.allProducts;
+    print("order.docId: ${order.items?.map((i) => i.productId).toList()}");
+    print("products: ${products.map((p) => p.product.docId).toList()}");
 
-    if (products == null || order.items == null || order.items!.isEmpty) {
+    if (products.isEmpty || order.items == null || order.items!.isEmpty) {
       AppNotification.error(context, 'Unable to reorder at this time');
       return;
     }
@@ -49,16 +50,18 @@ class OrderCard extends StatelessWidget {
     cartCubit.resetCart();
 
     final helper = CartHelper();
+    int addedCount = 0;
 
     for (final item in order.items!) {
       if (item.productId == null) continue;
 
-      final match = products.firstWhere(
+      final match = products.firstWhereOrNull(
         (p) => p.product.docId == item.productId,
-        orElse: () => products.first,
       );
 
-      if (match.product.docId != item.productId) continue;
+      if (match == null) {
+        continue;
+      }
 
       final product = match.product;
       final selectedByGroup = item.selectedModifiers ?? {};
@@ -103,7 +106,13 @@ class OrderCard extends StatelessWidget {
 
       try {
         cartCubit.addProduct(newItem: cartItem);
+        addedCount++;
       } catch (_) {}
+    }
+
+    if (addedCount == 0) {
+      AppNotification.error(context, 'Some items are no longer available');
+      return;
     }
 
     context.goNamed(CartPage.route);
@@ -124,23 +133,26 @@ class OrderCard extends StatelessWidget {
         border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppClickable(
                 onPressed: () {
-                  
+                  context.read<OrderCubit>().sendOrderToEmail(
+                    orderId: order.docId ?? '',
+                  );
                 },
-                child: Image.asset(AppImages.email, width: 24, height: 24)),
+                child: Image.asset(AppImages.email, width: 24, height: 24),
+              ),
               const SizedBox(width: AppSizes.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Order #${order.orderNumber?.substring(order.orderNumber!.length - 6) ?? '—'}',
+                      '#${order.orderNumber?.substring(order.orderNumber!.length - 6) ?? '—'}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -223,8 +235,8 @@ class OrderCard extends StatelessWidget {
                                 if (modifiers.isNotEmpty)
                                   Text(
                                     modifiers.join(', '),
-                                    style: AppTypography.body2XS.copyWith(
-                                      color: AppColors.lightGrey,
+                                    style: AppTypography.body3XS.copyWith(
+                                      color: AppColors.textBlackColor,
                                     ),
                                   ),
                               ],
@@ -240,7 +252,7 @@ class OrderCard extends StatelessWidget {
                 height: 24,
                 width: 48,
                 onPressed: () {
-                  _reorder(context);
+                  _reorder(context, order: order);
                 },
                 label: "Reorder",
                 textStyle: AppTypography.body2XS.copyWith(
@@ -249,6 +261,9 @@ class OrderCard extends StatelessWidget {
               ),
             ],
           ),
+
+          // add store name
+          Text(order.storeName ?? '—', textAlign: TextAlign.center),
         ],
       ),
     );

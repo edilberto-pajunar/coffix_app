@@ -12,6 +12,7 @@ import {
   InsufficientCreditError,
 } from "../coffixCredit/service";
 import { serializeForJson } from "../utils/serialize";
+import { scheduledAtNZ } from "../utils/nz_time";
 
 const router = express.Router();
 
@@ -91,7 +92,7 @@ router.post(
           ...orderData,
           status: "paid",
           paidAt,
-          scheduledAt: new Date(Date.now() + duration * 60_000),
+          scheduledAt: scheduledAtNZ(duration),
         };
         return response.status(200).json({
           success: true,

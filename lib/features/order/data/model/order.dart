@@ -41,6 +41,7 @@ class Order {
   final PaymentStatus? paymentStatus;
   @PaymentMethodConverter()
   final PaymentMethod? paymentMethod;
+  final String? storeName;
 
   Order({
     this.docId,
@@ -54,6 +55,7 @@ class Order {
     this.paymentStatus,
     this.items,
     this.paymentMethod,
+    this.storeName,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);

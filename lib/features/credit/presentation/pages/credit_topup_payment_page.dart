@@ -1,8 +1,7 @@
-import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class CreditTopupPaymentPage extends StatelessWidget {
   static String route = 'credit_topup_payment_route';
@@ -27,42 +26,12 @@ class CreditTopupPaymentView extends StatefulWidget {
 }
 
 class _CreditTopupPaymentViewState extends State<CreditTopupPaymentView> {
-  late WebViewController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setUserAgent(
+  final _settings = InAppWebViewSettings(
+    javaScriptEnabled: true,
+    applePayAPIEnabled: true,
+    userAgent:
         "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-      )
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (request) {
-            print("Navigating to ${request.url}");
-            final uri = Uri.parse(request.url);
-            final isSuccess =
-                uri.scheme == 'https' &&
-                uri.host == 'www.coffix.co.nz' &&
-                (uri.path == '/payment/successful' ||
-                    uri.path.contains('/credit') &&
-                        uri.path.contains('success'));
-            if (isSuccess) {
-              context.pop();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  context.goNamed(ProfilePage.route);
-                }
-              });
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.paymentSessionUrl));
-  }
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +40,30 @@ class _CreditTopupPaymentViewState extends State<CreditTopupPaymentView> {
       appBar: AppBar(
         title: Text('TopUp Coffix Credit', style: theme.textTheme.titleLarge),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: InAppWebView(
+        initialUrlRequest: URLRequest(url: WebUri(widget.paymentSessionUrl)),
+        initialSettings: _settings,
+        shouldOverrideUrlLoading: (controller, navigationAction) async {
+          final url = navigationAction.request.url?.toString() ?? '';
+          final uri = Uri.parse(url);
+          final isSuccess =
+              uri.scheme == 'https' &&
+              uri.host == 'www.coffix.co.nz' &&
+              (uri.path == '/payment/successful' ||
+                  uri.path.contains('/credit') &&
+                      uri.path.contains('success'));
+          if (isSuccess) {
+            context.pop();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.goNamed(ProfilePage.route);
+              }
+            });
+            return NavigationActionPolicy.CANCEL;
+          }
+          return NavigationActionPolicy.ALLOW;
+        },
+      ),
     );
   }
 }

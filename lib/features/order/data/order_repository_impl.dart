@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:coffix_app/core/api/api_client.dart';
 import 'package:coffix_app/core/utils/time_utils.dart';
@@ -50,10 +52,13 @@ class OrderRepositoryImpl extends ApiClient implements OrderRepository {
 
   @override
   Future<void> sendOrderToEmail({required String orderId}) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) {
+    final email = _auth.currentUser?.email;
+    if (email == null) {
       throw Exception('User not found');
     }
-    await post('/order/email', data: {'orderId': orderId});
+    // TODO: EMAIL TEST FIRST
+    final data = {"email": "espajunarjr@gmail.com", "orderId": orderId};
+    print(jsonEncode(data));
+    await post('/order/send-receipt', data: data);
   }
 }

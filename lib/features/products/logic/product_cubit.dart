@@ -22,6 +22,8 @@ class ProductCubit extends Cubit<ProductState> {
   List<ProductCategory> get _categories =>
       _allProducts.map((p) => p.category).toSet().toList();
 
+  List<ProductWithCategory> get allProducts => List.from(_allProducts);
+
   void initDefaultCategory() {
     if (_categories.isEmpty) return;
     final coffee = _categories.firstWhere(

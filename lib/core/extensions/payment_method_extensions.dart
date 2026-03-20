@@ -4,7 +4,7 @@ extension PaymentMethodExtensions on PaymentMethod {
   String get label {
     switch (this) {
       case PaymentMethod.card:
-        return 'Card';
+        return 'Credit Card';
       case PaymentMethod.coffixCredit:
         return 'Coffix Credit';
       case PaymentMethod.wallet:
