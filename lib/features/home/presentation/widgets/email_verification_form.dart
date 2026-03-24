@@ -131,6 +131,10 @@ class _EmailVerificationFormState extends State<EmailVerificationForm> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
+                                _pinController.clear();
+                                setState(() {
+                                  _pin = '';
+                                });
                                 await context
                                     .read<OtpCubit>()
                                     .sendEmailVerification();

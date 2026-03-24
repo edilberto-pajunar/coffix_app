@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/core/utils/time_utils.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/domain/firestore_service.dart';
 import 'package:coffix_app/features/auth/data/model/user.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/products/data/model/product_override.dart';
@@ -11,7 +12,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StoreRepositoryImpl implements StoreRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirestoreService.instance;
   final AuthRepository _authRepository;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

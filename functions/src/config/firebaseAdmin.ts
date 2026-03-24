@@ -1,12 +1,18 @@
 import * as admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
 const SECONDARY_APP = "printer";
 
 if (admin.apps.length === 0) {
-  admin.initializeApp();
+  admin.initializeApp(
+    {
+      credential: admin.credential.applicationDefault(),
+      
+    }
+  );
 }
 
-export const firestore = admin.firestore();
+export const firestore = getFirestore(admin.app(), "coffix-prod-australia");
 export const auth = admin.auth();
 export const timestamp = admin.firestore.Timestamp;
 export const fieldValue = admin.firestore.FieldValue;

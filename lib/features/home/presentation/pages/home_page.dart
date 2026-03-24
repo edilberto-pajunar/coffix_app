@@ -132,6 +132,7 @@ class _HomeViewState extends State<HomeView> {
                             );
                           },
                           builder: (context, state) {
+                            print(state);
                             final Widget mainContent = state.when(
                               emailNotVerified: () => EmailVerificationForm(),
                               hasAccount: (hasAccount) =>

@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/domain/firestore_service.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+   final FirebaseFirestore _firestore = FirestoreService.instance;
   final StoreRepository _storeRepository;
 
   ProductRepositoryImpl({required StoreRepository storeRepository})

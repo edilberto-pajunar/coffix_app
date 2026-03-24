@@ -48,9 +48,12 @@
         "firebase-debug.*.log",
         "*.local"
       ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
     }
-  ]
+  ],
+  "firestore": {
+    "database": "coffix-prod-australia",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
 }

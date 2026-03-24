@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/modifier_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
+import 'package:coffix_app/domain/firestore_service.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier_group.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier_group_bundle.dart';
 import 'package:coffix_app/features/products/data/model/product.dart';
 
 class ModifierRepositoryImpl implements ModifierRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+   final FirebaseFirestore _firestore = FirestoreService.instance;
   final StoreRepository _storeRepository;
 
   ModifierRepositoryImpl({required StoreRepository storeRepository})

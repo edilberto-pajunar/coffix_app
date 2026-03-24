@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
+import 'package:coffix_app/domain/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+   final FirebaseFirestore _firestore = FirestoreService.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override

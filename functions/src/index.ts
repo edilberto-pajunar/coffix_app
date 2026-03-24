@@ -1,8 +1,9 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-dotenv.config({ path: path.join(__dirname, "..", ".env") });
-// dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
+const project = process.env.GCLOUD_PROJECT ?? "";
+const envFile = project.includes("dev") ? ".env.development" : ".env";
+dotenv.config({ path: path.join(__dirname, "..", envFile) });
 
 import { setGlobalOptions } from "firebase-functions";
 import { onRequest } from "firebase-functions/https";

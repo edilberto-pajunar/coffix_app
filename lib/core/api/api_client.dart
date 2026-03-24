@@ -111,6 +111,7 @@ abstract class ApiClient {
   }) async {
     try {
       final token = secretKey ?? await _auth.currentUser?.getIdToken();
+      print(ApiEndpoints.v1);
 
       log("token: $token");
 

@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffix_app/data/repositories/transaction_repository.dart';
+import 'package:coffix_app/domain/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:coffix_app/features/transaction/data/model/transaction.dart'
     as ts;
 
 class TransactionRepositoryImpl implements TransactionRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirestoreService.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override

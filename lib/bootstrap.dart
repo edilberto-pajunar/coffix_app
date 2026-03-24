@@ -7,7 +7,6 @@ import 'package:coffix_app/firebase_options_prod.dart' as prodConfig;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -37,18 +36,24 @@ class AppBlocObserver extends BlocObserver {
 Future<void> bootstrap(Widget Function() builder) async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  FirebaseOptions? firebaseOptions;
   if (FlavorConfig.isDev()) {
     debugPrint('Dev flavor');
-    await dotenv.load(fileName: '.env.dev');
-    await Firebase.initializeApp(
-      options: devConfig.DefaultFirebaseOptions.currentPlatform,
-    );
+    firebaseOptions = devConfig.DefaultFirebaseOptions.currentPlatform;
   } else if (FlavorConfig.isProd()) {
     debugPrint('Prod flavor');
-    await dotenv.load(fileName: '.env');
-    await Firebase.initializeApp(
-      options: prodConfig.DefaultFirebaseOptions.currentPlatform,
-    );
+    firebaseOptions = prodConfig.DefaultFirebaseOptions.currentPlatform;
+  }
+
+  if (firebaseOptions != null) {
+    final hasDefaultApp = Firebase.apps.any((app) => app.name == '[DEFAULT]');
+    if (!hasDefaultApp) {
+      await Firebase.initializeApp(
+        // name: FlavorConfig.instance.name,
+        options: firebaseOptions,
+        
+      );
+    }
   }
 
   tz.initializeTimeZones();
@@ -59,6 +64,11 @@ Future<void> bootstrap(Widget Function() builder) async {
 
   // Add cross-flavor configuration here
   await setupServiceLocator();
+
+  debugPrint('Firebase apps: ${Firebase.apps.map((e) => e.name).toList()}');
+  debugPrint('Current flavor: ${FlavorConfig.instance.name}');
+  debugPrint('Firebase projectId: ${Firebase.app().options.projectId}');
+  debugPrint('Firebase apiKey: ${Firebase.app().options.apiKey}');
 
   runApp(builder());
 }

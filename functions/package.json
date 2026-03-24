@@ -8,6 +8,8 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
+    "deploy:dev": "firebase deploy --only functions --project coffix-app-dev",
+    "deploy:prod": "firebase deploy --only functions --project coffix-app-prod",
     "logs": "firebase functions:log"
   },
   "engines": {

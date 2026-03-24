@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "coffix-app-dev"
+    "default": "coffix-app-dev",
+    "dev": "coffix-app-dev",
+    "prod": "coffix-app-prod"
   }
 }

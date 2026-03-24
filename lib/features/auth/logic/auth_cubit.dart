@@ -190,6 +190,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.loading());
     try {
       final hasAccount = await _authRepository.customerHasAccount(email: email);
+      print(hasAccount);
       if (hasAccount) {
         await _authRepository.signInWithEmailAndPassword(
           email: email,
