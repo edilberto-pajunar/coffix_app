@@ -64,7 +64,7 @@ class ProfileView extends StatelessWidget {
       orElse: () => false,
     );
     final global = context.watch<AppCubit>().state.maybeWhen(
-      loaded: (global) => global,
+      loaded: (global, appVersion) => global,
       orElse: () => null,
     );
 

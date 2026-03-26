@@ -64,7 +64,7 @@ class _CreditViewState extends State<CreditView> {
   Widget build(BuildContext context) {
     final amount = formKey.currentState?.fields['amount']?.value;
     final global = context.watch<AppCubit>().state.maybeWhen(
-      loaded: (global) => global,
+      loaded: (global, appVersion) => global,
       orElse: () => null,
     );
 
