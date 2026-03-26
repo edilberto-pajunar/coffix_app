@@ -7,6 +7,7 @@ import 'package:coffix_app/features/products/data/model/product_with_category.da
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
+import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
@@ -107,8 +108,8 @@ class ProductList extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(AppSizes.md),
-                      child: Image.network(
-                        product.product.imageUrl ?? "",
+                      child: AppCachedNetworkImage(
+                        imageUrl: product.product.imageUrl ?? "",
                         width: AppSizes.iconSizeXLarge,
                         height: AppSizes.iconSizeXLarge,
                         fit: BoxFit.cover,

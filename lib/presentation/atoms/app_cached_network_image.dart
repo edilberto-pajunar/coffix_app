@@ -29,6 +29,7 @@ class AppCachedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("imageUrl: $imageUrl");
     if (imageUrl.isEmpty) {
       return _buildError();
     }
