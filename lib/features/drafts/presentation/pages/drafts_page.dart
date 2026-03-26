@@ -6,7 +6,7 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/data/model/cart.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
-import 'package:coffix_app/features/drafts/data/model/draft_item.dart';
+import 'package:coffix_app/features/drafts/data/model/draft.dart';
 import 'package:coffix_app/features/drafts/logic/draft_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
@@ -52,10 +52,11 @@ class _DraftsViewState extends State<DraftsView> {
       body: BlocBuilder<DraftCubit, DraftState>(
         builder: (context, state) {
           return state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            success: () => const SizedBox.shrink(),
-            error: (msg) => Center(
+            initial: (drafts) =>
+                const Center(child: CircularProgressIndicator()),
+            loading: (drafts) =>
+                const Center(child: CircularProgressIndicator()),
+            error: (msg, drafts) => Center(
               child: Padding(
                 padding: AppSizes.defaultPadding,
                 child: Text(msg, textAlign: TextAlign.center),
@@ -101,12 +102,12 @@ class _DraftsViewState extends State<DraftsView> {
 class _DraftCard extends StatelessWidget {
   const _DraftCard({required this.draft});
 
-  final DraftItem draft;
+  final Draft draft;
 
   void _loadDraftIntoCart(BuildContext context, Cart cart) {
     final cartCubit = context.read<CartCubit>();
     cartCubit.resetCart();
-    for (final item in cart.items) {
+    for (final item in cart.items ?? []) {
       try {
         cartCubit.addProduct(newItem: item);
       } catch (_) {}
@@ -116,9 +117,9 @@ class _DraftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cart = draft.cart;
-    final items = cart.items;
+    // final theme = Theme.of(context);
+    // final items = draft.carts.first.items ?? [];
+    final Cart cart = draft.cart ?? Cart();
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
@@ -137,16 +138,11 @@ class _DraftCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Draft',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text('Draft', style: AppTypography.titleS),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      '${items.length} item${items.length == 1 ? '' : 's'}',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      '${cart.items?.length ?? 0} item${cart.items?.length == 1 ? '' : 's'}',
+                      style: AppTypography.body2XS.copyWith(
                         color: AppColors.lightGrey,
                       ),
                     ),
@@ -162,16 +158,18 @@ class _DraftCard extends StatelessWidget {
             ],
           ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: items.length,
+                  itemCount: cart.items?.length ?? 0,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final item = items[index];
-                    final imageUrl = item.productImageUrl;
+                    final item = cart.items?[index];
+                    final imageUrl = item?.productImageUrl ?? '';
+                    final modifierLabels =
+                        item?.modifierLabelSnapshot.values.toList() ??
+                        [] as List<String>;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: AppSizes.sm),
@@ -208,9 +206,23 @@ class _DraftCard extends StatelessWidget {
                             ),
                           const SizedBox(width: AppSizes.sm),
                           Expanded(
-                            child: Text(
-                              '${item.productName} x${item.quantity}',
-                              style: AppTypography.bodyM600,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${item?.productName ?? ''} (x${item?.quantity ?? 0})',
+                                  style: AppTypography.bodyM600,
+                                ),
+                                if (modifierLabels.isNotEmpty) ...[
+                                  const SizedBox(height: AppSizes.xs),
+                                  Text(
+                                    modifierLabels.join(', '),
+                                    style: AppTypography.body3XS,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                         ],
@@ -220,7 +232,7 @@ class _DraftCard extends StatelessWidget {
                 ),
               ),
               Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
                     icon: CircleAvatar(
@@ -232,15 +244,17 @@ class _DraftCard extends StatelessWidget {
                       ),
                     ),
                     onPressed: () => context.read<DraftCubit>().deleteDraft(
-                      draftId: draft.id,
+                      draftId: draft.id ?? '',
                     ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
+                  const SizedBox(width: AppSizes.sm),
                   AppButton(
                     height: 24,
                     width: 56,
-                    onPressed: () => _loadDraftIntoCart(context, cart),
+                    onPressed: () =>
+                        _loadDraftIntoCart(context, draft.cart ?? Cart()),
                     label: 'Order',
                     textStyle: AppTypography.body2XS.copyWith(
                       color: AppColors.white,

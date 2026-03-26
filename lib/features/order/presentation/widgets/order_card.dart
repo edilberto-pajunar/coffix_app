@@ -1,5 +1,12 @@
 import 'package:coffix_app/core/extensions/order_extensions.dart';
-import 'package:collection/collection.dart';
+import 'package:coffix_app/core/utils/time_utils.dart';
+import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/features/cart/domain/helper.dart';
+import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
+import 'package:coffix_app/features/modifier/data/model/modifier.dart';
+import 'package:coffix_app/features/stores/logic/store_cubit.dart';
+import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
@@ -7,19 +14,13 @@ import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/payment_method_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/core/utils/time_utils.dart';
-import 'package:coffix_app/features/cart/data/model/cart_item.dart';
-import 'package:coffix_app/features/cart/domain/helper.dart';
-import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
-import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
-import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
-import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -38,13 +39,15 @@ class OrderCard extends StatelessWidget {
       return;
     }
 
+    // print(products.length);
+
     if (order.storeId == null) {
       AppNotification.error(context, 'Store information missing');
       return;
     }
 
     // 1. update the preferred store
-    context.read<StoreCubit>().updatePreferredStore(storeId: order.storeId!);
+    // context.read<StoreCubit>().updatePreferredStore(storeId: order.storeId!);
 
     final cartCubit = context.read<CartCubit>();
 
@@ -54,7 +57,7 @@ class OrderCard extends StatelessWidget {
     final helper = CartHelper();
     int addedCount = 0;
 
-    for (final item in order.items!) {
+    for (final Item item in order.items!) {
       if (item.productId == null) continue;
 
       final match = products.firstWhereOrNull(
@@ -66,6 +69,7 @@ class OrderCard extends StatelessWidget {
       }
 
       final product = match.product;
+      // print(product.docId);
       final selectedByGroup = item.selectedModifiers ?? {};
       final modifierMap = <String, Modifier>{
         for (final im in item.modifiers ?? [])
@@ -75,21 +79,25 @@ class OrderCard extends StatelessWidget {
               priceDelta: im.priceDelta,
             ),
       };
+      // print(modifierMap);
       final modifierPriceSnapshot = helper.buildModifierPriceSnapshot(
         selectedByGroup: selectedByGroup,
         modifierMap: modifierMap,
       );
+      print(modifierPriceSnapshot);
       final basePrice = product.price ?? 0;
       final unitTotal = helper.computeUnitTotal(
         basePrice: basePrice,
         modifierPriceSnapshot: modifierPriceSnapshot,
       );
+      print(unitTotal);
       final quantity = item.quantity ?? 1;
       final id = helper.buildCartItemIdHashed(
         storeId: order.storeId!,
         productId: product.docId ?? '',
         selectedByGroup: selectedByGroup,
       );
+      print(id);
 
       final cartItem = CartItem(
         id: id,
@@ -106,12 +114,16 @@ class OrderCard extends StatelessWidget {
         createdAt: TimeUtils.now(),
       );
 
+      print(cartItem.toJson());
+
       try {
         cartCubit.addProduct(newItem: cartItem);
         addedCount++;
       } catch (e) {
         print("error: $e");
       }
+
+      print("addedCount: $addedCount");
     }
 
     if (addedCount == 0) {
@@ -202,13 +214,11 @@ class OrderCard extends StatelessWidget {
                           if (imageUrl.isNotEmpty)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(AppSizes.sm),
-                              child: SizedBox(
+                              child: AppCachedNetworkImage(
+                                imageUrl: imageUrl,
                                 width: 48,
                                 height: 48,
-                                child: Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
+                                fit: BoxFit.cover,
                               ),
                             )
                           else

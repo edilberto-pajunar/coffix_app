@@ -67,7 +67,6 @@ class ProfileView extends StatelessWidget {
       loaded: (global) => global,
       orElse: () => null,
     );
-    print(global?.specialUrl);
 
     return Scaffold(
       appBar: AppBackHeader(

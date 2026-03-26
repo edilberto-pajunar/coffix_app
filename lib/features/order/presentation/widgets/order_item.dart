@@ -63,7 +63,9 @@ class OrderItemRow extends StatelessWidget {
                   ),
                   Text.rich(
                     basePrice.toCurrencySuperscript(
-                      style: AppTypography.bodyM600,
+                      style: AppTypography.body2XS.copyWith(
+                        color: AppColors.textBlackColor,
+                      ),
                     ),
                   ),
                 ],

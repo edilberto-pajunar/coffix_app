@@ -10,12 +10,11 @@ import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/features/stores/data/model/store.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
+import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_icon.dart';
-import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
-import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -100,8 +99,13 @@ class StoreList extends StatelessWidget {
                 child: Row(
                   children: [
                     CircleAvatar(
+                      backgroundColor: Colors.transparent,
                       radius: AppSizes.iconSizeLarge,
-                      backgroundImage: NetworkImage(store.imageUrl ?? ""),
+                      child: ClipOval(
+                        child: AppCachedNetworkImage(
+                          imageUrl: store.imageUrl ?? "",
+                        ),
+                      ),
                     ),
                     const SizedBox(width: AppSizes.md),
                     Expanded(

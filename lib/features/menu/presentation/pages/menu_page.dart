@@ -7,7 +7,6 @@ import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/products/presentation/widgets/product_list.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
-import 'package:coffix_app/presentation/molecules/app_cart.dart';
 import 'package:coffix_app/presentation/organisms/app_error.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';

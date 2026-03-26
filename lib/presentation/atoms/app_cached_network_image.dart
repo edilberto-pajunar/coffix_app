@@ -1,13 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:flutter/material.dart';
-
-extension on String {
-  bool get _isSvg {
-    final lower = toLowerCase();
-    return lower.endsWith('.svg');
-  }
-}
 
 class AppCachedNetworkImage extends StatelessWidget {
   const AppCachedNetworkImage({
@@ -29,19 +21,8 @@ class AppCachedNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("imageUrl: $imageUrl");
     if (imageUrl.isEmpty) {
       return _buildError();
-    }
-    if (imageUrl._isSvg) {
-      return CachedNetworkSVGImage(
-        imageUrl,
-        width: width,
-        height: height,
-        fit: fit,
-        placeholder: placeholder,
-        errorWidget: errorWidget,
-      );
     }
     return CachedNetworkImage(
       imageUrl: imageUrl,
