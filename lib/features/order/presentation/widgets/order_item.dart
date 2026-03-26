@@ -47,18 +47,26 @@ class OrderItemRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              RichText(
-                text: TextSpan(
-                  style: AppTypography.bodyM600.copyWith(
-                    color: AppColors.textBlackColor,
+              Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: AppTypography.bodyM600.copyWith(
+                          color: AppColors.textBlackColor,
+                        ),
+                        text:
+                            "${cartItem.productName} (x${cartItem.quantity}) ",
+                        children: [],
+                      ),
+                    ),
                   ),
-                  text: "${cartItem.productName} (x${cartItem.quantity}) ",
-                  children: [
+                  Text.rich(
                     basePrice.toCurrencySuperscript(
                       style: AppTypography.bodyM600,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               Column(
