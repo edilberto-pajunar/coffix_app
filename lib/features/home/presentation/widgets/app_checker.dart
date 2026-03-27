@@ -22,6 +22,7 @@ class _AppCheckerState extends State<AppChecker> {
   bool _isDialogShowing = false;
 
   AppCheckerState _appCheckerState(AppGlobal global, String appVersion) {
+    if (global.appVersion == null) return AppCheckerState.upToDate;
     final globalVersion = parseVersion(global.appVersion!);
     final localVersion = parseVersion(appVersion);
 

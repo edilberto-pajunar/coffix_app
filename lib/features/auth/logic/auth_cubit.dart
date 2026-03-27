@@ -50,10 +50,7 @@ class AuthCubit extends Cubit<AuthState> {
       case 'invalid-password':
         throw AuthExceptions(message: "Invalid password", code: e.code);
     }
-    return AuthExceptions(
-      message: e.message ?? "Unknown error",
-      code: e.code,
-    );
+    return AuthExceptions(message: e.message ?? "Unknown error", code: e.code);
   }
 
   Future<void> signInWithEmailAndPassword({
@@ -125,7 +122,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
       emit(AuthState.error(message: e.toString()));
     } on UserCancelledSignIn catch (_) {
-      emit(AuthState.initial());
+      emit(AuthState.unauthenticated());
       return;
     } catch (e) {
       emit(AuthState.error(message: e.toString()));

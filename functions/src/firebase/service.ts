@@ -51,7 +51,8 @@ class FirebaseService {
       throw new Error("Invalid body");
     }
     const storeDoc = await this.findStoreByStoreId(validation.data.storeId);
-    if (!storeDoc) throw new Error(`Store not found: ${validation.data.storeId}`);
+    if (!storeDoc)
+      throw new Error(`Store not found: ${validation.data.storeId}`);
 
     const orderRef = firestore.collection("orders").doc();
     // [StoreCode][YYMMDD][RunningNumber]

@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 const project = process.env.GCLOUD_PROJECT ?? "";
+console.log("GCLOUD_PROJECT:", process.env.GCLOUD_PROJECT);
 const envFile = project.includes("dev") ? ".env.development" : ".env";
 dotenv.config({ path: path.join(__dirname, "..", envFile) });
 

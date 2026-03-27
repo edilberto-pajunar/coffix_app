@@ -63,9 +63,9 @@ class _PaymentViewState extends State<PaymentView> {
     _navSubscription = _navController.stream.listen((action) {
       if (mounted) action();
     });
+    context.read<PaymentCubit>().resetPayment();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<PaymentCubit>().resetPayment();
       initPayment();
     });
   }
@@ -133,6 +133,7 @@ class _PaymentViewState extends State<PaymentView> {
         listener: (context, state) {
           state.maybeWhen(
             loaded: (paymentUrl, _) {
+              if (!mounted) return;
               if (_webViewController != null) {
                 _webViewController!.loadUrl(
                   urlRequest: URLRequest(url: WebUri(paymentUrl)),

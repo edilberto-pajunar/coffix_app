@@ -4,15 +4,17 @@ import { getFirestore } from "firebase-admin/firestore";
 const SECONDARY_APP = "printer";
 
 if (admin.apps.length === 0) {
-  admin.initializeApp(
-    {
-      credential: admin.credential.applicationDefault(),
-      
-    }
-  );
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+  });
 }
 
-export const firestore = getFirestore(admin.app(), "coffix-prod-australia");
+const project = process.env.GCLOUD_PROJECT ?? "";
+const databaseName = project.includes("dev")
+  ? "(default)"
+  : "coffix-prod-australia";
+
+export const firestore = getFirestore(admin.app(), databaseName);
 export const auth = admin.auth();
 export const timestamp = admin.firestore.Timestamp;
 export const fieldValue = admin.firestore.FieldValue;

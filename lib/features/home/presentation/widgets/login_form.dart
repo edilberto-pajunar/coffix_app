@@ -13,6 +13,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key, required this.formKey});
@@ -139,7 +140,14 @@ class _LoginFormState extends State<LoginForm> {
                           style: AppTypography.bodyXS.copyWith(
                             decoration: TextDecoration.underline,
                           ),
-                          recognizer: TapGestureRecognizer()..onTap = () {},
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await launchUrl(
+                                Uri.parse(
+                                  'https://www.coffix.co.nz/term-of-use-privacy',
+                                ),
+                              );
+                            },
                         ),
                       ],
                     ),
