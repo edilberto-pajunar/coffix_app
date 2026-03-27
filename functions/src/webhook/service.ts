@@ -2,21 +2,28 @@ import FirebaseService from "../firebase/service";
 import { WindcaveError } from "../utils/windcave.error";
 import { WindcaveService } from "../windcave/service";
 import { CoffixCreditService } from "../coffixCredit/service";
-import { parseTopupMerchantReference } from "../coffixCredit/utils";
+import {
+  parseTopupMerchantReference,
+  parseOrderMerchantReference,
+  TOPUP_PREFIX,
+} from "../coffixCredit/utils";
 import { logger } from "firebase-functions";
 import { ReceiptService } from "../receipt/service";
+import { NotificationService } from "../notification/service";
 
 export class WebhookService {
   private readonly windcaveService: WindcaveService;
   private readonly firebaseService: FirebaseService;
   private readonly receiptService: ReceiptService;
   private readonly coffixCreditService: CoffixCreditService;
+  private readonly notificationService: NotificationService;
 
   constructor() {
     this.windcaveService = new WindcaveService();
     this.firebaseService = new FirebaseService();
     this.coffixCreditService = new CoffixCreditService();
     this.receiptService = new ReceiptService();
+    this.notificationService = new NotificationService();
   }
 
   /**
@@ -178,12 +185,46 @@ export class WebhookService {
     const amount = Number(transaction.amount ?? 0) || transactionDoc.amount;
     const paymentMethod = transaction.method ?? transaction.cardType ?? "card";
 
-    const customerId = parseTopupMerchantReference(merchantReference);
-    // If the user tops up this function will be called
-    logger.info("customerId", customerId);
-    if (customerId) {
+    // MERCHANT REFERENCE IF TOPUP: topup:<customerId>
+    // MERCHANT REFERENCE IF ORDER: order:<customerId>:<orderId>
+    if (merchantReference.startsWith(TOPUP_PREFIX)) {
+      const customerId = parseTopupMerchantReference(merchantReference);
+      logger.info("customerId", customerId);
+      this.handleTopUp({
+        customerId: customerId ?? "",
+        amount,
+        sessionId,
+        transactionDoc,
+        transaction,
+        paymentMethod,
+        responseText: transaction.responseText,
+        authorised,
+      });
+    } else {
+      // if the user buys a product this function will be called
+      const parsed = parseOrderMerchantReference(merchantReference);
+      const customerId = parsed?.customerId ?? "";
+      const orderId = parsed?.orderId ?? merchantReference;
+      const orderDoc = await this.firebaseService.findOrderByOrderId(orderId);
+      const storeDoc = await this.firebaseService.findStoreByStoreId(
+        orderDoc?.storeId,
+      );
+
       if (authorised) {
-        await this.coffixCreditService.addCredit(customerId, amount);
+        if (!orderDoc) {
+          throw new WindcaveError(400, {
+            error: `No order found for orderId: ${orderId}`,
+          });
+        }
+        logger.info("orderDoc", orderId);
+        await this.firebaseService.updateOrder(orderDoc.docId, {
+          status: "paid",
+          paidAt: new Date(),
+          paymentMethod,
+          scheduledAt: new Date(
+            Date.now() + (orderDoc?.duration ?? 0) * 60_000,
+          ),
+        });
         await this.firebaseService.updateTransaction(transactionDoc.docId, {
           status: "approved",
           updatedAt: new Date(),
@@ -192,7 +233,37 @@ export class WebhookService {
           sessionId,
           paymentId: transaction.id,
           responseText: transaction.responseText,
+          orderNumber: orderDoc?.orderNumber,
         });
+
+        // CREATE RECEIPT PRINT QUEUE
+        await this.receiptService.createPrintQueue({
+          receiptData: {
+            printerId: storeDoc?.printerId ?? "TRY",
+            storeName: storeDoc?.name ?? "",
+            storeAddress: storeDoc?.address ?? "",
+            orderNumber: orderDoc?.orderNumber.toString() ?? "",
+            orders: (orderDoc.items ?? [])
+              .map(
+                (item: any) =>
+                  `${item.quantity}x ${item.productName} | $${item.price.toFixed(2)}`,
+              )
+              .join("\n"),
+            total: Number((orderDoc.amount ?? 0).toFixed(2)),
+            customer: transaction.customer.firstName ?? "",
+            baristaName: "John Doe",
+            duration: orderDoc?.duration ?? 0,
+            paymentMethod: "Credit Card",
+          },
+        });
+
+        this.notificationService
+          .sendNotification({
+            customerId: customerId ?? "",
+            title: "Order Successful",
+            message: "Your order has been successful",
+          })
+          .catch((err) => logger.error("Notification failed:", err));
         return;
       } else {
         await this.firebaseService.updateTransaction(transactionDoc.docId, {
@@ -201,31 +272,45 @@ export class WebhookService {
           paymentMethod,
           sessionId,
           responseText: transaction.responseText,
+          orderNumber: orderDoc?.orderNumber,
         });
+
+        await this.firebaseService.updateOrder(orderId, {
+          status: "payment_failed",
+          failedAt: new Date(),
+        });
+        this.notificationService
+          .sendNotification({
+            customerId: customerId ?? "",
+            title: "Order Failed",
+            message: "Your order has been failed",
+          })
+          .catch((err) => logger.error("Notification failed:", err));
       }
-      return;
     }
+  }
 
-    // if the user buys a product this function will be called
-    const orderId = merchantReference;
-    const orderDoc = await this.firebaseService.findOrderByOrderId(orderId);
-    const storeDoc = await this.firebaseService.findStoreByStoreId(
-      orderDoc?.storeId,
-    );
-
+  async handleTopUp({
+    customerId,
+    amount,
+    sessionId,
+    transactionDoc,
+    transaction,
+    paymentMethod,
+    responseText,
+    authorised,
+  }: {
+    customerId: string;
+    amount: number;
+    sessionId: string;
+    transactionDoc: any;
+    transaction: any;
+    paymentMethod: string;
+    responseText: string;
+    authorised: boolean;
+  }) {
     if (authorised) {
-      if (!orderDoc) {
-        throw new WindcaveError(400, {
-          error: `No order found for orderId: ${orderId}`,
-        });
-      }
-      logger.info("orderDoc", orderId);
-      await this.firebaseService.updateOrder(orderDoc.docId, {
-        status: "paid",
-        paidAt: new Date(),
-        paymentMethod,
-        scheduledAt: new Date(Date.now() + (orderDoc?.duration ?? 0) * 60_000),
-      });
+      await this.coffixCreditService.addCredit(customerId, amount);
       await this.firebaseService.updateTransaction(transactionDoc.docId, {
         status: "approved",
         updatedAt: new Date(),
@@ -234,29 +319,14 @@ export class WebhookService {
         sessionId,
         paymentId: transaction.id,
         responseText: transaction.responseText,
-        orderNumber: orderDoc?.orderNumber,
       });
-
-      // CREATE RECEIPT PRINT QUEUE
-      await this.receiptService.createPrintQueue({
-        receiptData: {
-          printerId: storeDoc?.printerId ?? "TRY",
-          storeName: storeDoc?.name ?? "",
-          storeAddress: storeDoc?.address ?? "",
-          orderNumber: orderDoc?.orderNumber.toString() ?? "",
-          orders: (orderDoc.items ?? [])
-            .map(
-              (item: any) =>
-                `${item.quantity}x ${item.productName} | $${item.price.toFixed(2)}`,
-            )
-            .join("\n"),
-          total: Number((orderDoc.amount ?? 0).toFixed(2)),
-          customer: transaction.customer.firstName ?? "",
-          baristaName: "John Doe",
-          duration: orderDoc?.duration ?? 0,
-          paymentMethod: "Credit Card",
-        },
-      });
+      this.notificationService
+        .sendNotification({
+          customerId,
+          title: "Top-up Successful",
+          message: "Your top-up has been successful",
+        })
+        .catch((err) => logger.error("Notification failed:", err));
       return;
     } else {
       await this.firebaseService.updateTransaction(transactionDoc.docId, {
@@ -265,13 +335,15 @@ export class WebhookService {
         paymentMethod,
         sessionId,
         responseText: transaction.responseText,
-        orderNumber: orderDoc?.orderNumber,
       });
-
-      await this.firebaseService.updateOrder(orderId, {
-        status: "payment_failed",
-        failedAt: new Date(),
-      });
+      this.notificationService
+        .sendNotification({
+          customerId,
+          title: "Top-up Failed",
+          message: "Your top-up has been failed",
+        })
+        .catch((err) => logger.error("Notification failed:", err));
     }
+    return;
   }
 }

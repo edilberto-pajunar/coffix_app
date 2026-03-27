@@ -15,6 +15,7 @@ import 'package:coffix_app/features/products/data/model/product.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/products/presentation/pages/add_product_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
+import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/molecules/empty_state.dart';
 import 'package:collection/collection.dart';
@@ -194,19 +195,43 @@ class _CartViewState extends State<CartView> {
                           ),
                           const SizedBox(width: AppSizes.md),
 
-                          Expanded(
-                            child: AppButton.outlined(
-                              disabled: state.cart?.items?.isEmpty ?? true,
-                              onPressed: () async {
-                                await context.read<DraftCubit>().createDraft(
-                                  cart: state.cart!,
+                          BlocConsumer<DraftCubit, DraftState>(
+                            listener: (context, draftState) {
+                              if (draftState.maybeWhen(
+                                success: (drafts) => true,
+                                orElse: () => false,
+                              )) {
+                                AppNotification.show(
+                                  context,
+                                  'Draft saved successfully',
                                 );
-                                if (context.mounted) {
-                                  context.goNamed(DraftsPage.route);
-                                }
-                              },
-                              label: 'Save as draft',
-                            ),
+                                context.goNamed(DraftsPage.route);
+                              }
+                            },
+                            builder: (context, draftState) {
+                              final isLoading = draftState.maybeWhen(
+                                loading: (drafts) => true,
+                                orElse: () => false,
+                              );
+                              print(state.cart?.items?.isEmpty ?? true);
+                              return Expanded(
+                                child: AppButton.outlined(
+                                  disabled:
+                                      (state.cart?.items?.isEmpty ?? true) ||
+                                      isLoading,
+                                  onPressed: () async {
+                                    if (state.cart == null) return;
+                                    context.read<DraftCubit>().createDraft(
+                                      cart: state.cart!,
+                                    );
+                                    // context.goNamed(DraftsPage.route);
+                                  },
+                                  label: isLoading
+                                      ? 'Saving...'
+                                      : 'Save as draft',
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

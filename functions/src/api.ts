@@ -6,6 +6,7 @@ import webhookRouter from "./webhook/router";
 import coffixCreditRouter from "./coffixCredit/router";
 import authRouter from "./auth/route";
 import orderRouter from "./order/router";
+import notificationRouter from "./notification/router";
 
 export const api = express();
 // Global middleware
@@ -23,3 +24,4 @@ api.use("/webhook", webhookRouter);
 api.use("/credit", coffixCreditRouter);
 api.use("/auth", authRouter);
 api.use("/order", orderRouter);
+api.use("/notification", notificationRouter);

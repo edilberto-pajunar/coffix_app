@@ -26,6 +26,7 @@ AppUser _$AppUserFromJson(Map<String, dynamic> json) => AppUser(
   lastLogin: const DateTimeConverter().fromJson(json['lastLogin']),
   disabled: json['disabled'] as bool?,
   qrId: json['qrId'] as String?,
+  fcmToken: json['fcmToken'] as String?,
 );
 
 Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
@@ -48,4 +49,5 @@ Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
   'lastLogin': const DateTimeConverter().toJson(instance.lastLogin),
   'disabled': instance.disabled,
   'qrId': instance.qrId,
+  'fcmToken': instance.fcmToken,
 };

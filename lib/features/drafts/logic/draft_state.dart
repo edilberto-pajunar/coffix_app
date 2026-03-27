@@ -6,6 +6,8 @@ abstract class DraftState with _$DraftState {
       _Initial;
   const factory DraftState.loading({@Default([]) List<Draft> drafts}) =
       _Loading;
+  const factory DraftState.success({@Default([]) List<Draft> drafts}) =
+      _Success;
   const factory DraftState.loaded({@Default([]) List<Draft> drafts}) = _Loaded;
   const factory DraftState.error({
     required String message,

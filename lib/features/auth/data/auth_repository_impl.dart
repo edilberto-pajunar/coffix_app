@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:math' hide log;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -22,7 +24,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthRepositoryImpl extends ApiClient implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
-    final FirebaseFirestore _firestore = FirestoreService.instance;
+  final FirebaseFirestore _firestore = FirestoreService.instance;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   AuthRepositoryImpl() : super(dio: Dio());
 
@@ -355,5 +358,20 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
   @override
   Future<void> sendPasswordResetEmail({required String email}) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  @override
+  Future<void> updateFcmToken() async {
+    String? fcmToken;
+    fcmToken = await _firebaseMessaging.getToken();
+    if (Platform.isIOS) {
+      fcmToken = await _firebaseMessaging.getAPNSToken();
+    }
+    if (fcmToken == null) {
+      throw Exception('No token found');
+    }
+    await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
+      {"fcmToken": fcmToken, "updatedAt": TimeUtils.now()},
+    );
   }
 }

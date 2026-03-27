@@ -72,7 +72,9 @@ export class WindcaveService {
       body: JSON.stringify({
         amount: amount,
         currency: "NZD",
-        merchantReference: orderId,
+        // MERCHANT REFERENCE IF TOPUP: topup:<customerId>
+        // MERCHANT REFERENCE IF ORDER: order:<customerId>:<orderId>
+        merchantReference: `order:${userDoc.docId}:${orderId}`,
         type: "purchase",
         callbackUrls: {
           approved: WINDCAVE_SUCCESS_URL,

@@ -10,6 +10,7 @@ import FirebaseService from "../firebase/service";
 import { InsufficientCreditError } from "../coffixCredit/service";
 import { serializeForJson } from "../utils/serialize";
 import { ReceiptService } from "../receipt/service";
+import { NotificationService } from "../notification/service";
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.post(
     const firebaseService = new FirebaseService();
     const windcaveService = new WindcaveService();
     const receiptService = new ReceiptService();
+    const notificationService = new NotificationService();
     const customerId = request.user?.uid;
 
     if (!customerId) {
@@ -110,6 +112,16 @@ router.post(
               customerId,
               error,
             });
+          });
+
+        notificationService
+          .sendNotification({
+            customerId,
+            title: "Payment Successful",
+            message: "Your payment has been successful",
+          })
+          .catch((error) => {
+            logger.error("Failed to send notification", { customerId, error });
           });
 
         const finalOrderData = {

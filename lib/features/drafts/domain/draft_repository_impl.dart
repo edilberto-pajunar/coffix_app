@@ -9,7 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 class DraftRepositoryImpl implements DraftRepository {
-    final FirebaseFirestore _firestore = FirestoreService.instance;
+  final FirebaseFirestore _firestore = FirestoreService.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   DraftRepositoryImpl();
@@ -31,19 +31,22 @@ class DraftRepositoryImpl implements DraftRepository {
   }
 
   @override
-  Future<List<Draft>> getDrafts() async {
+  Stream<List<Draft>> getDrafts() {
     final userId = _auth.currentUser?.uid;
     if (userId == null) {
       throw Exception('User not found');
     }
     try {
-      final snapshot = await _firestore
+      final snapshot = _firestore
           .collection('drafts')
           .where('userId', isEqualTo: userId)
-          .get();
-      return snapshot.docs.map((doc) {
-        return Draft.fromJson(doc.data());
-      }).toList();
+          .snapshots()
+          .map((event) {
+            return event.docs.map((doc) {
+              return Draft.fromJson(doc.data());
+            }).toList();
+          });
+          return snapshot;
     } catch (e) {
       print("error: $e");
       throw Exception('Failed to get drafts');

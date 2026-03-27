@@ -214,6 +214,7 @@ class FirebaseService {
       .collection("transactions")
       .doc(transactionId);
     await transactionRef.set(data, { merge: true });
+    
   }
 
   async createTopupTransaction({

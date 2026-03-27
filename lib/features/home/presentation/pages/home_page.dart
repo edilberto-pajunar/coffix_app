@@ -2,10 +2,12 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
+import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/model/user_with_store.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
+import 'package:coffix_app/features/drafts/logic/draft_cubit.dart';
 import 'package:coffix_app/features/drafts/presentation/pages/drafts_page.dart';
 import 'package:coffix_app/features/home/presentation/widgets/app_checker.dart';
 import 'package:coffix_app/features/home/presentation/widgets/email_forgot_password_sent.dart';
@@ -44,6 +46,7 @@ class HomePage extends StatelessWidget {
         BlocProvider.value(value: getIt<StoreCubit>()),
         BlocProvider.value(value: getIt<ProductCubit>()),
         BlocProvider.value(value: getIt<ModifierCubit>()),
+        BlocProvider.value(value: getIt<DraftCubit>()),
       ],
       child: const HomeView(),
     );
@@ -119,9 +122,10 @@ class _HomeViewState extends State<HomeView> {
                                 previous != current,
                             listener: (context, state) {
                               state.whenOrNull(
-                                authenticated: (user) {
+                                authenticated: (user) async {
                                   context.read<StoreCubit>().getStores();
                                   context.read<ProductCubit>().getProducts();
+                                  context.read<DraftCubit>().getDrafts();
                                 },
                                 passwordResetEmailSent: () {
                                   AppNotification.show(
@@ -189,7 +193,9 @@ class _HomeViewState extends State<HomeView> {
                                                 right: 0,
                                                 child: IconButton(
                                                   onPressed: () {
-                                                    if (isAuthenticated) {
+                                                    if (isAuthenticated &&
+                                                        user.emailVerified ==
+                                                            true) {
                                                       context.goNamed(
                                                         ProfilePage.route,
                                                       );

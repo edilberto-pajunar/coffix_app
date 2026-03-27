@@ -32,6 +32,7 @@ class AuthCubit extends Cubit<AuthState> {
     _userSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         getUserWithStore();
+        _authRepository.updateFcmToken();
       } else {
         emit(AuthState.unauthenticated());
         _userWithStoreSubscription?.cancel();

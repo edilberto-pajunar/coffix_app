@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/flavors/flavor_config.dart';
+import 'package:coffix_app/data/notification_service.dart';
 import 'package:coffix_app/firebase_options_dev.dart' as devConfig;
 import 'package:coffix_app/firebase_options_prod.dart' as prodConfig;
 import 'package:firebase_core/firebase_core.dart';
@@ -51,10 +52,12 @@ Future<void> bootstrap(Widget Function() builder) async {
       await Firebase.initializeApp(
         // name: FlavorConfig.instance.name,
         options: firebaseOptions,
-        
       );
     }
   }
+
+  // init notifications
+  await NotificationService().initialize();
 
   tz.initializeTimeZones();
   final location = tz.getLocation('Pacific/Auckland');

@@ -27,6 +27,7 @@ class AppUser {
   final DateTime? lastLogin;
   final bool? disabled;
   final String? qrId;
+  final String? fcmToken;
 
   AppUser({
     this.creditAvailable,
@@ -48,6 +49,7 @@ class AppUser {
     this.lastLogin,
     this.disabled,
     this.qrId,
+    this.fcmToken,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

@@ -24,4 +24,5 @@ abstract class AuthRepository {
   Future<String> getFirebaseToken();
   Future<bool> customerHasAccount({required String email});
   Future<void> sendPasswordResetEmail({required String email});
+  Future<void> updateFcmToken();
 }
