@@ -38,14 +38,6 @@ class AppSplashScreen extends StatelessWidget {
                   AppImages.logo,
                   size: AppSizes.iconSizeXXLarge,
                 ),
-                if (appVersion != null)
-                  Text(
-                    "Version $appVersion",
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodyXS.copyWith(
-                      color: AppColors.white,
-                    ),
-                  ),
               ],
             ),
           ),

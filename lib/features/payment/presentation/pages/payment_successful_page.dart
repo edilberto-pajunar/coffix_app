@@ -83,8 +83,8 @@ class PaymentSuccessfulView extends StatelessWidget {
                       const SizedBox(height: AppSizes.lg),
                       Text(
                         orderCreated != null
-                            ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from ${store?.name ?? '—'} at'
-                            : 'Your order will be ready for pick up from ${store?.name ?? '—'} at',
+                            ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from \n${store?.name ?? '—'} at'
+                            : 'Your order will be ready for pick up from \n${store?.name ?? '—'} at',
                         style: AppTypography.bodyM,
                         textAlign: TextAlign.center,
                       ),

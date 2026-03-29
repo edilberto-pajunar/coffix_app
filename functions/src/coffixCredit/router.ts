@@ -47,7 +47,7 @@ router.post(
       const { paymentSessionUrl, sessionId } =
         await windcaveService.createPaymentSession({
           amount,
-          orderId: merchantReference,
+          merchantReference,
           userDoc: userDoc,
         });
 

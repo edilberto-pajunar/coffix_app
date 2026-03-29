@@ -135,7 +135,7 @@ class StoreList extends StatelessWidget {
                                     final next = store.nextOpeningFormatted();
                                     return next != null
                                         ? "Closed. Opens on ${next.day} ${next.time}"
-                                        : "Closed";
+                                        : "MON-SUN is closed";
                                   }(),
                             style: AppTypography.body2XS.copyWith(
                               color: AppColors.primary,

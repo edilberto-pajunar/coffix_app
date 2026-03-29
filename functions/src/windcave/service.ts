@@ -54,11 +54,11 @@ export class WindcaveService {
    */
   async createPaymentSession({
     amount,
-    orderId,
+    merchantReference,
     userDoc,
   }: {
     amount: number;
-    orderId: string;
+    merchantReference: string;
     userDoc: DocumentData;
   }) {
     const nickName = userDoc.nickName ?? userDoc.firstName;
@@ -74,7 +74,7 @@ export class WindcaveService {
         currency: "NZD",
         // MERCHANT REFERENCE IF TOPUP: topup:<customerId>
         // MERCHANT REFERENCE IF ORDER: order:<customerId>:<orderId>
-        merchantReference: `order:${userDoc.docId}:${orderId}`,
+        merchantReference: merchantReference,
         type: "purchase",
         callbackUrls: {
           approved: WINDCAVE_SUCCESS_URL,

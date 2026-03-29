@@ -74,6 +74,7 @@ class _CreditViewState extends State<CreditView> {
         onBack: () {
           context.goNamed(HomePage.route);
         },
+        showLocation: false,
       ),
       backgroundColor: AppColors.background,
 

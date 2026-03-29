@@ -16,7 +16,9 @@ import 'package:coffix_app/features/home/presentation/widgets/forgot_password.da
 import 'package:coffix_app/features/home/presentation/widgets/login_form.dart';
 import 'package:coffix_app/features/menu/presentation/pages/menu_page.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
+import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/order/presentation/pages/order_page.dart';
+import 'package:coffix_app/features/order/presentation/widgets/order_card.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
@@ -47,6 +49,7 @@ class HomePage extends StatelessWidget {
         BlocProvider.value(value: getIt<ProductCubit>()),
         BlocProvider.value(value: getIt<ModifierCubit>()),
         BlocProvider.value(value: getIt<DraftCubit>()),
+        BlocProvider.value(value: getIt<OrderCubit>()),
       ],
       child: const HomeView(),
     );
@@ -126,6 +129,7 @@ class _HomeViewState extends State<HomeView> {
                                   context.read<StoreCubit>().getStores();
                                   context.read<ProductCubit>().getProducts();
                                   context.read<DraftCubit>().getDrafts();
+                                  context.read<OrderCubit>().getOrders();
                                 },
                                 passwordResetEmailSent: () {
                                   AppNotification.show(

@@ -29,7 +29,7 @@ class _SpecialUrlViewState extends State<SpecialUrlView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBackHeader(title: 'Special Url'),
+      appBar: const AppBackHeader(title: "", showLocation: false),
       body: widget.url.isNotEmpty
           ? InAppWebView(
               initialUrlRequest: URLRequest(url: WebUri(widget.url)),

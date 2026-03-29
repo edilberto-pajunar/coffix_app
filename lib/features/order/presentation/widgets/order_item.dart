@@ -1,8 +1,10 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/extensions/order_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/data/model/cart_item.dart';
+import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +39,7 @@ class OrderItemRow extends StatelessWidget {
             child: SizedBox(
               width: 56,
               height: 56,
-              child: Image.network(cartItem.productImageUrl, fit: BoxFit.cover),
+              child: AppCachedNetworkImage(imageUrl: cartItem.productImageUrl),
             ),
           ),
         ),
@@ -74,7 +76,7 @@ class OrderItemRow extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: cartItem.selectedByGroup.entries.map((entry) {
-                  final modifierId = entry.value;
+                  final String modifierId = entry.value;
                   final label =
                       cartItem.modifierLabelSnapshot[modifierId] ?? modifierId;
                   final price = cartItem.modifierPriceSnapshot[modifierId];
@@ -82,7 +84,7 @@ class OrderItemRow extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          label,
+                          label.toLarge(),
                           style: AppTypography.body3XS.copyWith(
                             color: AppColors.textBlackColor,
                           ),

@@ -9,12 +9,14 @@ class AppCard extends StatelessWidget {
     this.color,
     this.borderColor,
     this.padding,
+    this.boxShadow,
   });
 
   final Widget child;
   final Color? color;
   final Color? borderColor;
   final EdgeInsets? padding;
+  final List<BoxShadow>? boxShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class AppCard extends StatelessWidget {
           width: 1.21,
           color: borderColor ?? AppColors.borderColor,
         ),
+        boxShadow: boxShadow,
       ),
       child: child,
     );

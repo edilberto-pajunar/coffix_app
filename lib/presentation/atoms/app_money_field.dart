@@ -25,9 +25,9 @@ class AppMoneyField extends StatelessWidget {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintStyle: AppTypography.headlineXxl.copyWith(
-                color: AppColors.lightGrey,
+                color: AppColors.lightGrey.withValues(alpha: 0.3),
               ),
-              hintText: '50',
+              hintText: '0.00',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppSizes.md),
               ),

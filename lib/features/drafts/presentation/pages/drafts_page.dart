@@ -140,25 +140,8 @@ class _DraftCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${cart.items?.length ?? 0} item${cart.items?.length == 1 ? '' : 's'}',
-                      style: AppTypography.body2XS.copyWith(
-                        color: AppColors.lightGrey,
-                      ),
-                    ),
-                    const SizedBox(height: AppSizes.sm),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Row(

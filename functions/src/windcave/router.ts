@@ -11,6 +11,7 @@ import { InsufficientCreditError } from "../coffixCredit/service";
 import { serializeForJson } from "../utils/serialize";
 import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
+import { getOrderMerchantReference } from "../coffixCredit/utils";
 
 const router = express.Router();
 
@@ -142,10 +143,12 @@ router.post(
       // handle card payment
       logger.info("Total amount:", totalAmount);
 
+      const merchantReference = getOrderMerchantReference(customerId, orderId);
+
       const { paymentSessionUrl, sessionId } =
         await windcaveService.createPaymentSession({
           amount: totalAmount,
-          orderId,
+          merchantReference,
           userDoc,
         });
 
@@ -158,7 +161,11 @@ router.post(
 
       return response.status(200).json({
         success: true,
-        data: { order: serializeForJson(orderData), paymentSessionUrl },
+        data: {
+          order: serializeForJson(orderData),
+          paymentSessionUrl,
+          baseUrl: process.env.BASE_URL,
+        },
       });
     } catch (error) {
       if (error instanceof InsufficientCreditError) {
@@ -172,9 +179,11 @@ router.post(
         });
       }
       if (error instanceof WindcaveError) {
-        return response
-          .status(error.status)
-          .json({ success: false, message: error.message, data: error.data });
+        return response.status(error.status).json({
+          success: false,
+          message: error.message,
+          data: error.data,
+        });
       }
       logger.error("Error creating payment session:", error);
       return response

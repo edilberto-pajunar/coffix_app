@@ -3,10 +3,23 @@ extension OrderExtensions on String {
     return substring(length - 6);
   }
 
-  // convert {LARGE} to {Large}
+  // convert {LARGE, regular, no syrup, extra hot} to {Large, Regular, No Syrup, Extra Hot}
   String toLarge() {
     if (isEmpty) return this;
 
-    return this[0].toUpperCase() + substring(1).toLowerCase();
+    return split(',')
+        .map((part) {
+          final trimmed = part.trim();
+
+          return trimmed
+              .split(' ')
+              .map(
+                (word) => word.isEmpty
+                    ? word
+                    : word[0].toUpperCase() + word.substring(1).toLowerCase(),
+              )
+              .join(' ');
+        })
+        .join(', ');
   }
 }

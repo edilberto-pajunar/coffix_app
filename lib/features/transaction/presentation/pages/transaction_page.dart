@@ -12,6 +12,7 @@ import 'package:coffix_app/features/cart/domain/helper.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier.dart';
+import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
@@ -111,119 +112,24 @@ class _TransactionViewState extends State<TransactionView> {
   }
 }
 
-class _TransactionCard extends StatelessWidget {
+class _TransactionCard extends StatefulWidget {
   const _TransactionCard({required this.transaction});
 
   final Transaction transaction;
 
-  Future<void> _reorder(BuildContext context) async {
-    final orderId = transaction.orderId;
-    if (orderId == null || orderId.isEmpty) {
-      AppNotification.error(context, 'No linked order for this transaction');
-      return;
-    }
+  @override
+  State<_TransactionCard> createState() => _TransactionCardState();
+}
 
-    final order = await context.read<OrderCubit>().getOrderById(orderId);
-    if (order == null) {
-      if (context.mounted) {
-        AppNotification.error(context, 'Order not found');
-      }
-      return;
-    }
-
-    if (!context.mounted) return;
-
-    final productCubit = context.read<ProductCubit>();
-    final products = productCubit.allProducts;
-
-    if (products.isEmpty || order.items == null || order.items!.isEmpty) {
-      AppNotification.error(context, 'Unable to reorder at this time');
-      return;
-    }
-
-    if (order.storeId == null) {
-      AppNotification.error(context, 'Store information missing');
-      return;
-    }
-    context.read<StoreCubit>().updatePreferredStore(storeId: order.storeId!);
-
-    final cartCubit = context.read<CartCubit>();
-    cartCubit.resetCart();
-
-    final helper = CartHelper();
-    int addedCount = 0;
-
-    for (final item in order.items!) {
-      if (item.productId == null) continue;
-
-      final match = products.firstWhereOrNull(
-        (p) => p.product.docId == item.productId,
-      );
-
-      if (match == null) continue;
-
-      final product = match.product;
-      final selectedByGroup = item.selectedModifiers ?? {};
-      final modifierMap = <String, Modifier>{
-        for (final im in item.modifiers ?? [])
-          if (im.modifierId != null)
-            im.modifierId!: Modifier(
-              docId: im.modifierId,
-              priceDelta: im.priceDelta,
-            ),
-      };
-      final modifierPriceSnapshot = helper.buildModifierPriceSnapshot(
-        selectedByGroup: selectedByGroup,
-        modifierMap: modifierMap,
-      );
-      final basePrice = product.price ?? 0;
-      final unitTotal = helper.computeUnitTotal(
-        basePrice: basePrice,
-        modifierPriceSnapshot: modifierPriceSnapshot,
-      );
-      final quantity = item.quantity ?? 1;
-      final id = helper.buildCartItemIdHashed(
-        storeId: order.storeId!,
-        productId: product.docId ?? '',
-        selectedByGroup: selectedByGroup,
-      );
-
-      final cartItem = CartItem(
-        id: id,
-        storeId: order.storeId!,
-        productId: product.docId ?? '',
-        productName: product.name ?? '',
-        productImageUrl: product.imageUrl ?? '',
-        quantity: quantity,
-        selectedByGroup: selectedByGroup,
-        basePrice: basePrice,
-        modifierPriceSnapshot: modifierPriceSnapshot,
-        unitTotal: unitTotal,
-        lineTotal: unitTotal * quantity,
-        createdAt: TimeUtils.now(),
-      );
-
-      try {
-        cartCubit.addProduct(newItem: cartItem);
-        addedCount++;
-      } catch (_) {}
-    }
-
-    if (!context.mounted) return;
-
-    if (addedCount == 0) {
-      AppNotification.error(context, 'Some items are no longer available');
-      return;
-    }
-
-    context.goNamed(CartPage.route);
-  }
-
+class _TransactionCardState extends State<_TransactionCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (statusLabel, statusColor) = _transactionStatusStyle(
-      transaction.status,
+      widget.transaction.status,
+    );
+    final order = context.watch<OrderCubit>().state.orders.firstWhereOrNull(
+      (order) => order.docId == widget.transaction.orderId,
     );
 
     return Container(
@@ -244,15 +150,17 @@ class _TransactionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '#${transaction.orderNumber?.last6 ?? '—'}',
+                      widget.transaction.type == "topup"
+                          ? "TopUp"
+                          : "#${widget.transaction.orderNumber?.last6 ?? "N/A"}",
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: AppSizes.xs),
-                    if (transaction.createdAt != null)
+                    if (widget.transaction.createdAt != null)
                       Text(
-                        transaction.createdAt?.formatDate() ?? '—',
+                        widget.transaction.createdAt?.formatDate() ?? '—',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.lightGrey,
                         ),
@@ -265,12 +173,11 @@ class _TransactionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text.rich(
-                    transaction.amount?.toCurrencySuperscript(
+                    widget.transaction.amount?.toCurrencySuperscript(
                           style: AppTypography.titleS,
                         ) ??
                         0.00.toCurrencySuperscript(style: AppTypography.titleS),
                   ),
-                  Text(transaction.paymentMethod?.label ?? '—'),
                 ],
               ),
             ],
@@ -282,26 +189,85 @@ class _TransactionCard extends StatelessWidget {
                   children: [
                     StatusChip(label: statusLabel, color: statusColor),
                     const SizedBox(width: AppSizes.sm),
-                    if (transaction.paymentMethod != null)
+                    if (widget.transaction.paymentMethod != null)
                       Text(
-                        'via ${transaction.paymentMethod?.label ?? '—'}',
+                        'via ${widget.transaction.paymentMethod?.label ?? '—'}',
                         style: theme.textTheme.bodySmall,
                       ),
                   ],
                 ),
               ),
-              if (transaction.orderId != null)
-                AppButton(
-                  height: 24,
-                  width: 56,
-                  onPressed: () => _reorder(context),
-                  label: 'Reorder',
-                  textStyle: AppTypography.body2XS.copyWith(
-                    color: AppColors.white,
-                  ),
-                ),
             ],
           ),
+          if (order?.items != null && order!.items!.isNotEmpty) ...[
+            const SizedBox(height: AppSizes.sm),
+            const Divider(height: 1),
+            const SizedBox(height: AppSizes.sm),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: order.items!.length,
+              itemBuilder: (context, index) {
+                final Item item = order.items![index];
+                final imageUrl = item.productImageUrl ?? '';
+                final modifierLabels =
+                    item.selectedModifiers?.values.toList() ?? [];
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (imageUrl.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppSizes.sm),
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Image.network(imageUrl, fit: BoxFit.cover),
+                          ),
+                        )
+                      else
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.softGrey,
+                            borderRadius: BorderRadius.circular(AppSizes.sm),
+                          ),
+                          child: const Icon(
+                            Icons.coffee,
+                            color: AppColors.lightGrey,
+                            size: AppSizes.iconSizeSmall,
+                          ),
+                        ),
+                      const SizedBox(width: AppSizes.sm),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${item.productName ?? ''} (x${item.quantity ?? 0})',
+                              style: AppTypography.bodyM600,
+                            ),
+                            if (modifierLabels.isNotEmpty) ...[
+                              const SizedBox(height: AppSizes.xs),
+                              Text(
+                                modifierLabels.join(', ').toLarge(),
+                                style: AppTypography.body3XS,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

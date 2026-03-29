@@ -362,14 +362,12 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
 
   @override
   Future<void> updateFcmToken() async {
-    String? fcmToken;
-    fcmToken = await _firebaseMessaging.getToken();
-    if (Platform.isIOS) {
-      fcmToken = await _firebaseMessaging.getAPNSToken();
-    }
+    final fcmToken = await _firebaseMessaging.getToken();
+
     if (fcmToken == null) {
-      throw Exception('No token found');
+      throw Exception('No FCM token found');
     }
+
     await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
       {"fcmToken": fcmToken, "updatedAt": TimeUtils.now()},
     );

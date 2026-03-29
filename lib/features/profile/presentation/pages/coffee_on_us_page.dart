@@ -22,6 +22,46 @@ class CoffeeOnUsView extends StatefulWidget {
 }
 
 class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
+  static const int _minFriends = 3;
+  static const int _maxFriends = 5;
+
+  int _friendCount = _minFriends;
+
+  Widget _buildFriendRow(int index) {
+    final num = index + 1;
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: AppField(
+                hintText: "Name",
+                name: "Name $num",
+                isHorizontalAlign: true,
+              ),
+            ),
+            if (_friendCount > _minFriends)
+              IconButton(
+                icon: const Icon(
+                  Icons.remove_circle_outline,
+                  color: Colors.red,
+                ),
+                onPressed: () => setState(() => _friendCount--),
+              ),
+          ],
+        ),
+        SizedBox(height: AppSizes.sm),
+        AppField(
+          hintText: "Email",
+          name: "Email $num",
+          isHorizontalAlign: true,
+          keyboardType: TextInputType.emailAddress,
+        ),
+        if (index < _friendCount - 1) Divider(height: AppSizes.xxl),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,15 +70,13 @@ class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
         padding: AppSizes.defaultPadding,
         child: Column(
           children: [
-            Text(
+            const Text(
               "Introduce your friends to the Coffix App and get a coffee on us after their first purchase (within 7 days)",
               textAlign: TextAlign.center,
             ),
             SizedBox(height: AppSizes.xl),
-            AppField(hintText: "Name", name: "Name", isHorizontalAlign: true),
-            SizedBox(height: AppSizes.sm),
-            AppField(hintText: "Email", name: "Email", isHorizontalAlign: true),
-            Divider(),
+            ...List.generate(_friendCount, _buildFriendRow),
+
             SizedBox(height: AppSizes.xl),
             AppButton(onPressed: () {}, label: "Invite your friends"),
           ],

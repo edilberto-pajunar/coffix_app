@@ -88,12 +88,6 @@ class _WrapperViewState extends State<WrapperView> {
           ),
           const SizedBox(height: AppSizes.xl),
           SvgPicture.asset(AppImages.logo, width: 256, height: 256),
-          const SizedBox(height: AppSizes.xl),
-          Text(
-            "Version ${appVersion ?? '1.0.0'}",
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyXS.copyWith(color: AppColors.white),
-          ),
         ],
       ),
     );

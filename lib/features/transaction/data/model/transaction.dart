@@ -32,6 +32,7 @@ class Transaction {
   @DateTimeConverter()
   final DateTime? paymentTime;
   final String? orderNumber;
+  final String? type;
 
   Transaction({
     this.docId,
@@ -44,6 +45,7 @@ class Transaction {
     this.paymentId,
     this.paymentTime,
     this.orderNumber,
+    this.type,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

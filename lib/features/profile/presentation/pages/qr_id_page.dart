@@ -1,5 +1,8 @@
+import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
+import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +31,7 @@ class QrIdView extends StatelessWidget {
     final qrId = userWithStore?.user.qrId;
 
     return Scaffold(
-      appBar: const AppBackHeader(title: 'My QR ID'),
+      appBar: const AppBackHeader(title: "", showLocation: false),
 
       body: qrId == null || qrId.isEmpty
           ? Center(
@@ -42,16 +45,51 @@ class QrIdView extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: AppSizes.xxl),
-                  Center(
-                    child: QrImageView(
-                      data: qrId,
-                      version: QrVersions.auto,
-                      size: 240,
-                      backgroundColor: Colors.white,
+                  Text("Coffix VIP ID", style: AppTypography.headlineXl),
+                  Text(
+                    "Please show your VIP ID to your barista",
+                    style: AppTypography.bodyM,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: AppSizes.xxxxxl),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.xxl,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AppCard(
+                          color: AppColors.background,
+                          boxShadow: [AppColors.shadow],
+                          child: Text(
+                            userWithStore?.user.nickName ?? "",
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyS.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textBlackColor,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: AppSizes.sm),
+                        AppCard(
+                          color: AppColors.background,
+                          boxShadow: [AppColors.shadow],
+                          child: Center(
+                            child: QrImageView(
+                              data: qrId,
+                              version: QrVersions.auto,
+                              size: 240,
+                              backgroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: AppSizes.lg),
-                  SelectableText(qrId, style: theme.textTheme.bodyMedium),
+                  SelectableText(qrId, style: AppTypography.bodyM600),
                 ],
               ),
             ),

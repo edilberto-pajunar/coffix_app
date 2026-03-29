@@ -9,6 +9,7 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/coffee_for_home_page.dart';
@@ -38,6 +39,7 @@ class ProfilePage extends StatelessWidget {
         BlocProvider.value(value: getIt<AuthCubit>()),
         BlocProvider.value(value: getIt<AppCubit>()),
         BlocProvider.value(value: getIt<CartCubit>()),
+        BlocProvider.value(value: getIt<CreditCubit>()),
       ],
       child: const ProfileView(),
     );
@@ -114,6 +116,7 @@ class ProfileView extends StatelessWidget {
                   const SizedBox(height: AppSizes.md),
                   AppButton.primary(
                     onPressed: () {
+                      context.read<CreditCubit>().showTopUpField(false);
                       context.goNamed(CreditPage.route);
                     },
                     label: 'TopUp',

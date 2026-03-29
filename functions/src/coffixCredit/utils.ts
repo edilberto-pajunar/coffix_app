@@ -5,6 +5,10 @@ export function getTopupMerchantReference(customerId: string) {
   return `${TOPUP_PREFIX}${customerId}`;
 }
 
+export function getOrderMerchantReference(customerId: string, orderId: string) {
+  return `${ORDER_PREFIX}${customerId}:${orderId}`;
+}
+
 export function parseTopupMerchantReference(
   merchantReference: string,
 ): string | null {

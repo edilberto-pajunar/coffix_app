@@ -33,7 +33,7 @@ class AppBackHeader extends StatefulWidget implements PreferredSizeWidget {
         ? 154
         : showLocation
         ? 90
-        : 56,
+        : 64,
   );
 }
 
