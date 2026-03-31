@@ -40,7 +40,6 @@ class AppBackHeader extends StatefulWidget implements PreferredSizeWidget {
 class _AppBackHeaderState extends State<AppBackHeader> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final topPadding = MediaQuery.of(context).padding.top;
 
     return SafeArea(

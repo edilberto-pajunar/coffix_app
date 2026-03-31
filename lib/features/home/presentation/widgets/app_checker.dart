@@ -47,7 +47,6 @@ class _AppCheckerState extends State<AppChecker> {
     final appCubit = context.read<AppCubit>();
     final prefs = await SharedPreferences.getInstance();
     final count = prefs.getInt(AppConstants.kUpdateWarningDismissCount) ?? 0;
-    print("Update warning count: $count");
 
     if (count >= AppConstants.kUpdateWarningDismissLimit) return;
 
@@ -93,7 +92,6 @@ class _AppCheckerState extends State<AppChecker> {
                 },
               );
             } else if (checkerState == AppCheckerState.updateWarning) {
-              print("This is true");
               _handleUpdateWarning(context);
             }
           },

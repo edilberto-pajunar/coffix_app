@@ -46,7 +46,6 @@ class DraftRepositoryImpl implements DraftRepository {
           });
           return snapshot;
     } catch (e) {
-      print("error: $e");
       throw Exception('Failed to get drafts');
     }
   }

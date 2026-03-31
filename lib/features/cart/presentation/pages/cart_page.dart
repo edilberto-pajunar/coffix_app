@@ -130,9 +130,6 @@ class _CartViewState extends State<CartView> {
                                               cartItem.productId,
                                         )
                                         ?.product;
-                                    print(products.map((e) => e.product.docId));
-                                    print(cartItem.productId);
-                                    print(selectedProduct);
                                     if (selectedProduct == null) return;
                                     context.pushNamed(
                                       AddProductPage.route,
@@ -215,7 +212,6 @@ class _CartViewState extends State<CartView> {
                                 loading: (drafts) => true,
                                 orElse: () => false,
                               );
-                              print(state.cart?.items?.isEmpty ?? true);
                               return Expanded(
                                 child: AppButton.outlined(
                                   disabled:

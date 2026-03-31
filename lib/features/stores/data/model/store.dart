@@ -105,6 +105,7 @@ class Store {
     if (hour == 0) {
       hour = 12;
     } else if (hour > 12)
+      // ignore: curly_braces_in_flow_control_structures
       hour -= 12;
     final minStr = minute == 0 ? '' : ':${minute.toString().padLeft(2, '0')}';
     return '$hour$minStr$period';

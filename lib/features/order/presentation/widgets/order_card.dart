@@ -83,20 +83,17 @@ class OrderCard extends StatelessWidget {
         selectedByGroup: selectedByGroup,
         modifierMap: modifierMap,
       );
-      print(modifierPriceSnapshot);
       final basePrice = product.price ?? 0;
       final unitTotal = helper.computeUnitTotal(
         basePrice: basePrice,
         modifierPriceSnapshot: modifierPriceSnapshot,
       );
-      print(unitTotal);
       final quantity = item.quantity ?? 1;
       final id = helper.buildCartItemIdHashed(
         storeId: order.storeId!,
         productId: product.docId ?? '',
         selectedByGroup: selectedByGroup,
       );
-      print(id);
 
       final cartItem = CartItem(
         id: id,
@@ -113,16 +110,14 @@ class OrderCard extends StatelessWidget {
         createdAt: TimeUtils.now(),
       );
 
-      print(cartItem.toJson());
 
       try {
         cartCubit.addProduct(newItem: cartItem);
         addedCount++;
       } catch (e) {
-        print("error: $e");
+        continue;
       }
 
-      print("addedCount: $addedCount");
     }
 
     if (addedCount == 0) {

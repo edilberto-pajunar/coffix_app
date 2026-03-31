@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes
+
 import 'dart:async';
 
 import 'package:coffix_app/core/di/service_locator.dart';

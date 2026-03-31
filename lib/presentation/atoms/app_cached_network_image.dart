@@ -29,8 +29,8 @@ class AppCachedNetworkImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      placeholder: placeholder != null ? (_, __) => placeholder! : null,
-      errorWidget: errorWidget != null ? (_, __, ___) => errorWidget! : null,
+      placeholder: placeholder != null ? (_, _) => placeholder! : null,
+      errorWidget: errorWidget != null ? (_, _, _) => errorWidget! : null,
     );
   }
 

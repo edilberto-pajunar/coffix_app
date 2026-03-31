@@ -23,7 +23,6 @@ class CoffeeOnUsView extends StatefulWidget {
 
 class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
   static const int _minFriends = 3;
-  static const int _maxFriends = 5;
 
   int _friendCount = _minFriends;
 

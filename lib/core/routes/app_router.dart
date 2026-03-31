@@ -62,6 +62,7 @@ class AppRouter {
     ),
     redirect: (context, state) {
       final currentUser = FirebaseAuth.instance.currentUser;
+      // ignore: avoid_print
       print('Current state: ${state.uri.path} - ${currentUser?.uid}');
       // final isLoggedIn = currentUser != null;
       // final isOnAuthRoute = state.matchedLocation.startsWith('/auth');

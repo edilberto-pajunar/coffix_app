@@ -88,7 +88,6 @@ class _AddProductViewState extends State<AddProductView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final productModifierState = context.watch<ProductModifierCubit>().state;
     final hasModifiers = widget.product.modifierGroupIds?.isNotEmpty ?? false;
 
     return BlocListener<ModifierCubit, ModifierState>(

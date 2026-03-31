@@ -63,10 +63,7 @@ class _WrapperViewState extends State<WrapperView> {
 
   @override
   Widget build(BuildContext context) {
-    final appVersion = context.watch<AppCubit>().state.maybeWhen(
-      loaded: (global, appVersion) => appVersion,
-      orElse: () => null,
-    );
+ 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.black,

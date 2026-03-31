@@ -51,7 +51,6 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final double creditBalance = context.watch<AuthCubit>().state.maybeWhen(
       authenticated: (user) =>
           double.parse(user.user.creditAvailable?.toString() ?? '0.00'),
@@ -100,6 +99,7 @@ class ProfileView extends StatelessWidget {
                         ),
                         // TODO: IMPLEMENT THE COUPON SYSTEM
                         // Single condition for coupon block
+                        // ignore: dead_code
                         if (false) ...[
                           TextSpan(text: "+ ", style: AppTypography.headlineXl),
                           0.00.toCurrencySuperscript(

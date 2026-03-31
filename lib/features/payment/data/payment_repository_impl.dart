@@ -3,10 +3,8 @@ import 'package:coffix_app/core/api/api_client.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class PaymentRepositoryImpl extends ApiClient implements PaymentRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   PaymentRepositoryImpl() : super(dio: Dio());
 
   @override

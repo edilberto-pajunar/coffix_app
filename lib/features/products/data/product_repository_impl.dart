@@ -9,6 +9,7 @@ import 'package:rxdart/rxdart.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
    final FirebaseFirestore _firestore = FirestoreService.instance;
+  // ignore: unused_field
   final StoreRepository _storeRepository;
 
   ProductRepositoryImpl({required StoreRepository storeRepository})

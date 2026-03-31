@@ -215,12 +215,8 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw UserCancelledSignIn();
       }
-      print(
-        'Google Sign In error: code: ${e.code.name} description:${e.description} details:${e.details}',
-      );
       rethrow;
     } catch (error) {
-      print('Unexpected Google Sign-In error: $error');
       rethrow;
     }
   }
