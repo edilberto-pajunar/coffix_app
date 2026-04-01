@@ -232,7 +232,10 @@ class _HomeViewState extends State<HomeView> {
                                                   );
                                                 },
                                                 label: "New Order",
-                                                disabled: isAuthenticated
+                                                disabled:
+                                                    isAuthenticated &&
+                                                        user.emailVerified ==
+                                                            true
                                                     ? false
                                                     : true,
                                               ),
@@ -244,7 +247,9 @@ class _HomeViewState extends State<HomeView> {
                                                   Expanded(
                                                     child: AppButton.primary(
                                                       onPressed: () async {
-                                                        if (isAuthenticated) {
+                                                        if (isAuthenticated &&
+                                                            user.emailVerified ==
+                                                                true) {
                                                           context.pushNamed(
                                                             OrderPage.route,
                                                           );
@@ -259,9 +264,13 @@ class _HomeViewState extends State<HomeView> {
                                                   Expanded(
                                                     child: AppButton.primary(
                                                       onPressed: () {
-                                                        context.pushNamed(
-                                                          DraftsPage.route,
-                                                        );
+                                                        if (isAuthenticated &&
+                                                            user.emailVerified ==
+                                                                true) {
+                                                          context.pushNamed(
+                                                            DraftsPage.route,
+                                                          );
+                                                        }
                                                       },
                                                       label: "My Drafts",
                                                     ),

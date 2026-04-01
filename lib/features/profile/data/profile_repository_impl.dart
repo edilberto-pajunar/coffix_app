@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffix_app/core/api/api_client.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/domain/firestore_service.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ProfileRepositoryImpl implements ProfileRepository {
-   final FirebaseFirestore _firestore = FirestoreService.instance;
+class ProfileRepositoryImpl extends ApiClient implements ProfileRepository {
+  final FirebaseFirestore _firestore = FirestoreService.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  ProfileRepositoryImpl() : super(dio: Dio());
 
   @override
   Future<void> updateProfile({
@@ -49,4 +53,22 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<void> sendCoffeeOnUs({
     required List<Map<String, dynamic>> datas,
   }) async {}
+
+  @override
+  Future<void> sendGift({
+    required String recipientFirstName,
+    required String recipientLastName,
+    required String recipientEmail,
+    required double amount,
+  }) async {
+    await post(
+      '/credit/share',
+      data: {
+        'recipientFirstName': recipientFirstName,
+        'recipientLastName': recipientLastName,
+        'recipientEmail': recipientEmail,
+        'amount': amount,
+      },
+    );
+  }
 }

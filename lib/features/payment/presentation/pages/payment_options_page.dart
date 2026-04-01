@@ -62,7 +62,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
         paymentMethod == PaymentMethod.coffixCredit && creditAvailable < total;
 
     return Scaffold(
-      appBar: AppBackHeader(title: "Payment Method"),
+      appBar: AppBackHeader(title: "Payment"),
       body: Column(
         children: [
           BlocConsumer<PaymentCubit, PaymentState>(

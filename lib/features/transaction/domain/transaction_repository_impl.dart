@@ -24,6 +24,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
             ts.TransactionStatus.paid.name,
             ts.TransactionStatus.approved.name,
             ts.TransactionStatus.failed.name,
+            ts.TransactionStatus.completed.name,
           ],
         )
         .orderBy("createdAt", descending: true)

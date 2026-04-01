@@ -56,4 +56,24 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileState.error(message: e.toString()));
     }
   }
+
+  void sendGift({
+    required String recipientFirstName,
+    required String recipientLastName,
+    required String recipientEmail,
+    required double amount,
+  }) async {
+    emit(ProfileState.loading());
+    try {
+      await _profileRepository.sendGift(
+        recipientFirstName: recipientFirstName,
+        recipientLastName: recipientLastName,
+        recipientEmail: recipientEmail,
+        amount: amount,
+      );
+      emit(ProfileState.success());
+    } catch (e) {
+      emit(ProfileState.error(message: e.toString()));
+    }
+  }
 }

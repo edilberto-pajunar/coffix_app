@@ -10,4 +10,10 @@ abstract class ProfileRepository {
     String? preferredStoreId,
   });
   Future<void> sendCoffeeOnUs({required List<Map<String, dynamic>> datas});
+  Future<void> sendGift({
+    required String recipientFirstName,
+    required String recipientLastName,
+    required String recipientEmail,
+    required double amount,
+  });
 }

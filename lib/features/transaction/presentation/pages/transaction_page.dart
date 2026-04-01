@@ -27,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
     TransactionStatus.created => ('Created', AppColors.primary),
     TransactionStatus.approved => ('Approved', AppColors.success),
     TransactionStatus.failed => ('Failed', AppColors.error),
+    TransactionStatus.completed => ('Completed', AppColors.success),
     _ => ('—', AppColors.lightGrey),
   };
 }
@@ -125,6 +126,15 @@ class _TransactionCardState extends State<_TransactionCard> {
       (order) => order.docId == widget.transaction.orderId,
     );
 
+    String getTransactionTitle() {
+      if (widget.transaction.type == "topup") {
+        return "TopUp";
+      } else if (widget.transaction.type == "gift") {
+        return "Gift: ${widget.transaction.recipientEmail}";
+      }
+      return "#${widget.transaction.orderNumber?.last6 ?? "N/A"}";
+    }
+
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
       decoration: BoxDecoration(
@@ -141,9 +151,7 @@ class _TransactionCardState extends State<_TransactionCard> {
                 child: Row(
                   children: [
                     Text(
-                      widget.transaction.type == "topup"
-                          ? "TopUp"
-                          : "#${widget.transaction.orderNumber?.last6 ?? "N/A"}",
+                      getTransactionTitle(),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

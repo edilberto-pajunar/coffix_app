@@ -15,6 +15,8 @@ enum TransactionStatus {
   approved,
   @JsonValue('declined')
   declined,
+  @JsonValue('completed')
+  completed,
 }
 
 @JsonSerializable()
@@ -33,6 +35,10 @@ class Transaction {
   final DateTime? paymentTime;
   final String? orderNumber;
   final String? type;
+  String? recipientCustomerId;
+  String? recipientEmail;
+  String? senderFirstName;
+  String? senderLastName;
 
   Transaction({
     this.docId,
@@ -46,6 +52,10 @@ class Transaction {
     this.paymentTime,
     this.orderNumber,
     this.type,
+    this.recipientCustomerId,
+    this.recipientEmail,
+    this.senderFirstName,
+    this.senderLastName,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

@@ -4,8 +4,12 @@ export const topupBodySchema = z.object({
   amount: z.number().positive(),
 });
 
-// export const shareCoffixCreditSchema = z.object({
-//   name,
-// });
+export const shareCoffixCreditSchema = z.object({
+  recipientFirstName: z.string().min(1),
+  recipientLastName: z.string().min(1),
+  recipientEmail: z.string().email(),
+  amount: z.number().positive(),
+});
 
 export type TopupBodySchema = z.infer<typeof topupBodySchema>;
+export type ShareCoffixCreditSchema = z.infer<typeof shareCoffixCreditSchema>;

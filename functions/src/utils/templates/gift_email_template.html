@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You received a Coffix gift!</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #333333;
+      }
+      .wrapper {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .header {
+        background-color: #f15f2c;
+        padding: 32px 40px;
+        text-align: center;
+      }
+      .header h1 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 28px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      .header p {
+        margin: 6px 0 0;
+        color: #fff;
+        font-size: 13px;
+        letter-spacing: 1px;
+      }
+      .body {
+        padding: 40px 40px 32px;
+        text-align: center;
+      }
+      .gift-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      .greeting {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 12px;
+      }
+      .message {
+        font-size: 15px;
+        color: #555555;
+        line-height: 1.6;
+        margin: 0 0 32px;
+      }
+      .amount-box {
+        display: inline-block;
+        background-color: #fff7f4;
+        border: 2px solid #f15f2c;
+        border-radius: 12px;
+        padding: 20px 48px;
+        margin-bottom: 32px;
+      }
+      .amount-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #999999;
+        margin: 0 0 6px;
+      }
+      .amount-value {
+        font-size: 36px;
+        font-weight: 700;
+        color: #f15f2c;
+        margin: 0;
+      }
+      .cta-text {
+        font-size: 14px;
+        color: #777777;
+        line-height: 1.6;
+        margin: 0 0 8px;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 32px 0;
+      }
+      .footer {
+        background-color: #f9f9f9;
+        border-top: 1px solid #eeeeee;
+        padding: 24px 40px;
+        text-align: center;
+      }
+      .footer p {
+        margin: 4px 0;
+        font-size: 12px;
+        color: #aaaaaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <h1>Coffix</h1>
+        <p>You've received a gift</p>
+      </div>
+
+      <div class="body">
+        <div class="gift-icon">🎁</div>
+
+        <p class="greeting">Hey {{recipientFirstName}}!</p>
+
+        <p class="message">
+          <strong>{{senderName}}</strong> just sent you a Coffix Credit gift.
+          The credit has been added to your account and is ready to use on your
+          next coffee order.
+        </p>
+
+        <div class="amount-box">
+          <p class="amount-label">Gift Amount</p>
+          <p class="amount-value">${{amount}}</p>
+        </div>
+
+        <hr class="divider" />
+
+        <p class="cta-text">
+          Simply log in to the Coffix app and your credit will be waiting for
+          you at checkout.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>Thank you for being part of the Coffix community!</p>
+        <p>This is an automated message — please do not reply to this email.</p>
+      </div>
+    </div>
+  </body>
+</html>

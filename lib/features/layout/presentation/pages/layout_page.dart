@@ -155,16 +155,19 @@ class _LayoutViewState extends State<LayoutView> {
                               onTap: (index) {
                                 state.maybeWhen(
                                   authenticated: (user) {
-                                    if (index ==
-                                        LayoutPageTab.coffixCredit.index) {
-                                      context
-                                          .read<CreditCubit>()
-                                          .showTopUpField(false);
+                                    if (user.user.emailVerified == true) {
+                                      if (index ==
+                                          LayoutPageTab.coffixCredit.index) {
+                                        context
+                                            .read<CreditCubit>()
+                                            .showTopUpField(false);
+                                      }
+
+                                      widget.shell.goBranch(
+                                        index,
+                                        initialLocation: true,
+                                      );
                                     }
-                                    widget.shell.goBranch(
-                                      index,
-                                      initialLocation: true,
-                                    );
                                   },
                                   orElse: () => null,
                                 );

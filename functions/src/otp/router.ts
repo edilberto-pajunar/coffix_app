@@ -7,6 +7,7 @@ import { firestore } from "../config/firebaseAdmin";
 import { createOTPDocumentWithTransaction } from "./service";
 import { verifyEmail } from "../user/service";
 import { RESEND_FROM_EMAIL } from "../constant/constant";
+import FirebaseService from "../firebase/service";
 
 export const otpRouter = express.Router();
 otpRouter.use(express.json());
@@ -190,6 +191,14 @@ otpRouter.post(
       );
 
       await verifyEmail({ userId: uid });
+
+      // Apply any pending gifts sent to this email before the account existed
+      const email: string = data.to;
+      const firebaseService = new FirebaseService();
+      await firebaseService.applyPendingGifts(uid, email).catch((err) => {
+        console.error("Error applying pending gifts:", err);
+      });
+
       return response.status(200).json({
         success: true,
         message: "OTP verified",

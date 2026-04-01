@@ -24,7 +24,9 @@ class AppLocation extends StatelessWidget {
             return AppClickable(
               showSplash: false,
               onPressed: () {
-                context.pushNamed(StoresPage.route);
+                if (user.user.emailVerified == true) {
+                  context.pushNamed(StoresPage.route);
+              }
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,

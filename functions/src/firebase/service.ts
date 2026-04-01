@@ -1,8 +1,9 @@
 import { firestore, printerFirestore } from "../config/firebaseAdmin";
 import { generateOrderNumber } from "../utils/generate_order_number";
 import { createOrderBodySchema, CreateOrderBodySchema } from "./schema";
-import { InsufficientCreditError } from "../coffixCredit/service";
+import { InsufficientCreditError } from "../coffixCredit/errors";
 import { scheduledAtNZ } from "../utils/nz_time";
+import * as admin from "firebase-admin";
 
 class FirebaseService {
   /**
@@ -274,6 +275,90 @@ class FirebaseService {
       return null;
     }
     return userRef.data();
+  }
+
+  async findCustomerByEmail(email: string): Promise<{
+    customerId: string;
+    data: admin.firestore.DocumentData;
+  } | null> {
+    const snap = await firestore
+      .collection("customers")
+      .where("email", "==", email.toLowerCase())
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    const doc = snap.docs[0];
+    return { customerId: doc.id, data: doc.data() };
+  }
+
+  createGiftTransaction(
+    tx: admin.firestore.Transaction,
+    {
+      senderId,
+      senderFirstName,
+      senderLastName,
+      recipientEmail,
+      recipientCustomerId,
+      amount,
+    }: {
+      senderId: string;
+      senderFirstName: string;
+      senderLastName: string;
+      recipientEmail: string;
+      recipientCustomerId?: string;
+      amount: number;
+    },
+  ): void {
+    const transactionRef = firestore.collection("transactions").doc();
+    const doc: Record<string, any> = {
+      docId: transactionRef.id,
+      customerId: senderId,
+      type: "gift",
+      senderFirstName,
+      senderLastName,
+      recipientEmail: recipientEmail.toLowerCase(),
+      amount,
+      status: "completed",
+      createdAt: new Date(),
+    };
+    if (recipientCustomerId !== undefined) {
+      doc.recipientCustomerId = recipientCustomerId;
+    }
+    tx.set(transactionRef, doc);
+  }
+
+  async applyPendingGifts(newUserId: string, email: string): Promise<void> {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const snap = await firestore
+      .collection("transactions")
+      .where("type", "==", "gift")
+      .where("recipientEmail", "==", email.toLowerCase())
+      .where("createdAt", ">=", thirtyDaysAgo)
+      .get();
+
+    const pending = snap.docs.filter((d) => !d.data().recipientCustomerId);
+    if (pending.length === 0) return;
+
+    const totalAmount = pending.reduce(
+      (sum, d) => sum + ((d.data().amount as number) ?? 0),
+      0,
+    );
+
+    const customerRef = firestore.collection("customers").doc(newUserId);
+    await firestore.runTransaction(async (tx) => {
+      const customerSnap = await tx.get(customerRef);
+      const current = customerSnap.exists
+        ? ((customerSnap.data()?.creditAvailable ?? 0) as number)
+        : 0;
+      tx.set(
+        customerRef,
+        { creditAvailable: current + totalAmount },
+        { merge: true },
+      );
+      for (const doc of pending) {
+        tx.update(doc.ref, { recipientCustomerId: newUserId });
+      }
+    });
   }
 }
 

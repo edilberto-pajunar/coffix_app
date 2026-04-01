@@ -1,12 +1,17 @@
 import express, { Response } from "express";
 import { requiredAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { requirePost } from "../middleware/method";
-import { topupBodySchema } from "./schema";
 import FirebaseService from "../firebase/service";
 import { WindcaveService } from "../windcave/service";
 import { WindcaveError } from "../utils/windcave.error";
 import { logger } from "firebase-functions";
 import { getTopupMerchantReference } from "./utils";
+import {
+  CoffixCreditService,
+  InsufficientCreditError,
+  MinCreditError,
+} from "./service";
+import { shareCoffixCreditSchema, topupBodySchema } from "./schema";
 
 const router = express.Router();
 
@@ -75,18 +80,73 @@ router.post(
   },
 );
 
-// router.post(
-//   "/share",
-//   requiredAuth,
-//   requirePost,
-//   async (request: AuthenticatedRequest, response: Response) => {
-//     const customerId = request.user?.uid;
-//     if (!customerId) {
-//       return response
-//         .status(401)
-//         .json({ success: false, message: "Unauthorized" });
-//     }
-//   },
-// );
+router.post(
+  "/share",
+  requiredAuth,
+  requirePost,
+  async (request: AuthenticatedRequest, response: Response) => {
+    const senderId = request.user?.uid;
+    if (!senderId) {
+      return response
+        .status(401)
+        .json({ success: false, message: "Unauthorized" });
+    }
+
+    const validation = shareCoffixCreditSchema.safeParse(request.body);
+    if (!validation.success) {
+      const errors = validation.error.issues
+        .map((i: any) => `${i.path.join(".")}: ${i.message}`)
+        .join(", ");
+      return response.status(400).json({ success: false, errors });
+    }
+
+    const firebaseService = new FirebaseService();
+    const creditService = new CoffixCreditService();
+
+    try {
+      const senderDoc = await firebaseService.findUserByCustomerId(senderId);
+      if (!senderDoc) {
+        return response
+          .status(401)
+          .json({ success: false, message: "Unauthorized" });
+      }
+
+      const { recipientFirstName, recipientEmail, amount } = validation.data;
+
+      await creditService.shareCredit({
+        senderId,
+        senderFirstName: (senderDoc.firstName as string) ?? "",
+        senderLastName: (senderDoc.lastName as string) ?? "",
+        recipientFirstName,
+        recipientEmail,
+        amount,
+      });
+
+      return response.status(200).json({ success: true });
+    } catch (error) {
+      if (error instanceof InsufficientCreditError) {
+        return response.status(400).json({
+          success: false,
+          message: "Insufficient credit",
+          data: {
+            creditAvailable: error.creditAvailable,
+            required: error.required,
+          },
+        });
+      }
+      if (error instanceof MinCreditError) {
+        return response.status(400).json({
+          success: false,
+          message: `Amount must be at least ${error.min}`,
+          data: { min: error.min },
+        });
+      }
+      logger.error("Error sharing credit:", error);
+      return response
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  },
+);
 
 export default router;
