@@ -149,10 +149,11 @@ class _DraftCard extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: CircleAvatar(
+                        radius: AppSizes.iconSizeXxs,
                         backgroundColor: AppColors.error,
                         child: const Icon(
                           Icons.close,
-                          size: AppSizes.iconSizeMedium,
+                          size: AppSizes.iconSizeSmall,
                           color: AppColors.white,
                         ),
                       ),
@@ -232,65 +233,61 @@ class _DraftCard extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                          Text.rich(
-                                            item?.lineTotal
-                                                    .toCurrencySuperscript(
-                                                      style: AppTypography
-                                                          .body2XS
-                                                          .copyWith(
-                                                            color: AppColors
-                                                                .textBlackColor,
-                                                          ),
-                                                    ) ??
-                                                0.00.toCurrencySuperscript(
-                                                  style: AppTypography.body2XS,
-                                                ),
-                                          ),
+                                          // Text.rich(
+                                          //   item?.lineTotal
+                                          //           .toCurrencySuperscript(
+                                          //             style: AppTypography
+                                          //                 .body2XS
+                                          //                 .copyWith(
+                                          //                   color: AppColors
+                                          //                       .textBlackColor,
+                                          //                 ),
+                                          //           ) ??
+                                          //       0.00.toCurrencySuperscript(
+                                          //         style: AppTypography.body2XS,
+                                          //       ),
+                                          // ),
                                         ],
                                       ),
                                       if (modifierPrices.isNotEmpty) ...[
                                         const SizedBox(height: AppSizes.xs),
 
                                         Column(
-                                          children: modifierPrices
-                                              .asMap()
-                                              .entries
-                                              .map((entry) {
-                                                return Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        modifierLabels[entry
-                                                                .key]
-                                                            .toLarge(),
-                                                        style: AppTypography
-                                                            .body3XS
-                                                            .copyWith(
-                                                              color: AppColors
-                                                                  .textBlackColor,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                    if (modifierPrices[entry
-                                                            .key] !=
-                                                        0) ...[
-                                                      const SizedBox(
-                                                        width: AppSizes.xs,
-                                                      ),
-                                                      Text.rich(
-                                                        modifierPrices[entry
-                                                                .key]
-                                                            .toCurrencySuperscript(
-                                                              style:
-                                                                  AppTypography
-                                                                      .body3XS,
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ],
-                                                );
-                                              })
-                                              .toList(),
+                                          children: modifierPrices.asMap().entries.map((
+                                            entry,
+                                          ) {
+                                            return Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    modifierLabels[entry.key]
+                                                        .toLarge(),
+                                                    style: AppTypography.body3XS
+                                                        .copyWith(
+                                                          color: AppColors
+                                                              .textBlackColor,
+                                                        ),
+                                                  ),
+                                                ),
+                                                // if (modifierPrices[entry
+                                                //         .key] !=
+                                                //     0) ...[
+                                                //   const SizedBox(
+                                                //     width: AppSizes.xs,
+                                                //   ),
+                                                //   Text.rich(
+                                                //     modifierPrices[entry
+                                                //             .key]
+                                                //         .toCurrencySuperscript(
+                                                //           style:
+                                                //               AppTypography
+                                                //                   .body3XS,
+                                                //         ),
+                                                //   ),
+                                                // ],
+                                              ],
+                                            );
+                                          }).toList(),
                                         ),
                                       ],
                                     ],

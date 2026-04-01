@@ -77,10 +77,7 @@ class AboutView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _InfoRow(
-                          label: 'App version',
-                          value: appVersion ?? '',
-                        ),
+                        _InfoRow(label: 'App version', value: appVersion ?? ''),
                         const Divider(height: 1),
                         _InfoRow(
                           label: 'Last login',
@@ -97,7 +94,26 @@ class AboutView extends StatelessWidget {
                   const SizedBox(height: AppSizes.xxl),
                   Center(
                     child: AppButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final String subject = "${user?.user.qrId} - Feedback";
+                        final Uri emailUri = Uri(
+                          scheme: 'mailto',
+                          path: 'support@coffix.co.nz',
+                          queryParameters: {
+                            'subject': subject,
+                            // optionally add body
+                            // 'body': 'Describe your issue here...'
+                          },
+                        );
+                        final launched = await launchUrl(
+                          emailUri,
+                          mode: LaunchMode.externalApplication,
+                        );
+
+                        if (!launched) {
+                          throw Exception('No email app found');
+                        }
+                      },
                       label: 'Report an issue / feedback',
                     ),
                   ),

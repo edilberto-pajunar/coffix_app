@@ -110,14 +110,12 @@ class OrderCard extends StatelessWidget {
         createdAt: TimeUtils.now(),
       );
 
-
       try {
         cartCubit.addProduct(newItem: cartItem);
         addedCount++;
       } catch (e) {
         continue;
       }
-
     }
 
     if (addedCount == 0) {
@@ -148,43 +146,32 @@ class OrderCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppClickable(
-                onPressed: () {
-                  context.read<OrderCubit>().sendOrderToEmail(
-                    orderId: order.docId ?? '',
-                  );
-                },
-                child: Image.asset(AppImages.email, width: 24, height: 24),
-              ),
-              const SizedBox(width: AppSizes.sm),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
+                    AppClickable(
+                      onPressed: () {
+                        context.read<OrderCubit>().sendOrderToEmail(
+                          orderId: order.docId ?? '',
+                        );
+                      },
+                      child: Image.asset(
+                        AppImages.email,
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                    const SizedBox(width: AppSizes.sm),
                     Text(
                       '#${order.orderNumber?.substring(order.orderNumber!.length - 6) ?? '—'}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: AppSizes.xs),
-                    Text(dateStr, style: theme.textTheme.bodySmall?.copyWith()),
-                    const SizedBox(height: AppSizes.sm),
                   ],
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text.rich(
-                    order.amount?.toCurrencySuperscript(
-                          style: AppTypography.titleS,
-                        ) ??
-                        0.00.toCurrencySuperscript(style: AppTypography.titleS),
-                  ),
-                  Text(order.paymentMethod?.label ?? '—'),
-                ],
-              ),
+              Text(dateStr, style: theme.textTheme.bodySmall?.copyWith()),
             ],
           ),
           Row(
@@ -241,11 +228,21 @@ class OrderCard extends StatelessWidget {
                                   style: AppTypography.bodyM600,
                                 ),
                                 if (modifiers.isNotEmpty)
-                                  Text(
-                                    modifiers.join(', ').toLarge(),
-                                    style: AppTypography.body3XS.copyWith(
-                                      color: AppColors.textBlackColor,
-                                    ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: modifiers
+                                        .map(
+                                          (m) => Text(
+                                            m?.toLarge() ?? '—',
+                                            style: AppTypography.body3XS
+                                                .copyWith(
+                                                  color:
+                                                      AppColors.textBlackColor,
+                                                ),
+                                          ),
+                                        )
+                                        .toList(),
                                   ),
                               ],
                             ),
@@ -256,16 +253,33 @@ class OrderCard extends StatelessWidget {
                   },
                 ),
               ),
-              AppButton(
-                height: 24,
-                width: 48,
-                onPressed: () {
-                  _reorder(context, order: order);
-                },
-                label: "Reorder",
-                textStyle: AppTypography.body2XS.copyWith(
-                  color: AppColors.white,
-                ),
+              Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text.rich(
+                        order.amount?.toCurrencySuperscript(
+                              style: AppTypography.titleS,
+                            ) ??
+                            0.00.toCurrencySuperscript(
+                              style: AppTypography.titleS,
+                            ),
+                      ),
+                    ],
+                  ),
+                  AppButton(
+                    height: 24,
+                    width: 48,
+                    onPressed: () {
+                      _reorder(context, order: order);
+                    },
+                    label: "Reorder",
+                    textStyle: AppTypography.body2XS.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

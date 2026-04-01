@@ -67,7 +67,7 @@ class _TransactionViewState extends State<TransactionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBackHeader(title: "My Transactions"),
+      appBar: AppBackHeader(title: "My Transactions", showLocation: false),
       body: BlocBuilder<TransactionCubit, TransactionState>(
         builder: (context, state) {
           return state.when(
@@ -124,12 +124,6 @@ class _TransactionCardState extends State<_TransactionCard> {
     final order = context.watch<OrderCubit>().state.orders.firstWhereOrNull(
       (order) => order.docId == widget.transaction.orderId,
     );
-    // final modifiers = context.read<ModifierCubit>().state.when(
-    //   initial: () => [],
-    //   loading: () => [],
-    //   loaded: (modifiers) => modifiers,
-    //   error: (error) => [],
-    // );
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
@@ -142,40 +136,183 @@ class _TransactionCardState extends State<_TransactionCard> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.transaction.type == "topup"
-                              ? "TopUp"
-                              : "#${widget.transaction.orderNumber?.last6 ?? "N/A"}",
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.sm),
-                        StatusChip(label: statusLabel, color: statusColor),
-                      ],
-                    ),
-                    const SizedBox(height: AppSizes.xs),
-                    if (widget.transaction.createdAt != null)
-                      Text(
-                        widget.transaction.createdAt?.formatDate() ?? '—',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.lightGrey,
-                        ),
+                    Text(
+                      widget.transaction.type == "topup"
+                          ? "TopUp"
+                          : "#${widget.transaction.orderNumber?.last6 ?? "N/A"}",
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                    const SizedBox(height: AppSizes.sm),
+                    ),
+                    const SizedBox(width: AppSizes.sm),
+                    Expanded(
+                      child: Text(
+                        order?.storeName ?? '',
+                        style: AppTypography.body2XS.copyWith(
+                          color: AppColors.textBlackColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ],
                 ),
               ),
+
+              if (widget.transaction.createdAt != null)
+                Text(
+                  widget.transaction.createdAt?.formatDate() ?? '—',
+                  style: AppTypography.body2XS.copyWith(
+                    color: AppColors.textBlackColor,
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: AppSizes.sm),
+          Row(
+            children: [
+              order?.items != null && order!.items!.isNotEmpty
+                  ? Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: order.items!.length,
+                        itemBuilder: (context, index) {
+                          final Item item = order.items![index];
+                          final imageUrl = item.productImageUrl ?? '';
+                          final List<ItemModifier> modifiers =
+                              item.modifiers ?? [];
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (imageUrl.isNotEmpty)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      AppSizes.sm,
+                                    ),
+                                    child: SizedBox(
+                                      width: 48,
+                                      height: 48,
+                                      child: Image.network(
+                                        imageUrl,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.softGrey,
+                                      borderRadius: BorderRadius.circular(
+                                        AppSizes.sm,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.coffee,
+                                      color: AppColors.lightGrey,
+                                      size: AppSizes.iconSizeSmall,
+                                    ),
+                                  ),
+                                const SizedBox(width: AppSizes.sm),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                style: AppTypography.bodyM600
+                                                    .copyWith(
+                                                      color: AppColors
+                                                          .textBlackColor,
+                                                    ),
+                                                text:
+                                                    "${item.productName} (x${item.quantity}) ",
+                                                children: [],
+                                              ),
+                                            ),
+                                          ),
+                                          Text.rich(
+                                            item.price?.toCurrencySuperscript(
+                                                  style: AppTypography.body2XS
+                                                      .copyWith(
+                                                        color: AppColors
+                                                            .textBlackColor,
+                                                      ),
+                                                ) ??
+                                                0.00.toCurrencySuperscript(
+                                                  style: AppTypography.body2XS,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (modifiers.isNotEmpty) ...[
+                                        const SizedBox(height: AppSizes.xs),
+
+                                        Column(
+                                          children: modifiers.asMap().entries.map((
+                                            entry,
+                                          ) {
+                                            return Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    entry.value.modifierId
+                                                            ?.toLarge() ??
+                                                        '—',
+                                                    style: AppTypography.body3XS
+                                                        .copyWith(
+                                                          color: AppColors
+                                                              .textBlackColor,
+                                                        ),
+                                                  ),
+                                                ),
+
+                                                if (entry.value.priceDelta !=
+                                                        null &&
+                                                    entry.value.priceDelta !=
+                                                        0) ...[
+                                                  const SizedBox(
+                                                    width: AppSizes.xs,
+                                                  ),
+                                                  Text.rich(
+                                                    entry.value.priceDelta!
+                                                        .toCurrencySuperscript(
+                                                          style: AppTypography
+                                                              .body3XS,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ],
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : const Expanded(child: Text('No items')),
+
+              SizedBox(width: AppSizes.md),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text.rich(
                     widget.transaction.amount?.toCurrencySuperscript(
@@ -183,131 +320,12 @@ class _TransactionCardState extends State<_TransactionCard> {
                         ) ??
                         0.00.toCurrencySuperscript(style: AppTypography.titleS),
                   ),
-                  if (widget.transaction.paymentMethod != null)
-                    Text(
-                      'via ${widget.transaction.paymentMethod?.label ?? '—'}',
-                      style: theme.textTheme.bodySmall,
-                    ),
+                  SizedBox(height: AppSizes.sm),
+                  StatusChip(label: statusLabel, color: statusColor),
                 ],
               ),
             ],
           ),
-
-          if (order?.items != null && order!.items!.isNotEmpty) ...[
-            const SizedBox(height: AppSizes.sm),
-            const Divider(height: 1),
-            const SizedBox(height: AppSizes.sm),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: order.items!.length,
-              itemBuilder: (context, index) {
-                final Item item = order.items![index];
-                final imageUrl = item.productImageUrl ?? '';
-                final List<ItemModifier> modifiers = item.modifiers ?? [];
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSizes.sm),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (imageUrl.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(AppSizes.sm),
-                          child: SizedBox(
-                            width: 48,
-                            height: 48,
-                            child: Image.network(imageUrl, fit: BoxFit.cover),
-                          ),
-                        )
-                      else
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.softGrey,
-                            borderRadius: BorderRadius.circular(AppSizes.sm),
-                          ),
-                          child: const Icon(
-                            Icons.coffee,
-                            color: AppColors.lightGrey,
-                            size: AppSizes.iconSizeSmall,
-                          ),
-                        ),
-                      const SizedBox(width: AppSizes.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      style: AppTypography.bodyM600.copyWith(
-                                        color: AppColors.textBlackColor,
-                                      ),
-                                      text:
-                                          "${item.productName} (x${item.quantity}) ",
-                                      children: [],
-                                    ),
-                                  ),
-                                ),
-                                Text.rich(
-                                  item.price?.toCurrencySuperscript(
-                                        style: AppTypography.body2XS.copyWith(
-                                          color: AppColors.textBlackColor,
-                                        ),
-                                      ) ??
-                                      0.00.toCurrencySuperscript(
-                                        style: AppTypography.body2XS,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            if (modifiers.isNotEmpty) ...[
-                              const SizedBox(height: AppSizes.xs),
-
-                              Column(
-                                children: modifiers.asMap().entries.map((
-                                  entry,
-                                ) {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          entry.value.modifierId?.toLarge() ??
-                                              '—',
-                                          style: AppTypography.body3XS.copyWith(
-                                            color: AppColors.textBlackColor,
-                                          ),
-                                        ),
-                                      ),
-
-                                      if (entry.value.priceDelta != null &&
-                                          entry.value.priceDelta != 0) ...[
-                                        const SizedBox(width: AppSizes.xs),
-                                        Text.rich(
-                                          entry.value.priceDelta!
-                                              .toCurrencySuperscript(
-                                                style: AppTypography.body3XS,
-                                              ),
-                                        ),
-                                      ],
-                                    ],
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
         ],
       ),
     );
