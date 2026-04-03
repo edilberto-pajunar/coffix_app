@@ -69,7 +69,6 @@ class _CartViewState extends State<CartView> {
       ),
       body: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
-          print(state.cart?.items?.map((e) => e.toJson()).toList());
           return Column(
             children: [
               Expanded(

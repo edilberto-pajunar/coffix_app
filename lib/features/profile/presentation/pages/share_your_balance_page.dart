@@ -174,8 +174,9 @@ class _ShareYourBalanceViewState extends State<ShareYourBalanceView> {
                                     if (n == null || n <= 0 || n < 15) {
                                       return 'Enter a valid amount';
                                     }
-                                    if (n > balance)
+                                    if (n > balance) {
                                       return 'Amount exceeds balance';
+                                    }
                                     return null;
                                   },
                                 ],
