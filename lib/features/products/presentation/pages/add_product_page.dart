@@ -325,7 +325,7 @@ class _AddProductViewState extends State<AddProductView> {
                               lineTotal: newItem.lineTotal,
                             );
                             context.read<CartCubit>().updateProduct(
-                              cartItemId: widget.cartItem!.id,
+                              cartItemId: widget.cartItem!.id ?? '',
                               updatedItem: updated,
                             );
                           } else {

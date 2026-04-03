@@ -214,6 +214,7 @@ export class WindcaveService {
           productName: product.name,
           productImageUrl: product.imageUrl,
           price: unitPrice,
+          basePrice: basePrice,
           quantity: item.quantity,
           selectedModifiers: item.selectedModifiers,
           modifiers: modifiersSnapshot,

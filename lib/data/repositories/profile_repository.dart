@@ -8,6 +8,10 @@ abstract class ProfileRepository {
     String? suburb,
     String? city,
     String? preferredStoreId,
+    bool? getPurchaseInfoByMail,
+    bool? getPromotions,
+    bool? allowWinACoffee,
+    bool? allowWithdrawBalance,
   });
   Future<void> sendCoffeeOnUs({required List<Map<String, dynamic>> datas});
   Future<void> sendGift({

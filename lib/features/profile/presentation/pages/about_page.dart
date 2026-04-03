@@ -11,6 +11,7 @@ import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
+import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
 import 'package:coffix_app/presentation/organisms/app_layout_body.dart';
 import 'package:flutter/material.dart';
@@ -67,76 +68,77 @@ class AboutView extends StatelessWidget {
                 children: [
                   Text(
                     'General information',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: AppColors.lightGrey,
+                    style: AppTypography.bodyM.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: AppSizes.sm),
-                  AppCard(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _InfoRow(label: 'App version', value: appVersion ?? ''),
-                        const Divider(height: 1),
-                        _InfoRow(
-                          label: 'Last login',
-                          value: '${user?.user.lastLogin?.formatDate()}',
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        "App Version: ${appVersion ?? ""}",
+                        style: AppTypography.bodyXS.copyWith(
+                          color: AppColors.textBlackColor,
                         ),
-                        const Divider(height: 1),
-                        _InfoRow(
-                          label: 'Customer ID',
-                          value: user?.user.qrId ?? '',
+                      ),
+                      Text(
+                        "Last login: ${user?.user.lastLogin?.formatDate()}",
+                        style: AppTypography.bodyXS.copyWith(
+                          color: AppColors.textBlackColor,
                         ),
-                      ],
-                    ),
+                      ),
+                      Text(
+                        "Customer ID: ${user?.user.qrId ?? ""}",
+                        style: AppTypography.bodyXS.copyWith(
+                          color: AppColors.textBlackColor,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: AppSizes.xxl),
-                  Center(
-                    child: AppButton(
-                      onPressed: () async {
-                        final String subject = "${user?.user.qrId} - Feedback";
-                        final Uri emailUri = Uri(
-                          scheme: 'mailto',
-                          path: 'support@coffix.co.nz',
-                          queryParameters: {
-                            'subject': subject,
-                            // optionally add body
-                            // 'body': 'Describe your issue here...'
-                          },
-                        );
-                        final launched = await launchUrl(
-                          emailUri,
-                          mode: LaunchMode.externalApplication,
-                        );
+                  const SizedBox(height: AppSizes.xxxxxl),
+                  Divider(color: AppColors.textBlackColor),
+                  SizedBox(height: AppSizes.xl),
+                  AppTextButton(
+                    showUnderline: true,
+                    onPressed: () async {
+                      final String subject = "${user?.user.qrId} - Feedback";
+                      final Uri emailUri = Uri(
+                        scheme: 'mailto',
+                        path: 'support@coffix.co.nz',
+                        queryParameters: {
+                          'subject': subject,
+                          // optionally add body
+                          // 'body': 'Describe your issue here...'
+                        },
+                      );
+                      final launched = await launchUrl(
+                        emailUri,
+                        mode: LaunchMode.externalApplication,
+                      );
 
-                        if (!launched) {
-                          throw Exception('No email app found');
-                        }
-                      },
-                      label: 'Report an issue / feedback',
-                    ),
+                      if (!launched) {
+                        throw Exception('No email app found');
+                      }
+                    },
+                    text: 'Report an issue / feedback',
                   ),
                   SizedBox(height: AppSizes.sm),
-                  Center(
-                    child: AppButton(
-                      onPressed: () {
-                        if (global?.specialUrl != null) {
-                          launchUrl(Uri.parse(global?.specialUrl ?? ''));
-                        } else {
-                          AppNotification.error(
-                            context,
-                            'No special URL found',
-                          );
-                        }
-                      },
-                      label: 'Coffix website',
-                    ),
+                  AppTextButton(
+                    showUnderline: true,
+                    onPressed: () {
+                      if (global?.specialUrl != null) {
+                        launchUrl(Uri.parse(global?.specialUrl ?? ''));
+                      } else {
+                        AppNotification.error(context, 'No special URL found');
+                      }
+                    },
+                    text: 'Coffix website',
                   ),
                   Spacer(),
                   Center(
-                    child: AppButton(
-                      color: AppColors.error,
+                    child: AppTextButton(
+                      showUnderline: true,
                       onPressed: () {
                         ConfirmAccountDeletion.show(
                           context,
@@ -146,7 +148,13 @@ class AboutView extends StatelessWidget {
                           },
                         );
                       },
-                      label: 'Delete account',
+                      text: 'Delete account',
+                      textStyle: AppTypography.bodyS.copyWith(
+                        color: AppColors.redColor,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.redColor,
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSizes.xxl),

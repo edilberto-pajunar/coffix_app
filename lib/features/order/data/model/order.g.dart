@@ -68,6 +68,7 @@ Item _$ItemFromJson(Map<String, dynamic> json) => Item(
   productName: json['productName'] as String?,
   productImageUrl: json['productImageUrl'] as String?,
   price: (json['price'] as num?)?.toDouble(),
+  basePrice: (json['basePrice'] as num?)?.toDouble(),
   quantity: (json['quantity'] as num?)?.toInt(),
   selectedModifiers: (json['selectedModifiers'] as Map<String, dynamic>?)?.map(
     (k, e) => MapEntry(k, e as String),
@@ -82,6 +83,7 @@ Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
   'productName': instance.productName,
   'productImageUrl': instance.productImageUrl,
   'price': instance.price,
+  'basePrice': instance.basePrice,
   'quantity': instance.quantity,
   'selectedModifiers': instance.selectedModifiers,
   'modifiers': instance.modifiers?.map((e) => e.toJson()).toList(),

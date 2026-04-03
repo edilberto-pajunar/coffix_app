@@ -15,6 +15,7 @@ class AppColors {
   static const Color disabledBg = Color(0xFFE3D9D9);
 
   static const Color error = Color(0xFFD32F2F);
+  static const Color redColor = Color(0xFFFF0000);
   static const Color success = Color(0xFF00C853);
 
   static final BoxShadow shadow = BoxShadow(

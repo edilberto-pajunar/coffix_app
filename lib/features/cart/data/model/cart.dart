@@ -26,7 +26,7 @@ class Cart {
   double get subtotal =>
       items?.fold(0.0, (sum, item) => sum ?? 0 + item.lineTotal) ?? 0.0;
   int get totalQuantity =>
-      items?.fold(0, (sum, item) => sum ?? 0 + item.quantity) ?? 0;
+      items?.fold(0, (sum, item) => sum ?? 0 + (item.quantity ?? 0)) ?? 0;
 
   Cart copyWith({
     String? storeId,

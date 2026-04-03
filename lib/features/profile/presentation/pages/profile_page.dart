@@ -81,10 +81,9 @@ class ProfileView extends StatelessWidget {
           children: [
             Text(
               "My Coffix Credit Balance",
-              style: AppTypography.bodyM,
+              style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: AppSizes.md),
             AppCard(
               color: AppColors.primary.withValues(alpha: 0.1),
               child: Column(

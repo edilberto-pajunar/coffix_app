@@ -61,6 +61,12 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
         suburb: formValues?['suburb'],
         city: formValues?['city'],
         preferredStoreId: formValues?['preferredStoreId'],
+        getPurchaseInfoByMail:
+            formValues?['getPurchaseInfoByMail'], // notifications
+        getPromotions: formValues?['getPromotions'], // promotions
+        allowWinACoffee: formValues?['allowWinACoffee'], // purchase messages
+        allowWithdrawBalance:
+            formValues?['allowWithdrawBalance'], // none for now
       );
     }
   }
@@ -166,39 +172,41 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
           itemValue: (Store store) => store.docId,
         ),
         const SizedBox(height: AppSizes.xxl),
-        Text('Settings', style: theme.textTheme.titleMedium),
-        const SizedBox(height: AppSizes.sm),
+        Text(
+          'Settings',
+          style: AppTypography.titleS.copyWith(
+            color: AppColors.textBlackColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         FormBuilderSwitch(
-          name: 'receiveNotification',
+          name: 'getPurchaseInfoByMail',
           title: Text(
             'Receive notifications',
             style: theme.textTheme.bodyMedium,
           ),
-          initialValue: true,
           activeColor: AppColors.white,
           activeTrackColor: AppColors.success,
           inactiveTrackColor: AppColors.white,
           inactiveThumbColor: AppColors.primary,
         ),
         FormBuilderSwitch(
-          name: 'receiveNewsAndPromotions',
+          name: 'getPromotions',
           title: Text(
             'Receive news and promotions',
             style: theme.textTheme.bodyMedium,
           ),
-          initialValue: true,
           activeColor: AppColors.white,
           activeTrackColor: AppColors.success,
           inactiveTrackColor: AppColors.white,
           inactiveThumbColor: AppColors.primary,
         ),
         FormBuilderSwitch(
-          name: 'receivePurchaseMessages',
+          name: 'allowWinACoffee',
           title: Text(
             'Receive purchase messages',
             style: theme.textTheme.bodyMedium,
           ),
-          initialValue: true,
           activeColor: AppColors.white,
           activeTrackColor: AppColors.success,
           inactiveTrackColor: AppColors.white,
@@ -253,6 +261,10 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
               "suburb": user?.suburb,
               "city": user?.city,
               "preferredStoreId": user?.preferredStoreId,
+              "getPurchaseInfoByMail": user?.getPurchaseInfoByMail,
+              "getPromotions": user?.getPromotions,
+              "allowWinACoffee": user?.allowWinACoffee,
+              "allowWithdrawBalance": user?.allowWithdrawBalance,
             },
             key: _formKey,
             child: BlocConsumer<ProfileCubit, ProfileState>(

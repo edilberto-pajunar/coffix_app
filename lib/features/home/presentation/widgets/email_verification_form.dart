@@ -1,9 +1,11 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/auth/logic/otp_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
+import 'package:coffix_app/presentation/atoms/app_text_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -144,6 +146,21 @@ class _EmailVerificationFormState extends State<EmailVerificationForm> {
                               },
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+                  Center(
+                    child: AppTextButton(
+                      text: "Logout",
+                      showUnderline: true,
+                      onPressed: () {
+                        context.read<AuthCubit>().signOut();
+                      },
+                      textStyle: AppTypography.bodyS.copyWith(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        color: AppColors.textBlackColor,
                       ),
                     ),
                   ),

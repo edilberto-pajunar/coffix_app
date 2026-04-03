@@ -211,8 +211,8 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                   cart.items
                                       ?.map(
                                         (item) => PaymentItem(
-                                          productId: item.productId,
-                                          quantity: item.quantity,
+                                          productId: item.productId ?? '',
+                                          quantity: item.quantity ?? 0,
                                           selectedModifiers:
                                               item.selectedByGroup,
                                         ),

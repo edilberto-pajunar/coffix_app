@@ -23,10 +23,12 @@ AppUser _$AppUserFromJson(Map<String, dynamic> json) => AppUser(
   getPurchaseInfoByMail: json['getPurchaseInfoByMail'] as bool?,
   getPromotions: json['getPromotions'] as bool?,
   allowWinACoffee: json['allowWinACoffee'] as bool?,
+  allowWithdrawBalance: json['allowWithdrawBalance'] as bool?,
   lastLogin: const DateTimeConverter().fromJson(json['lastLogin']),
   disabled: json['disabled'] as bool?,
   qrId: json['qrId'] as String?,
   fcmToken: json['fcmToken'] as String?,
+  finishedOnboarding: json['finishedOnboarding'] as bool?,
 );
 
 Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
@@ -46,8 +48,10 @@ Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
   'getPurchaseInfoByMail': instance.getPurchaseInfoByMail,
   'getPromotions': instance.getPromotions,
   'allowWinACoffee': instance.allowWinACoffee,
+  'allowWithdrawBalance': instance.allowWithdrawBalance,
   'lastLogin': const DateTimeConverter().toJson(instance.lastLogin),
   'disabled': instance.disabled,
   'qrId': instance.qrId,
   'fcmToken': instance.fcmToken,
+  'finishedOnboarding': instance.finishedOnboarding,
 };

@@ -43,15 +43,16 @@ class CreditView extends StatefulWidget {
 
 class _CreditViewState extends State<CreditView> {
   final formKey = GlobalKey<FormBuilderState>();
+  bool _amountInitialized = false;
 
   double calculateTopUp(double amount, AppGlobal global) {
     double totalAmount = amount;
 
-    if (amount < 50) {
+    if (amount < (global.minTopUp ?? 0)) {
       return totalAmount;
-    } else if (amount < 250) {
+    } else if (amount < (global.topupLevel2 ?? 0)) {
       totalAmount += amount * ((global.basicDiscount ?? 0) / 100);
-    } else if (amount < 500) {
+    } else if (amount < (global.topupLevel3 ?? 0)) {
       totalAmount += amount * ((global.discountLevel2 ?? 0) / 100);
     } else {
       totalAmount += amount * ((global.discountLevel3 ?? 0) / 100);
@@ -67,12 +68,18 @@ class _CreditViewState extends State<CreditView> {
       orElse: () => null,
     );
     final minTopUp = global?.minTopUp?.toStringAsFixed(0);
-    final amount = formKey.currentState?.fields['amount']?.value ?? minTopUp;
+    if (!_amountInitialized && minTopUp != null) {
+      _amountInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        formKey.currentState?.fields['amount']?.didChange(minTopUp);
+      });
+    }
+    final amount =
+        formKey.currentState?.fields['amount']?.value ?? minTopUp ?? '0';
+    final parsedAmount = double.tryParse(amount) ?? 0;
 
     final bool minTopUpNotReached =
-        amount != null &&
-        amount.isNotEmpty &&
-        double.parse(amount) < double.parse(minTopUp ?? '0');
+        parsedAmount < double.parse(minTopUp ?? '0');
 
     return Scaffold(
       appBar: AppBackHeader(
@@ -166,7 +173,8 @@ class _CreditViewState extends State<CreditView> {
                             ),
                             const SizedBox(width: AppSizes.sm),
                             InfoCard(
-                              text: 'Get 10% - 20% discount for any order',
+                              text:
+                                  'Get ${global?.basicDiscount?.toInt()}% - ${global?.discountLevel3?.toInt()}% discount for any order',
                               image: AppImages.creditGray,
                             ),
                           ],
@@ -183,17 +191,23 @@ class _CreditViewState extends State<CreditView> {
                         children: [
                           const SizedBox(height: AppSizes.lg),
                           TierCard(
-                            amount: 50,
+                            amount: double.parse(
+                              global?.minTopUp?.toString() ?? '0',
+                            ),
                             percent: '${global?.basicDiscount?.toInt()}%',
                           ),
                           const SizedBox(height: AppSizes.sm),
                           TierCard(
-                            amount: 250,
+                            amount: double.parse(
+                              global?.topupLevel2?.toString() ?? '0',
+                            ),
                             percent: '${global?.discountLevel2?.toInt()}%',
                           ),
                           const SizedBox(height: AppSizes.sm),
                           TierCard(
-                            amount: 500,
+                            amount: double.parse(
+                              global?.topupLevel3?.toString() ?? '0',
+                            ),
                             percent: '${global?.discountLevel3?.toInt()}%',
                           ),
                         ],
@@ -233,7 +247,7 @@ class _CreditViewState extends State<CreditView> {
                             SizedBox(height: AppSizes.sm),
                             !minTopUpNotReached
                                 ? Text(
-                                    "You will receive: \$${calculateTopUp(double.parse(amount ?? '0'), global ?? AppGlobal()).toStringAsFixed(2)} Coffix Credits",
+                                    "You will receive: \$${calculateTopUp(parsedAmount, global ?? AppGlobal()).toStringAsFixed(2)} Coffix Credits",
                                   )
                                 : Text("Minimum top up is \$$minTopUp"),
                           ],
@@ -245,15 +259,13 @@ class _CreditViewState extends State<CreditView> {
                     AppButton(
                       disabled:
                           (showTopUpField &&
-                          (amount == null ||
-                              amount.isEmpty ||
-                              double.parse(amount ?? '0') <
-                                  (global?.minTopUp ?? 0))),
+                          (amount.isEmpty ||
+                              parsedAmount < (global?.minTopUp ?? 0))),
                       onPressed: () {
                         if (showTopUpField &&
                             formKey.currentState!.validate()) {
                           context.read<CreditCubit>().topup(
-                            amount: double.parse(amount),
+                            amount: parsedAmount,
                           );
                         } else {
                           context.read<CreditCubit>().showTopUpField(true);

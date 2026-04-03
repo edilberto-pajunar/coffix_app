@@ -80,6 +80,7 @@ class _HomeViewState extends State<HomeView> {
       orElse: () => null,
     );
     final bool isAuthenticated = user != null;
+    final bool finishedOnboarding = user?.finishedOnboarding ?? false;
 
     return AppChecker(
       child: Scaffold(
@@ -123,11 +124,20 @@ class _HomeViewState extends State<HomeView> {
                                 previous != current,
                             listener: (context, state) {
                               state.whenOrNull(
-                                authenticated: (user) async {
+                                authenticated: (userWithStore) async {
                                   context.read<StoreCubit>().getStores();
                                   context.read<ProductCubit>().getProducts();
                                   context.read<DraftCubit>().getDrafts();
                                   context.read<OrderCubit>().getOrders();
+                                  if (userWithStore.user.emailVerified ==
+                                          true &&
+                                      userWithStore.user.finishedOnboarding !=
+                                          true) {
+                                    context.goNamed(
+                                      PersonalInfoPage.route,
+                                      extra: {"canBack": false},
+                                    );
+                                  }
                                 },
                                 passwordResetEmailSent: () {
                                   AppNotification.show(

@@ -21,6 +21,10 @@ class ProfileRepositoryImpl extends ApiClient implements ProfileRepository {
     String? suburb,
     String? city,
     String? preferredStoreId,
+    bool? getPurchaseInfoByMail, // Receive notifications
+    bool? getPromotions, // Receive news and promotions
+    bool? allowWinACoffee, // Receive purchase messages
+    bool? allowWithdrawBalance // TODO: ASK WHAT IS THE PURPOSE FOR THIS
   }) async {
     try {
       final customerRef = _firestore
@@ -39,6 +43,11 @@ class ProfileRepositoryImpl extends ApiClient implements ProfileRepository {
           'suburb': ?suburb,
           'city': ?city,
           'preferredStoreId': ?preferredStoreId,
+          'finishedOnboarding': true,
+          'getPurchaseInfoByMail': getPurchaseInfoByMail,
+          'getPromotions': getPromotions,
+          'allowWinACoffee': allowWinACoffee,
+          'allowWithdrawBalance': allowWithdrawBalance,
         };
         if (data.isNotEmpty) await customerRef.update(data);
       } else {

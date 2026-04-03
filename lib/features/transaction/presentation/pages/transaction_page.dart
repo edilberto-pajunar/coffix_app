@@ -3,6 +3,7 @@ import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/order_extensions.dart';
+import 'package:coffix_app/core/extensions/payment_method_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
@@ -155,15 +156,6 @@ class _TransactionCardState extends State<_TransactionCard> {
                       ),
                     ),
                     const SizedBox(width: AppSizes.sm),
-                    Expanded(
-                      child: Text(
-                        order?.storeName ?? '',
-                        style: AppTypography.body2XS.copyWith(
-                          color: AppColors.textBlackColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -251,15 +243,21 @@ class _TransactionCardState extends State<_TransactionCard> {
                                             ),
                                           ),
                                           Text.rich(
-                                            item.price?.toCurrencySuperscript(
+                                            item.basePrice
+                                                    ?.toCurrencySuperscript(
+                                                      style: AppTypography
+                                                          .body2XS
+                                                          .copyWith(
+                                                            color: AppColors
+                                                                .textBlackColor,
+                                                          ),
+                                                    ) ??
+                                                0.00.toCurrencySuperscript(
                                                   style: AppTypography.body2XS
                                                       .copyWith(
                                                         color: AppColors
                                                             .textBlackColor,
                                                       ),
-                                                ) ??
-                                                0.00.toCurrencySuperscript(
-                                                  style: AppTypography.body2XS,
                                                 ),
                                           ),
                                         ],
@@ -326,11 +324,18 @@ class _TransactionCardState extends State<_TransactionCard> {
                         ) ??
                         0.00.toCurrencySuperscript(style: AppTypography.titleS),
                   ),
-                  SizedBox(height: AppSizes.sm),
+                  Text(widget.transaction.paymentMethod?.label ?? ''),
                   StatusChip(label: statusLabel, color: statusColor),
                 ],
               ),
             ],
+          ),
+          Text(
+            order?.storeName ?? '',
+            style: AppTypography.body2XS.copyWith(
+              color: AppColors.textBlackColor,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

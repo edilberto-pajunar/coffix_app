@@ -20,6 +20,7 @@ export const createOrderBodySchema = z
         productName: z.string().trim(),
         productImageUrl: z.string().trim(),
         price: z.number().nonnegative(),
+        basePrice: z.number().nonnegative(),
         quantity: z.number().positive(),
         selectedModifiers: z.record(z.string(), z.string()),
         modifiers: z.array(

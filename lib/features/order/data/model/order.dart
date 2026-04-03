@@ -68,6 +68,7 @@ class Item {
   final String? productName;
   final String? productImageUrl;
   final double? price;
+  final double? basePrice;
   final int? quantity;
   final Map<String, String>? selectedModifiers;
   final List<ItemModifier>? modifiers;
@@ -77,6 +78,7 @@ class Item {
     this.productName,
     this.productImageUrl,
     this.price,
+    this.basePrice,
     this.quantity,
     this.selectedModifiers,
     this.modifiers,

@@ -9,13 +9,13 @@ part 'cart_item.g.dart';
 
 @JsonSerializable()
 class CartItem extends Equatable {
-  final String id;
-  final String storeId;
-  final String productId;
-  final String productName;
-  final String productImageUrl;
+  final String? id;
+  final String? storeId;
+  final String? productId;
+  final String? productName;
+  final String? productImageUrl;
 
-  final int quantity;
+  final int? quantity;
 
   final Map<String, String> selectedByGroup;
   final double basePrice;
@@ -71,7 +71,7 @@ class CartItem extends Equatable {
     );
     final modifierLabelSnapshot = {
       for (final m in modifiers)
-        if (m.docId != null && m.label != null) m.docId!: m.label!,
+        if (m.docId != null) m.docId!: m.label ?? m.docId!,
     };
     final basePrice = product.price ?? 0;
     final unitTotal = helper.computeUnitTotal(

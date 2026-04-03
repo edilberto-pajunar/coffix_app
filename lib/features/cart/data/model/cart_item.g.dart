@@ -7,12 +7,12 @@ part of 'cart_item.dart';
 // **************************************************************************
 
 CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
-  id: json['id'] as String,
-  storeId: json['storeId'] as String,
-  productId: json['productId'] as String,
-  productName: json['productName'] as String,
-  productImageUrl: json['productImageUrl'] as String,
-  quantity: (json['quantity'] as num).toInt(),
+  id: json['id'] as String?,
+  storeId: json['storeId'] as String?,
+  productId: json['productId'] as String?,
+  productName: json['productName'] as String?,
+  productImageUrl: json['productImageUrl'] as String?,
+  quantity: (json['quantity'] as num?)?.toInt(),
   selectedByGroup: Map<String, String>.from(json['selectedByGroup'] as Map),
   basePrice: (json['basePrice'] as num).toDouble(),
   modifierPriceSnapshot: (json['modifierPriceSnapshot'] as Map<String, dynamic>)

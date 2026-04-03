@@ -26,6 +26,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? suburb,
     String? city,
     String? preferredStoreId,
+    bool? getPurchaseInfoByMail,
+    bool? getPromotions,
+    bool? allowWinACoffee,
+    bool? allowWithdrawBalance,
   }) async {
     emit(ProfileState.loading());
     try {
@@ -39,6 +43,10 @@ class ProfileCubit extends Cubit<ProfileState> {
           suburb: suburb,
           city: city,
           preferredStoreId: preferredStoreId,
+          getPurchaseInfoByMail: getPurchaseInfoByMail,
+          getPromotions: getPromotions,
+          allowWinACoffee: allowWinACoffee,
+          allowWithdrawBalance: allowWithdrawBalance,
         ),
       );
       emit(ProfileState.success());

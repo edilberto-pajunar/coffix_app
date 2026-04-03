@@ -23,11 +23,13 @@ class AppUser {
   final bool? getPurchaseInfoByMail;
   final bool? getPromotions;
   final bool? allowWinACoffee;
+  final bool? allowWithdrawBalance;
   @DateTimeConverter()
   final DateTime? lastLogin;
   final bool? disabled;
   final String? qrId;
   final String? fcmToken;
+  final bool? finishedOnboarding;
 
   AppUser({
     this.creditAvailable,
@@ -46,10 +48,12 @@ class AppUser {
     this.getPurchaseInfoByMail,
     this.getPromotions,
     this.allowWinACoffee,
+    this.allowWithdrawBalance,
     this.lastLogin,
     this.disabled,
     this.qrId,
     this.fcmToken,
+    this.finishedOnboarding,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) =>

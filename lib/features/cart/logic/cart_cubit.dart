@@ -59,7 +59,7 @@ class CartCubit extends Cubit<CartState> {
           lineTotal: 0,
           createdAt: DateTime.now(),
         );
-    final int newQuantity = existing.quantity + newItem.quantity;
+    final int newQuantity = (existing.quantity ?? 0) + (newItem.quantity ?? 0);
 
     final updated = existing.copyWith(
       quantity: newQuantity,
