@@ -1,5 +1,6 @@
 import express from "express";
 import { otpRouter } from "./otp/router";
+import referralsRouter from "./referrals/router";
 import windcaveRouter from "./windcave/router";
 import firebaseRouter from "./firebase/router";
 import webhookRouter from "./webhook/router";
@@ -25,3 +26,4 @@ api.use("/credit", coffixCreditRouter);
 api.use("/auth", authRouter);
 api.use("/order", orderRouter);
 api.use("/notification", notificationRouter);
+api.use("/referrals", referralsRouter);

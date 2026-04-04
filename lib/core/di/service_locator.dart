@@ -5,6 +5,7 @@ import 'package:coffix_app/data/repositories/order_repository.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
 import 'package:coffix_app/data/repositories/product_repository.dart';
 import 'package:coffix_app/data/repositories/profile_repository.dart';
+import 'package:coffix_app/data/repositories/referral_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/data/repositories/transaction_repository.dart';
 import 'package:coffix_app/features/app/data/app_repository_impl.dart';
@@ -29,6 +30,8 @@ import 'package:coffix_app/features/products/logic/product_modifier_cubit.dart';
 import 'package:coffix_app/features/profile/data/profile_repository_impl.dart';
 import 'package:coffix_app/features/profile/domain/usecase/update_profile.dart';
 import 'package:coffix_app/features/profile/logic/profile_cubit.dart';
+import 'package:coffix_app/features/referral/domain/repository/referral_repository_impl.dart';
+import 'package:coffix_app/features/referral/logic/referral_cubit.dart';
 import 'package:coffix_app/features/stores/data/store_repository_impl.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
@@ -60,6 +63,12 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl());
   getIt.registerLazySingleton<DraftRepository>(() => DraftRepositoryImpl());
+  getIt.registerLazySingleton<ReferralRepository>(
+    () => ReferralRepositoryImpl(),
+  );
+  getIt.registerLazySingleton<ReferralCubit>(
+    () => ReferralCubit(referralRepository: getIt<ReferralRepository>()),
+  );
   // App Cubit
   getIt.registerLazySingleton<AppCubit>(
     () => AppCubit(appRepository: getIt<AppRepository>()),

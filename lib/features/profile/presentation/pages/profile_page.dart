@@ -11,7 +11,7 @@ import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/coffee_for_home_page.dart';
-import 'package:coffix_app/features/profile/presentation/pages/coffee_on_us_page.dart';
+import 'package:coffix_app/features/referral/pages/view/coffee_on_us_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/personal_info_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';

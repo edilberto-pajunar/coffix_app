@@ -61,7 +61,10 @@ class ProfileRepositoryImpl extends ApiClient implements ProfileRepository {
   @override
   Future<void> sendCoffeeOnUs({
     required List<Map<String, dynamic>> datas,
-  }) async {}
+  }) async {
+    // implement the referral in here
+    
+  }
 
   @override
   Future<void> sendGift({

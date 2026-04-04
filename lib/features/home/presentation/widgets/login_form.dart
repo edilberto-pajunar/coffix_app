@@ -100,6 +100,7 @@ class _LoginFormState extends State<LoginForm> {
                     AppIconButton.withSvgPath(
                       AppImages.google,
                       onPressed: () {
+                        print("cliekd");
                         context.read<AuthCubit>().signInWithGoogle();
                       },
                       backgroundColor: Colors.white,
