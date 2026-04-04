@@ -20,6 +20,7 @@ class AppButton extends StatelessWidget {
     this.textStyle,
     this.height,
     this.width,
+    this.padding,
   });
 
   final AppButtonVariant variant;
@@ -34,7 +35,7 @@ class AppButton extends StatelessWidget {
   final TextStyle? textStyle;
   final double? height;
   final double? width;
-
+  final EdgeInsets? padding;
   factory AppButton.primary({
     required VoidCallback onPressed,
     required String label,
@@ -132,7 +133,7 @@ class AppButton extends StatelessWidget {
         //   minHeight: height ?? 48,
         //   maxHeight: width ?? 48,
         // ),
-        padding: EdgeInsets.all(AppSizes.md),
+        padding: padding ?? EdgeInsets.all(AppSizes.md),
         decoration: decoration,
         alignment: Alignment.center,
         child: prefixIcon != null || suffixIcon != null

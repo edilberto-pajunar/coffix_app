@@ -30,6 +30,7 @@ class AppMoneyField extends StatelessWidget {
           child: FormBuilderTextField(
             initialValue: initialValue,
             name: name,
+            onTapOutside: (_) => FocusScope.of(context).unfocus(),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintStyle: AppTypography.headlineXxl.copyWith(

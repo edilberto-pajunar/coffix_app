@@ -153,6 +153,10 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                     textStyle: AppTypography.labelS.copyWith(
                                       color: AppColors.white,
                                     ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSizes.md,
+                                      vertical: AppSizes.xs,
+                                    ),
                                     label: "TopUp",
                                     onPressed: () {
                                       context.pushNamed(CreditPage.route);
