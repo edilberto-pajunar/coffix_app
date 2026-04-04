@@ -63,6 +63,144 @@ Since authentication is **email + OTP only** (no phone number collected), preven
 
 > **Note:** Without phone verification, device ID is the strongest signal we have to detect same-person fraud across different emails. There is no foolproof solution — a user on a different device will still be hard to detect.
 
+## Email Template
+
+### Template Name (for Firestore Email table)
+
+```
+referral_invite
+```
+
+### Subject
+
+```
+{{referrerName}} is buying you a coffee ☕
+```
+
+### Body (HTML)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coffee on Us</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f0eb;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #2c1a0e;
+    }
+    .wrapper {
+      max-width: 560px;
+      margin: 40px auto;
+      background-color: #fffdf9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .header {
+      background-color: #2c1a0e;
+      padding: 36px 40px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      color: #e8c98a;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+    .header p {
+      margin: 8px 0 0;
+      color: #c9a96e;
+      font-size: 14px;
+    }
+    .body {
+      padding: 36px 40px;
+    }
+    .body p {
+      font-size: 16px;
+      line-height: 1.7;
+      margin: 0 0 20px;
+    }
+    .highlight {
+      color: #a0522d;
+      font-weight: bold;
+    }
+    .cta-wrapper {
+      text-align: center;
+      margin: 32px 0;
+    }
+    .cta {
+      display: inline-block;
+      background-color: #2c1a0e;
+      color: #e8c98a !important;
+      text-decoration: none;
+      padding: 14px 36px;
+      border-radius: 8px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #e8ddd0;
+      margin: 28px 0;
+    }
+    .footer {
+      padding: 0 40px 32px;
+      font-size: 13px;
+      color: #9e8878;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>☕ Coffee on Us</h1>
+      <p>Your friend wants to treat you</p>
+    </div>
+    <div class="body">
+      <p>Hi <span class="highlight">{{refereeName}}</span>,</p>
+      <p>
+        <span class="highlight">{{referrerName}}</span> thinks you deserve a great cup of coffee —
+        and they're willing to prove it. They've invited you to join <strong>Coffix</strong>,
+        and your first order comes with a treat on them.
+      </p>
+      <p>
+        Download the Coffix app, sign up, and make your first purchase. It's that simple.
+      </p>
+      <div class="cta-wrapper">
+        <a href="{{appDownloadUrl}}" class="cta">Download Coffix</a>
+      </div>
+      <hr class="divider" />
+      <p style="font-size:14px; color:#7a6555;">
+        This invite was sent by <strong>{{referrerName}}</strong> ({{referrerEmail}}).
+        If you weren't expecting this, you can safely ignore it.
+      </p>
+    </div>
+    <div class="footer">
+      © Coffix · You're receiving this because a friend invited you.
+    </div>
+  </div>
+</body>
+</html>
+```
+
+### Template Variables
+
+| Variable | Source |
+|---|---|
+| `{{refereeName}}` | Name entered by referrer on page [21] |
+| `{{referrerName}}` | Display name of the referring customer |
+| `{{referrerEmail}}` | Email of the referring customer |
+| `{{appDownloadUrl}}` | App Store / Play Store deep link |
+
+---
+
 ### Suggested `referrals` Status Field
 
 Add a `status` field to the referral document to track state:
