@@ -4,6 +4,8 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/coupons/data/model/coupon.dart';
+import 'package:coffix_app/features/coupons/logic/coupon_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/payment/data/model/payment.dart';
 import 'package:coffix_app/features/payment/logic/payment_cubit.dart';
@@ -29,6 +31,7 @@ class PaymentOptionsPage extends StatelessWidget {
       providers: [
         BlocProvider.value(value: getIt<CartCubit>()),
         BlocProvider.value(value: getIt<PaymentCubit>()),
+        BlocProvider.value(value: getIt<CouponCubit>()),
       ],
       child: const PaymentOptionsPageView(),
     );
@@ -44,6 +47,15 @@ class PaymentOptionsPageView extends StatefulWidget {
 
 class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<CouponCubit>().streamCoupons();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final total =
@@ -58,8 +70,17 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
       authenticated: (u) => u.user.creditAvailable ?? 0,
       orElse: () => 0.0,
     );
+    final coupons = context.watch<CouponCubit>().state.maybeWhen(
+      loaded: (coupons) => coupons,
+      orElse: () => <Coupon>[],
+    );
+    final totalCoupon = coupons.fold(
+      0.0,
+      (sum, c) => sum + (c.amount ?? 0.0),
+    );
+    final totalBalance = creditAvailable + totalCoupon;
     final insufficientCredit =
-        paymentMethod == PaymentMethod.coffixCredit && creditAvailable < total;
+        paymentMethod == PaymentMethod.coffixCredit && totalBalance < total;
 
     return Scaffold(
       appBar: AppBackHeader(title: "Payment"),
@@ -145,7 +166,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text.rich(
-                                    creditAvailable.toCurrencySuperscript(
+                                    totalBalance.toCurrencySuperscript(
                                       style: AppTypography.labelM,
                                     ),
                                   ),

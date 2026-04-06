@@ -111,13 +111,13 @@ router.post(
           .json({ success: false, message: "Unauthorized" });
       }
 
-      const { recipientFirstName, recipientEmail, amount } = validation.data;
+      const { recipientFirstName, recipientLastName, recipientEmail, amount } = validation.data;
 
       await creditService.shareCredit({
         senderId,
         senderFirstName: (senderDoc.firstName as string) ?? "",
         senderLastName: (senderDoc.lastName as string) ?? "",
-        recipientFirstName,
+        recipientFullName: `${recipientFirstName} ${recipientLastName}`,
         recipientEmail,
         amount,
       });

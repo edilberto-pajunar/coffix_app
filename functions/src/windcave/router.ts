@@ -6,12 +6,12 @@ import { createPaymentSessionBodySchema } from "./schema";
 import { WindcaveService } from "./service";
 import { logger } from "firebase-functions";
 import { WindcaveError } from "../utils/windcave.error";
-import FirebaseService from "../firebase/service";
 import { InsufficientCreditError } from "../coffixCredit/service";
 import { serializeForJson } from "../utils/serialize";
 import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
 import { getOrderMerchantReference } from "../coffixCredit/utils";
+import FirebaseService from "../firebase/service";
 
 const router = express.Router();
 
@@ -81,7 +81,7 @@ router.post(
 
         // Single atomic transaction: deduct credit + create transaction doc + mark order paid
         const { paidAt, scheduledAt } =
-          await firebaseService.deductCreditAndMarkOrderPaid({
+          await firebaseService.deductCouponsThenCreditAndMarkOrderPaid({
             customerId,
             orderId,
             amount: totalAmount,

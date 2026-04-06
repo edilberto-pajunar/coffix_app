@@ -1,5 +1,6 @@
 import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
+import 'package:coffix_app/data/repositories/coupon_repository.dart';
 import 'package:coffix_app/data/repositories/modifier_repository.dart';
 import 'package:coffix_app/data/repositories/order_repository.dart';
 import 'package:coffix_app/data/repositories/payment_repository.dart';
@@ -9,6 +10,8 @@ import 'package:coffix_app/data/repositories/referral_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/data/repositories/transaction_repository.dart';
 import 'package:coffix_app/features/app/data/app_repository_impl.dart';
+import 'package:coffix_app/features/coupons/data/coupon_repository_impl.dart';
+import 'package:coffix_app/features/coupons/logic/coupon_cubit.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/data/auth_repository_impl.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
@@ -68,6 +71,10 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<ReferralCubit>(
     () => ReferralCubit(referralRepository: getIt<ReferralRepository>()),
+  );
+  getIt.registerLazySingleton<CouponRepository>(() => CouponRepositoryImpl());
+  getIt.registerLazySingleton<CouponCubit>(
+    () => CouponCubit(couponRepository: getIt<CouponRepository>()),
   );
   // App Cubit
   getIt.registerLazySingleton<AppCubit>(

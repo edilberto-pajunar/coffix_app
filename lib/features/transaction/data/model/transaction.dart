@@ -37,6 +37,7 @@ class Transaction {
   final String? type;
   String? recipientCustomerId;
   String? recipientEmail;
+  String? recipientFullName;
   String? senderFirstName;
   String? senderLastName;
 
@@ -54,6 +55,7 @@ class Transaction {
     this.type,
     this.recipientCustomerId,
     this.recipientEmail,
+    this.recipientFullName,
     this.senderFirstName,
     this.senderLastName,
   });

@@ -179,6 +179,148 @@ class FirebaseService {
     return { paidAt, scheduledAt };
   }
 
+  /**
+   * Deducts eligible coupons first, then Coffix Credit for the remainder.
+   * Eligible coupons: assigned to this user, not expired, not used, usageCount < usageLimit.
+   * All writes are atomic in a single Firestore transaction.
+   */
+  async deductCouponsThenCreditAndMarkOrderPaid({
+    customerId,
+    orderId,
+    amount,
+    duration,
+    orderNumber,
+  }: {
+    customerId: string;
+    orderId: string;
+    amount: number;
+    duration: number;
+    orderNumber: string;
+  }): Promise<{ paidAt: Date; scheduledAt: Date }> {
+    const customerRef = firestore.collection("customers").doc(customerId);
+    const orderRef = firestore.collection("orders").doc(orderId);
+    const transactionRef = firestore.collection("transactions").doc();
+
+    const paidAt = new Date();
+    const scheduledAt = scheduledAtNZ(duration);
+    const now = new Date();
+
+    // Fetch eligible coupons outside the transaction (reads before transaction opens)
+    const couponSnap = await firestore
+      .collection("coupons")
+      .where("userIds", "array-contains", customerId)
+      .get();
+
+    const eligibleCouponRefs = couponSnap.docs
+      .filter((doc) => {
+        const c = doc.data() as Record<string, any>;
+        const notExpired =
+          !c.expiryDate ||
+          (c.expiryDate as admin.firestore.Timestamp).toDate() > now;
+        const notUsed = c.isUsed !== true;
+        const hasUsage =
+          c.usageLimit == null ||
+          c.usageCount == null ||
+          (c.usageCount as number) < (c.usageLimit as number);
+        return notExpired && notUsed && hasUsage;
+      })
+      .map((doc) => doc.ref);
+
+    await firestore.runTransaction(async (tx) => {
+      // READ phase
+      const customerSnap = await tx.get(customerRef);
+      if (!customerSnap.exists) throw new Error("Customer not found");
+
+      // Re-read each coupon inside the transaction to guard against races
+      const couponSnaps = await Promise.all(
+        eligibleCouponRefs.map((ref) => tx.get(ref)),
+      );
+
+      const data = customerSnap.data()!;
+      const creditAvailable = (data.creditAvailable ?? 0) as number;
+
+      // Determine which coupons to consume and how much credit to deduct
+      let remaining = amount;
+      const couponsToConsume: Array<{
+        ref: admin.firestore.DocumentReference;
+        couponId: string;
+        amountUsed: number;
+        newUsageCount: number;
+      }> = [];
+
+      for (const snap of couponSnaps) {
+        if (!snap.exists || remaining <= 0) continue;
+        const cd = snap.data()!;
+        // Re-validate inside transaction
+        const notExpired =
+          !cd.expiryDate ||
+          (cd.expiryDate as admin.firestore.Timestamp).toDate() > now;
+        const notUsed = cd.isUsed !== true;
+        const hasUsage =
+          cd.usageLimit == null ||
+          cd.usageCount == null ||
+          (cd.usageCount as number) < (cd.usageLimit as number);
+        if (!notExpired || !notUsed || !hasUsage) continue;
+
+        const couponAmount = (cd.amount ?? 0) as number;
+        const amountUsed = Math.min(couponAmount, remaining);
+        remaining -= amountUsed;
+        couponsToConsume.push({
+          ref: snap.ref,
+          couponId: snap.id,
+          amountUsed,
+          newUsageCount: ((cd.usageCount ?? 0) as number) + 1,
+        });
+      }
+
+      const totalBalance =
+        creditAvailable +
+        couponsToConsume.reduce((s, c) => s + c.amountUsed, 0);
+      if (totalBalance < amount) {
+        throw new InsufficientCreditError(totalBalance, amount);
+      }
+
+      // WRITE phase
+      // Mark each consumed coupon as used
+      for (const c of couponsToConsume) {
+        tx.update(c.ref, {
+          isUsed: true,
+          usageCount: c.newUsageCount,
+        });
+      }
+
+      // Deduct remaining from creditAvailable (may be 0 if coupons covered it all)
+      if (remaining > 0) {
+        tx.update(customerRef, {
+          creditAvailable: creditAvailable - remaining,
+        });
+      }
+
+      tx.set(transactionRef, {
+        docId: transactionRef.id,
+        customerId,
+        orderId,
+        amount,
+        couponIds: couponsToConsume.map((c) => c.couponId),
+        couponDiscount: amount - remaining,
+        status: "approved",
+        createdAt: paidAt,
+        paymentTime: paidAt,
+        paymentMethod: "coffixCredit",
+        sessionId: "coffixCredit",
+        orderNumber,
+      });
+
+      tx.set(
+        orderRef,
+        { status: "paid", paidAt, scheduledAt },
+        { merge: true },
+      );
+    });
+
+    return { paidAt, scheduledAt };
+  }
+
   // Transaction Status	Meaning
   // created	Session created
   // pending	User on HPP
@@ -298,6 +440,7 @@ class FirebaseService {
       senderFirstName,
       senderLastName,
       recipientEmail,
+      recipientFullName,
       recipientCustomerId,
       amount,
     }: {
@@ -305,6 +448,7 @@ class FirebaseService {
       senderFirstName: string;
       senderLastName: string;
       recipientEmail: string;
+      recipientFullName: string;
       recipientCustomerId?: string;
       amount: number;
     },
@@ -317,6 +461,7 @@ class FirebaseService {
       senderFirstName,
       senderLastName,
       recipientEmail: recipientEmail.toLowerCase(),
+      recipientFullName,
       amount,
       status: "completed",
       createdAt: new Date(),

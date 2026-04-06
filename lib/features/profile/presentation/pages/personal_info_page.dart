@@ -232,7 +232,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
     );
 
     return PopScope(
-      canPop: widget.canBack,
+      canPop: user?.finishedOnboarding == true,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -241,7 +241,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
               color: AppColors.textBlackColor,
             ),
           ),
-          leading: widget.canBack
+          leading: user?.finishedOnboarding == true
               ? IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded),
                   onPressed: () => context.pop(),

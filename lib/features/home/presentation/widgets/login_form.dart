@@ -23,10 +23,10 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  void handleLogin() {
+  void handleLogin() async {
     if (widget.formKey.currentState?.saveAndValidate() ?? false) {
       final fields = widget.formKey.currentState!.value;
-      context.read<AuthCubit>().createOrLoginAccount(
+      await context.read<AuthCubit>().createOrLoginAccount(
         email: fields['email'] as String,
         password: fields['password'] as String,
       );
@@ -35,7 +35,13 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          authenticated: (_) => widget.formKey.currentState?.reset(),
+        );
+      },
+      child: Column(
       children: [
         const SizedBox(height: AppSizes.xxxxl),
         Center(
@@ -70,6 +76,33 @@ class _LoginFormState extends State<LoginForm> {
                   hintText: "Password",
                   name: "password",
                   obscureText: true,
+                  isRequired: true,
+                  validators: [
+                    (String? value) {
+                      if (value == null || value.isEmpty) return null;
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      if (value.length > 4096) {
+                        return 'Password must not exceed 4096 characters';
+                      }
+                      if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                        return 'Password must contain an uppercase letter';
+                      }
+                      if (!RegExp(r'[a-z]').hasMatch(value)) {
+                        return 'Password must contain a lowercase letter';
+                      }
+                      if (!RegExp(r'[0-9]').hasMatch(value)) {
+                        return 'Password must contain a number';
+                      }
+                      if (!RegExp(
+                        r'[!@#$%^&*(),.?":{}|<>_\-\+=\[\]\\\/~`]',
+                      ).hasMatch(value)) {
+                        return 'Password must contain a special character';
+                      }
+                      return null;
+                    },
+                  ],
                 ),
                 const SizedBox(height: 14.0),
 
@@ -159,6 +192,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
         const SizedBox(height: AppSizes.xxxxl),
       ],
+    ),
     );
   }
 }

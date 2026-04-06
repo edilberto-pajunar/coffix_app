@@ -5,6 +5,7 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/coupons/logic/coupon_cubit.dart';
 import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/modifier/logic/modifier_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
@@ -68,6 +69,7 @@ class LayoutPage extends StatelessWidget {
         BlocProvider.value(value: getIt<ProductCubit>()),
         BlocProvider.value(value: getIt<ModifierCubit>()),
         BlocProvider.value(value: getIt<CreditCubit>()),
+        BlocProvider.value(value: getIt<CouponCubit>()),
       ],
       child: LayoutView(shell: shell),
     );
@@ -155,7 +157,8 @@ class _LayoutViewState extends State<LayoutView> {
                               onTap: (index) {
                                 state.maybeWhen(
                                   authenticated: (user) {
-                                    if (user.user.emailVerified == true) {
+                                    if (user.user.emailVerified == true &&
+                                        user.user.finishedOnboarding == true) {
                                       if (index ==
                                           LayoutPageTab.coffixCredit.index) {
                                         context

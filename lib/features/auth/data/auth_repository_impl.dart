@@ -14,6 +14,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -72,7 +73,14 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
         docId: credential.user!.uid,
         email: credential.user!.email!,
       );
-    } catch (e) {
+    } on FirebaseAuthException catch (e, st) {
+      if (e.code == 'email-already-in-use') {
+        throw Exception('Email already in use');
+      }
+      debugPrint('signUp error: $e\n$st'); // see real error in console
+      throw Exception(e.message);
+    } catch (e, st) {
+      debugPrint('signUp error: $e\n$st'); // see real error in console
       throw Exception(e);
     }
   }

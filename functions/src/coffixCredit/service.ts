@@ -1,8 +1,9 @@
 import { firestore } from "../config/firebaseAdmin";
 import { logger } from "firebase-functions";
-import { GLOBAL_COLLECTION_ID, RESEND_FROM_EMAIL } from "../constant/constant";
+import { GLOBAL_COLLECTION_ID } from "../constant/constant";
 import FirebaseService from "../firebase/service";
 import { InsufficientCreditError, MinCreditError } from "./errors";
+import { EmailService } from "../email/service";
 
 export { InsufficientCreditError, MinCreditError };
 
@@ -88,14 +89,14 @@ export class CoffixCreditService {
     senderId,
     senderFirstName,
     senderLastName,
-    recipientFirstName,
+    recipientFullName,
     recipientEmail,
     amount,
   }: {
     senderId: string;
     senderFirstName: string;
     senderLastName: string;
-    recipientFirstName: string;
+    recipientFullName: string;
     recipientEmail: string;
     amount: number;
   }): Promise<void> {
@@ -128,7 +129,7 @@ export class CoffixCreditService {
     const recipient = await firebaseService.findCustomerByEmail(recipientEmail);
 
     if (recipient) {
-      // Branch A: recipient exists — transfer atomically
+      // Branch A: recipient exists — transfer automically
       const recipientRef = firestore
         .collection("customers")
         .doc(recipient.customerId);
@@ -155,6 +156,7 @@ export class CoffixCreditService {
           senderFirstName,
           senderLastName,
           recipientEmail,
+          recipientFullName,
           recipientCustomerId: recipient.customerId,
           amount,
         });
@@ -174,6 +176,7 @@ export class CoffixCreditService {
           senderFirstName,
           senderLastName,
           recipientEmail,
+          recipientFullName,
           amount,
         });
       });
@@ -181,52 +184,14 @@ export class CoffixCreditService {
 
     // 5. Send gift notification email (non-fatal)
     try {
-      const RESEND_API_KEY = process.env.RESEND_API_KEY;
-      if (!RESEND_API_KEY) {
-        logger.warn(
-          "RESEND_API_KEY not set – skipping gift notification email",
-        );
-        return;
-      }
-
-      const templateSnap = await firestore
-        .collection("emails")
-        .doc("GIFT_NOTIFICATION")
-        .get();
-      const templateData = templateSnap.data();
-      if (!templateData) {
-        logger.warn("Gift notification email template not found");
-        return;
-      }
-
-      const senderName = `${senderFirstName} ${senderLastName}`.trim();
-      const subject: string =
-        (templateData.subject as string) ?? "You received a gift!";
-      const body: string = ((templateData.body as string) ?? "")
-        .replace(/\{\{senderName\}\}/g, senderName)
-        .replace(/\{\{amount\}\}/g, amount.toFixed(2))
-        .replace(/\{\{recipientFirstName\}\}/g, recipientFirstName);
-
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: RESEND_FROM_EMAIL,
-          to: [recipientEmail],
-          subject,
-          html: body,
-        }),
+      await new EmailService().sendGift({
+        to: recipientEmail,
+        senderFirstName,
+        senderLastName,
+        amount,
       });
-
-      if (!resendRes.ok) {
-        const err = await resendRes.json();
-        logger.error("Failed to send gift notification email", err);
-      }
     } catch (emailError) {
-      logger.error("Error sending gift notification email", emailError);
+      logger.error("Error sending gift notification email", { emailError });
     }
   }
 }

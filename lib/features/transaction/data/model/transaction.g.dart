@@ -20,6 +20,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
   type: json['type'] as String?,
   recipientCustomerId: json['recipientCustomerId'] as String?,
   recipientEmail: json['recipientEmail'] as String?,
+  recipientFullName: json['recipientFullName'] as String?,
   senderFirstName: json['senderFirstName'] as String?,
   senderLastName: json['senderLastName'] as String?,
 );
@@ -41,6 +42,7 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'type': instance.type,
       'recipientCustomerId': instance.recipientCustomerId,
       'recipientEmail': instance.recipientEmail,
+      'recipientFullName': instance.recipientFullName,
       'senderFirstName': instance.senderFirstName,
       'senderLastName': instance.senderLastName,
     };

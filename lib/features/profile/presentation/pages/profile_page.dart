@@ -7,6 +7,8 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
+import 'package:coffix_app/features/coupons/data/model/coupon.dart';
+import 'package:coffix_app/features/coupons/logic/coupon_cubit.dart';
 import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/about_page.dart';
@@ -39,14 +41,29 @@ class ProfilePage extends StatelessWidget {
         BlocProvider.value(value: getIt<AppCubit>()),
         BlocProvider.value(value: getIt<CartCubit>()),
         BlocProvider.value(value: getIt<CreditCubit>()),
+        BlocProvider.value(value: getIt<CouponCubit>()),
       ],
       child: const ProfileView(),
     );
   }
 }
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<CouponCubit>().streamCoupons();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,28 +106,40 @@ class ProfileView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text.rich(
-                    textAlign: TextAlign.center,
-                    TextSpan(
-                      children: [
-                        creditBalance.toCurrencySuperscript(
-                          style: AppTypography.headlineXl,
+                  BlocBuilder<CouponCubit, CouponState>(
+                    builder: (context, couponState) {
+                      final coupons = couponState.maybeWhen(
+                        loaded: (coupons) => coupons,
+                        orElse: () => <Coupon>[],
+                      );
+                      final totalCoupon = coupons.fold(
+                        0.0,
+                        (sum, c) => sum + (c.amount ?? 0.0),
+                      );
+                      return Text.rich(
+                        textAlign: TextAlign.center,
+                        TextSpan(
+                          children: [
+                            creditBalance.toCurrencySuperscript(
+                              style: AppTypography.headlineXl,
+                            ),
+                            if (totalCoupon > 0) ...[
+                              TextSpan(
+                                text: " + ",
+                                style: AppTypography.headlineXl,
+                              ),
+                              totalCoupon.toCurrencySuperscript(
+                                style: AppTypography.headlineXl,
+                              ),
+                              TextSpan(
+                                text: " Coupon",
+                                style: AppTypography.bodyXS,
+                              ),
+                            ],
+                          ],
                         ),
-                        // TODO: IMPLEMENT THE COUPON SYSTEM
-                        // Single condition for coupon block
-                        // ignore: dead_code
-                        if (false) ...[
-                          TextSpan(text: "+ ", style: AppTypography.headlineXl),
-                          0.00.toCurrencySuperscript(
-                            style: AppTypography.headlineXl,
-                          ),
-                          TextSpan(
-                            text: " Coupon",
-                            style: AppTypography.bodyXS,
-                          ),
-                        ],
-                      ],
-                    ),
+                      );
+                    },
                   ),
                   const SizedBox(height: AppSizes.md),
                   AppButton.primary(

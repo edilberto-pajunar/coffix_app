@@ -10,13 +10,14 @@ import {
 import { logger } from "firebase-functions";
 import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
-
+import { ReferralService } from "../referrals/service";
 export class WebhookService {
   private readonly windcaveService: WindcaveService;
   private readonly firebaseService: FirebaseService;
   private readonly receiptService: ReceiptService;
   private readonly coffixCreditService: CoffixCreditService;
   private readonly notificationService: NotificationService;
+  private readonly referralService: ReferralService;
 
   constructor() {
     this.windcaveService = new WindcaveService();
@@ -24,6 +25,7 @@ export class WebhookService {
     this.coffixCreditService = new CoffixCreditService();
     this.receiptService = new ReceiptService();
     this.notificationService = new NotificationService();
+    this.referralService = new ReferralService();
   }
 
   /**
@@ -217,9 +219,10 @@ export class WebhookService {
           });
         }
         logger.info("orderDoc", orderId);
+        const paidAt = new Date();
         await this.firebaseService.updateOrder(orderDoc.docId, {
           status: "paid",
-          paidAt: new Date(),
+          paidAt,
           paymentMethod,
           scheduledAt: new Date(
             Date.now() + (orderDoc?.duration ?? 0) * 60_000,
@@ -264,6 +267,15 @@ export class WebhookService {
             message: "Your order has been successful",
           })
           .catch((err) => logger.error("Notification failed:", err));
+        this.referralService
+          .handleFirstPurchase({
+            customerId: customerId ?? "",
+            orderId,
+            paidAt,
+          })
+          .catch((err) =>
+            logger.error("Referral first-purchase check failed:", err),
+          );
         return;
       } else {
         await this.firebaseService.updateTransaction(transactionDoc.docId, {

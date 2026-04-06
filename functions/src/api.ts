@@ -8,6 +8,7 @@ import coffixCreditRouter from "./coffixCredit/router";
 import authRouter from "./auth/route";
 import orderRouter from "./order/router";
 import notificationRouter from "./notification/router";
+import emailRouter from "./email/router";
 
 export const api = express();
 // Global middleware
@@ -27,3 +28,4 @@ api.use("/auth", authRouter);
 api.use("/order", orderRouter);
 api.use("/notification", notificationRouter);
 api.use("/referrals", referralsRouter);
+api.use("/email", emailRouter);

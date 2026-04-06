@@ -4,8 +4,8 @@ import { requirePost } from "../middleware/method";
 import { AuthenticatedRequest, requiredAuth } from "../middleware/auth";
 import { firestore } from "../config/firebaseAdmin";
 import { AuthService } from "../auth/service";
-import { RESEND_FROM_EMAIL } from "../constant/constant";
 import { logger } from "firebase-functions/v1";
+import { ReferralService } from "./service";
 
 const referralsRouter = express.Router();
 referralsRouter.use(express.json());
@@ -67,7 +67,7 @@ referralsRouter.post(
           firestore
             .collection("referrals")
             .where("referee", "==", email)
-            .where("status", "==", "pending")
+            .where("status", "in", ["pending", "active"])
             .limit(1)
             .get(),
         ),
@@ -84,64 +84,18 @@ referralsRouter.post(
         });
       }
 
-      // Fetch email template once
-      const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
-      const templateSnap = await firestore
-        .collection("emails")
-        .doc("REFERRAL")
-        .get();
-      const templateData = templateSnap.data();
-
       // Create referral documents and send emails in parallel
+      const referralService = new ReferralService();
       await Promise.all(
         existenceChecks.map(async ({ email, name }) => {
-          const referralRef = firestore.collection("referrals").doc();
-          const docId = referralRef.id;
-
-          await referralRef.set({
-            docId,
-            referralTime: new Date(),
-            referrer: uid,
-            referee: email,
-            status: "pending",
+          await referralService.createReferral({
+            referrerUid: uid,
+            referee: { email, name },
           });
-
-          if (!RESEND_API_KEY) {
-            logger.warn("RESEND_API_KEY not set – skipping referral email");
-            return;
-          }
-
-          if (!templateData) {
-            logger.warn("Referral email template not found in emails/REFERRAL");
-            return;
-          }
-
-          const subject: string =
-            (templateData.subject as string) ??
-            "You've been invited to Coffix!";
-          const body: string = ((templateData.body as string) ?? "")
-            .replace(/\{\{refereeName\}\}/g, name)
-            .replace(/\{\{refereeEmail\}\}/g, email);
-
-          const resendRes = await fetch("https://api.resend.com/emails", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${RESEND_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              from: RESEND_FROM_EMAIL,
-              to: [email],
-              subject,
-              html: body,
-            }),
+          await referralService.sendReferralEmail({
+            referrerUid: uid,
+            referee: { email, name },
           });
-
-          if (!resendRes.ok) {
-            const err = await resendRes.json();
-            logger.error("Failed to send referral email", { email, err });
-          }
         }),
       );
 
