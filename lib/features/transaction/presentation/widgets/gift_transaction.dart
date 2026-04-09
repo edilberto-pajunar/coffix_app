@@ -58,7 +58,7 @@ class GiftTransactionState extends State<GiftTransaction> {
                 child: Row(
                   children: [
                     Text(
-                      "#${widget.transaction.docId?.last6 ?? "N/A"}",
+                      "#${widget.transaction.transactionNumber ?? 'N/A'}",
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

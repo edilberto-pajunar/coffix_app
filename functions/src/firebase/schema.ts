@@ -34,6 +34,7 @@ export const createOrderBodySchema = z
     ),
     duration: z.number().min(0),
     paymentMethod: z.enum(["coffixCredit", "card"]),
+    transactionNumber: z.string().trim(),
   })
   .strict();
 

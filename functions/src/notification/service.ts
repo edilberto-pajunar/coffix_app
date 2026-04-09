@@ -1,3 +1,4 @@
+import * as admin from "firebase-admin";
 import { getMessaging } from "firebase-admin/messaging";
 import { logger } from "firebase-functions";
 import { firestore } from "../config/firebaseAdmin";
@@ -35,7 +36,7 @@ export class NotificationService {
         metadata,
       });
       try {
-        await getMessaging().send({
+        await getMessaging(admin.app()).send({
           token: fcmToken,
           notification: { title, body: message },
         });
@@ -116,7 +117,7 @@ export class NotificationService {
 
     for (let i = 0; i < messagingPayloads.length; i += BATCH_LIMIT) {
       const chunk = messagingPayloads.slice(i, i + BATCH_LIMIT);
-      const batchResponse = await getMessaging().sendEach(chunk);
+      const batchResponse = await getMessaging(admin.app()).sendEach(chunk);
       batchResponse.responses.forEach((r, idx) => {
         if (!r.success) {
           logger.error(`FCM batch send failed for index ${i + idx}:`, r.error);

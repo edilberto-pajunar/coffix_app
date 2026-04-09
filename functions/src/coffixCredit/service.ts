@@ -4,6 +4,7 @@ import { GLOBAL_COLLECTION_ID } from "../constant/constant";
 import FirebaseService from "../firebase/service";
 import { InsufficientCreditError, MinCreditError } from "./errors";
 import { EmailService } from "../email/service";
+import { generateTransactionNumber } from "../utils/generate_order_number";
 
 export { InsufficientCreditError, MinCreditError };
 
@@ -36,11 +37,11 @@ export class CoffixCreditService {
     });
   }
 
-  async addCredit(customerId: string, amount: number): Promise<void> {
+  async addCredit(customerId: string, amount: number): Promise<number> {
     const customerRef = firestore.collection("customers").doc(customerId);
     const globals = await firestore
       .collection("global")
-      .doc("EQ0i4V6H47Ra7yMCdG7B")
+      .doc(GLOBAL_COLLECTION_ID)
       .get();
     if (!globals.exists) {
       throw new Error("Global not found");
@@ -83,6 +84,8 @@ export class CoffixCreditService {
         { merge: true },
       );
     });
+
+    return totalAmount;
   }
 
   async shareCredit({
@@ -108,6 +111,7 @@ export class CoffixCreditService {
       .doc(GLOBAL_COLLECTION_ID)
       .get();
     const minCreditToShare = (globals.data()?.minCreditToShare ?? 0) as number;
+    const transactionNumber = await generateTransactionNumber();
 
     // 2. Validate minimum amount
     if (amount < minCreditToShare) {
@@ -159,6 +163,7 @@ export class CoffixCreditService {
           recipientFullName,
           recipientCustomerId: recipient.customerId,
           amount,
+          transactionNumber,
         });
       });
     } else {
@@ -178,6 +183,7 @@ export class CoffixCreditService {
           recipientEmail,
           recipientFullName,
           amount,
+          transactionNumber,
         });
       });
     }

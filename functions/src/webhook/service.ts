@@ -322,7 +322,10 @@ export class WebhookService {
     authorised: boolean;
   }) {
     if (authorised) {
-      await this.coffixCreditService.addCredit(customerId, amount);
+      const totalAmount = await this.coffixCreditService.addCredit(
+        customerId,
+        amount,
+      );
       await this.firebaseService.updateTransaction(transactionDoc.docId, {
         status: "approved",
         updatedAt: new Date(),
@@ -331,6 +334,7 @@ export class WebhookService {
         sessionId,
         paymentId: transaction.id,
         responseText: transaction.responseText,
+        totalAmount,
       });
       this.notificationService
         .sendNotification({

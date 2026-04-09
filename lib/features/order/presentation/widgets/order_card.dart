@@ -162,7 +162,7 @@ class OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(width: AppSizes.sm),
                     Text(
-                      '#${order.orderNumber?.substring(order.orderNumber!.length - 6) ?? '—'}',
+                      '#${order.transactionNumber ?? 'N/A'}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

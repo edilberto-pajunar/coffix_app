@@ -44,15 +44,6 @@ class OrderTransactionState extends State<OrderTransaction> {
       (order) => order.docId == widget.transaction.orderId,
     );
 
-    String getTransactionTitle() {
-      if (widget.transaction.type == "topup") {
-        return "TopUp";
-      } else if (widget.transaction.type == "gift") {
-        return "Gift: ${widget.transaction.recipientEmail}";
-      }
-      return "#${widget.transaction.orderNumber?.last6 ?? "N/A"}";
-    }
-
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
       decoration: BoxDecoration(
@@ -69,7 +60,7 @@ class OrderTransactionState extends State<OrderTransaction> {
                 child: Row(
                   children: [
                     Text(
-                      getTransactionTitle(),
+                      "#${widget.transaction.transactionNumber ?? 'N/A'}",
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),

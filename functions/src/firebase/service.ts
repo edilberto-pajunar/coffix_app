@@ -71,6 +71,7 @@ class FirebaseService {
       status: "pending_payment",
       duration: validation.data.duration,
       paymentMethod: validation.data.paymentMethod,
+      transactionNumber: validation.data.transactionNumber,
     };
     await orderRef.set(orderData);
 
@@ -190,12 +191,14 @@ class FirebaseService {
     amount,
     duration,
     orderNumber,
+    transactionNumber,
   }: {
     customerId: string;
     orderId: string;
     amount: number;
     duration: number;
     orderNumber: string;
+    transactionNumber: string;
   }): Promise<{ paidAt: Date; scheduledAt: Date }> {
     const customerRef = firestore.collection("customers").doc(customerId);
     const orderRef = firestore.collection("orders").doc(orderId);
@@ -309,6 +312,7 @@ class FirebaseService {
         paymentMethod: "coffixCredit",
         sessionId: "coffixCredit",
         orderNumber,
+        transactionNumber,
       });
 
       tx.set(
@@ -333,11 +337,13 @@ class FirebaseService {
     orderId,
     amount,
     sessionId,
+    transactionNumber,
   }: {
     customerId: string;
     orderId: string;
     amount: number;
     sessionId: string;
+    transactionNumber: string;
   }): Promise<string> {
     const transactionRef = firestore.collection("transactions").doc();
     await transactionRef.set({
@@ -348,6 +354,7 @@ class FirebaseService {
       status: "created",
       createdAt: new Date(),
       sessionId,
+      transactionNumber,
     });
     return transactionRef.id;
   }
@@ -363,10 +370,12 @@ class FirebaseService {
     customerId,
     amount,
     sessionId,
+    transactionNumber,
   }: {
     customerId: string;
     amount: number;
     sessionId: string;
+    transactionNumber: string;
   }): Promise<string> {
     const transactionRef = firestore.collection("transactions").doc();
     await transactionRef.set({
@@ -377,6 +386,7 @@ class FirebaseService {
       createdAt: new Date(),
       sessionId,
       type: "topup",
+      transactionNumber,
     });
     return transactionRef.id;
   }
@@ -443,6 +453,7 @@ class FirebaseService {
       recipientFullName,
       recipientCustomerId,
       amount,
+      transactionNumber,
     }: {
       senderId: string;
       senderFirstName: string;
@@ -451,6 +462,7 @@ class FirebaseService {
       recipientFullName: string;
       recipientCustomerId?: string;
       amount: number;
+      transactionNumber: string;
     },
   ): void {
     const transactionRef = firestore.collection("transactions").doc();
@@ -465,6 +477,7 @@ class FirebaseService {
       amount,
       status: "completed",
       createdAt: new Date(),
+      transactionNumber,
     };
     if (recipientCustomerId !== undefined) {
       doc.recipientCustomerId = recipientCustomerId;

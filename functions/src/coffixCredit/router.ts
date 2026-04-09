@@ -12,6 +12,7 @@ import {
   MinCreditError,
 } from "./service";
 import { shareCoffixCreditSchema, topupBodySchema } from "./schema";
+import { generateTransactionNumber } from "../utils/generate_order_number";
 
 const router = express.Router();
 
@@ -56,10 +57,13 @@ router.post(
           userDoc: userDoc,
         });
 
+      const transactionNumber = await generateTransactionNumber();
+
       await firebaseService.createTopupTransaction({
         customerId,
         amount,
         sessionId,
+        transactionNumber,
       });
 
       return response.status(200).json({
@@ -111,7 +115,8 @@ router.post(
           .json({ success: false, message: "Unauthorized" });
       }
 
-      const { recipientFirstName, recipientLastName, recipientEmail, amount } = validation.data;
+      const { recipientFirstName, recipientLastName, recipientEmail, amount } =
+        validation.data;
 
       await creditService.shareCredit({
         senderId,

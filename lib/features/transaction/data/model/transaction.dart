@@ -40,6 +40,8 @@ class Transaction {
   String? recipientFullName;
   String? senderFirstName;
   String? senderLastName;
+  String? transactionNumber;
+  double? totalAmount;
 
   Transaction({
     this.docId,
@@ -58,6 +60,8 @@ class Transaction {
     this.recipientFullName,
     this.senderFirstName,
     this.senderLastName,
+    this.transactionNumber,
+    this.totalAmount,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

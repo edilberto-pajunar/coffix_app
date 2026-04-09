@@ -23,6 +23,8 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
   recipientFullName: json['recipientFullName'] as String?,
   senderFirstName: json['senderFirstName'] as String?,
   senderLastName: json['senderLastName'] as String?,
+  transactionNumber: json['transactionNumber'] as String?,
+  totalAmount: (json['totalAmount'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
@@ -45,6 +47,8 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'recipientFullName': instance.recipientFullName,
       'senderFirstName': instance.senderFirstName,
       'senderLastName': instance.senderLastName,
+      'transactionNumber': instance.transactionNumber,
+      'totalAmount': instance.totalAmount,
     };
 
 const _$TransactionStatusEnumMap = {

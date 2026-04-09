@@ -1,7 +1,6 @@
 import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
-import 'package:coffix_app/core/extensions/order_extensions.dart';
 import 'package:coffix_app/core/extensions/payment_method_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
@@ -42,15 +41,10 @@ class TopUpTransactionState extends State<TopUpTransaction> {
     final order = context.watch<OrderCubit>().state.orders.firstWhereOrNull(
       (order) => order.docId == widget.transaction.orderId,
     );
-
-    String getTransactionTitle() {
-      if (widget.transaction.type == "topup") {
-        return "TopUp";
-      } else if (widget.transaction.type == "gift") {
-        return "Gift: ${widget.transaction.recipientEmail}";
-      }
-      return "#${widget.transaction.orderNumber?.last6 ?? "N/A"}";
-    }
+    final bonus = widget.transaction.totalAmount == null
+        ? 0.0
+        : (widget.transaction.totalAmount ?? 0.0) -
+              (widget.transaction.amount ?? 0.0);
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
@@ -68,7 +62,7 @@ class TopUpTransactionState extends State<TopUpTransaction> {
                 child: Row(
                   children: [
                     Text(
-                      getTransactionTitle(),
+                      "#${widget.transaction.transactionNumber ?? 'N/A'}",
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -91,7 +85,21 @@ class TopUpTransactionState extends State<TopUpTransaction> {
           const SizedBox(height: AppSizes.sm),
           Row(
             children: [
-              Expanded(child: SizedBox()),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "You received ${widget.transaction.totalAmount?.toCurrency() ?? 'N/A'} credits (${widget.transaction.amount?.toCurrency() ?? 'N/A'} + ${bonus.toCurrency()} bonus)",
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(width: AppSizes.md),
               Column(
                 children: [

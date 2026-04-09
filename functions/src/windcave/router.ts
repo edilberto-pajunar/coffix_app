@@ -12,6 +12,7 @@ import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
 import { getOrderMerchantReference } from "../coffixCredit/utils";
 import FirebaseService from "../firebase/service";
+import { generateTransactionNumber } from "../utils/generate_order_number";
 
 const router = express.Router();
 
@@ -62,6 +63,8 @@ router.post(
           .json({ success: false, message: "Store not found" });
       }
 
+      const transactionNumber = await generateTransactionNumber();
+
       // create order
       const { orderId, orderData } = await firebaseService.createNewOrder({
         amount: totalAmount,
@@ -72,6 +75,7 @@ router.post(
         items: enrichedItems,
         duration: validation.data.duration,
         paymentMethod: validation.data.paymentMethod,
+        transactionNumber,
       });
 
       // handle coffix credit payment
@@ -87,6 +91,7 @@ router.post(
             amount: totalAmount,
             duration,
             orderNumber: orderData.orderNumber,
+            transactionNumber,
           });
 
         // Non-critical path: don't block response
@@ -157,6 +162,7 @@ router.post(
         orderId,
         amount: totalAmount,
         sessionId,
+        transactionNumber,
       });
 
       return response.status(200).json({
