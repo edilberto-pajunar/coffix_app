@@ -17,7 +17,10 @@ import { handleCustomerCreated } from "./triggers/onCustomerCreated";
 export const v1 = onRequest(api);
 
 export const onCustomerCreated = onDocumentCreated(
-  "customers/{uid}",
+  {
+    document: "customers/{uid}",
+    database: project.includes("dev") ? "(default)" : "coffix-prod-australia",
+  },
   async (event) => {
     const uid = event.params.uid;
     const data = event.data?.data();
