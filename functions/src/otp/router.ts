@@ -8,6 +8,7 @@ import { createOTPDocumentWithTransaction } from "./service";
 import { verifyEmail } from "../user/service";
 import { RESEND_FROM_EMAIL } from "../constant/constant";
 import FirebaseService from "../firebase/service";
+import { otpSendLimiter } from "../middleware/rateLimiter";
 
 export const otpRouter = express.Router();
 otpRouter.use(express.json());
@@ -22,6 +23,7 @@ function generateOtp6(): string {
 otpRouter.post(
   "/send",
   requirePost,
+  otpSendLimiter,
   requiredAuth,
   async (request: AuthenticatedRequest, response) => {
     const validation = sendEmailOTPSchema.safeParse(request.body);
@@ -132,6 +134,7 @@ otpRouter.post(
 otpRouter.post(
   "/verify",
   requirePost,
+  otpSendLimiter,
   requiredAuth,
   async (request: AuthenticatedRequest, response) => {
     const validation = verifyEmailOTPSchema.safeParse(request.body);

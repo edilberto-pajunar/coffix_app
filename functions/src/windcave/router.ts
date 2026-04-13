@@ -13,12 +13,14 @@ import { NotificationService } from "../notification/service";
 import { getOrderMerchantReference } from "../coffixCredit/utils";
 import FirebaseService from "../firebase/service";
 import { generateTransactionNumber } from "../utils/generate_order_number";
+import { paymentLimiter } from "../middleware/rateLimiter";
 
 const router = express.Router();
 
 router.post(
   "/session",
   requirePost,
+  paymentLimiter,
   requiredAuth,
   async (request: AuthenticatedRequest, response: Response) => {
     const firebaseService = new FirebaseService();

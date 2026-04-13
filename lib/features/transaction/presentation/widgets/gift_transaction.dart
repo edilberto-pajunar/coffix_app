@@ -86,7 +86,7 @@ class GiftTransactionState extends State<GiftTransaction> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Gift to: ${widget.transaction.recipientFullName ?? widget.transaction.recipientEmail ?? 'N/A'}",
+                      "Gift to: ${widget.transaction.recipientFullName ?? 'N/A'} (${widget.transaction.recipientEmail ?? 'N/A'})",
                     ),
                   ],
                 ),

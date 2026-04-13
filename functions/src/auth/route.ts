@@ -2,10 +2,11 @@ import express from "express";
 import { requirePost } from "../middleware/method";
 import { customerHasAccountSchema } from "./schema";
 import { AuthService } from "./service";
+import { authLimiter } from "../middleware/rateLimiter";
 
 const router = express.Router();
 
-router.post("/verify", requirePost, async (request, response) => {
+router.post("/verify", requirePost, authLimiter, async (request, response) => {
   try {
     const validation = customerHasAccountSchema.safeParse(request.body);
 

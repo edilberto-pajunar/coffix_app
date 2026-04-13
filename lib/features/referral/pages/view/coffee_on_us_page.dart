@@ -42,10 +42,24 @@ class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
         Row(
           children: [
             Expanded(
-              child: AppField(
-                hintText: "Name",
-                name: "name_$index",
-                isHorizontalAlign: true,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AppField(
+                      hintText: "First Name",
+                      name: "firstName_$index",
+                      isHorizontalAlign: true,
+                    ),
+                  ),
+                  SizedBox(width: AppSizes.sm),
+                  Expanded(
+                    child: AppField(
+                      hintText: "Last Name",
+                      name: "lastName_$index",
+                      isHorizontalAlign: true,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (_friendCount > _minFriends)
@@ -80,19 +94,21 @@ class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
     String? localError;
 
     for (int i = 0; i < _friendCount; i++) {
-      final name = (fields['name_$i'] as String? ?? '').trim();
+      final firstName = (fields['firstName_$i'] as String? ?? '').trim();
+      final lastName = (fields['lastName_$i'] as String? ?? '').trim();
       final email = (fields['email_$i'] as String? ?? '').trim();
 
-      final hasName = name.isNotEmpty;
+      final hasFirstName = firstName.isNotEmpty;
+      final hasLastName = lastName.isNotEmpty;
       final hasEmail = email.isNotEmpty;
 
-      if (!hasName && !hasEmail) continue;
+      if (!hasFirstName && !hasLastName && !hasEmail) continue;
 
-      if (hasName && !hasEmail) {
+      if (hasFirstName && !hasLastName && !hasEmail) {
         localError = 'Please enter an email for friend ${i + 1}';
         break;
       }
-      if (!hasName && hasEmail) {
+      if (!hasFirstName && hasLastName && !hasEmail) {
         localError = 'Please enter a name for friend ${i + 1}';
         break;
       }
@@ -103,7 +119,7 @@ class _CoffeeOnUsViewState extends State<CoffeeOnUsView> {
         break;
       }
 
-      recipients.add({'name': name, 'email': email});
+      recipients.add({'name': '$firstName $lastName', 'email': email});
     }
 
     if (localError != null) {

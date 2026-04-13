@@ -9,10 +9,12 @@ import authRouter from "./auth/route";
 import orderRouter from "./order/router";
 import notificationRouter from "./notification/router";
 import emailRouter from "./email/router";
+import { globalLimiter } from "./middleware/rateLimiter";
 
 export const api = express();
 // Global middleware
 api.use(express.json());
+api.use(globalLimiter);
 
 api.use("/hello-world", (request, response) => {
   response.send("Hello World");

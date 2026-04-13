@@ -13,6 +13,7 @@ import {
 } from "./service";
 import { shareCoffixCreditSchema, topupBodySchema } from "./schema";
 import { generateTransactionNumber } from "../utils/generate_order_number";
+import { creditLimiter } from "../middleware/rateLimiter";
 
 const router = express.Router();
 
@@ -86,6 +87,7 @@ router.post(
 
 router.post(
   "/share",
+  creditLimiter,
   requiredAuth,
   requirePost,
   async (request: AuthenticatedRequest, response: Response) => {
@@ -117,6 +119,16 @@ router.post(
 
       const { recipientFirstName, recipientLastName, recipientEmail, amount } =
         validation.data;
+
+      if (
+        senderDoc.email &&
+        (senderDoc.email as string).toLowerCase() === recipientEmail.toLowerCase()
+      ) {
+        return response.status(400).json({
+          success: false,
+          message: "You cannot share credit to your own account",
+        });
+      }
 
       await creditService.shareCredit({
         senderId,
