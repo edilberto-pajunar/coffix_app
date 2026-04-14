@@ -26,5 +26,24 @@ export const sendOrderReceiptEmailSchema = z.object({
   items: z.array(orderItemSchema).min(1),
 });
 
+export interface SendEmailParams {
+  email: string;
+  subject: string;
+  documentId: string;
+  variables: Record<string, string | number>;
+}
+
+export interface GiftEmailParams {
+  to: string;
+  senderFirstName: string;
+  senderLastName: string;
+  amount: number;
+  recipientFirstName?: string;
+  recipientLastName?: string;
+  transactionNumber?: string;
+}
+
 export type SendGiftEmailSchema = z.infer<typeof sendGiftEmailSchema>;
-export type SendOrderReceiptEmailSchema = z.infer<typeof sendOrderReceiptEmailSchema>;
+export type SendOrderReceiptEmailSchema = z.infer<
+  typeof sendOrderReceiptEmailSchema
+>;

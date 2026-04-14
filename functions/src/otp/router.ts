@@ -9,6 +9,9 @@ import { verifyEmail } from "../user/service";
 import { RESEND_FROM_EMAIL } from "../constant/constant";
 import FirebaseService from "../firebase/service";
 import { otpSendLimiter } from "../middleware/rateLimiter";
+import { renderTemplate } from "../utils/renderEmailTemplate";
+import { wrapInEmailShell } from "../utils/emailShell";
+import { nowNZ } from "../utils/nz_time";
 
 export const otpRouter = express.Router();
 otpRouter.use(express.json());
@@ -23,8 +26,8 @@ function generateOtp6(): string {
 otpRouter.post(
   "/send",
   requirePost,
-  otpSendLimiter,
   requiredAuth,
+  otpSendLimiter,
   async (request: AuthenticatedRequest, response) => {
     const validation = sendEmailOTPSchema.safeParse(request.body);
     if (!validation.success) {
@@ -40,9 +43,8 @@ otpRouter.post(
     const otpCode = generateOtp6();
     try {
       const RESEND_API_KEY = process.env.RESEND_API_KEY;
-      const RESEND_TEMPLATE_ID = process.env.RESEND_TEMPLATE_ID;
 
-      if (!RESEND_API_KEY || !RESEND_TEMPLATE_ID) {
+      if (!RESEND_API_KEY) {
         return response.status(500).json({
           success: false,
           message: "Server email configuration missing",
@@ -78,27 +80,54 @@ otpRouter.post(
         });
       });
 
-      // Send email AFTER db write (or before—either is fine; this is consistent w/ single active OTP)
-      const payload = {
-        from: RESEND_FROM_EMAIL,
-        to: [email],
-        subject: "Your OTP Code",
-        template: {
-          id: RESEND_TEMPLATE_ID,
-          variables: {
-            otp: otpCode,
-            timestamp: new Date().toLocaleString(),
-          },
-        },
-      };
+      // Fetch user document
+      const userSnap = await firestore.collection("customers").doc(uid).get();
+      if (!userSnap.exists) {
+        return response.status(500).json({
+          success: false,
+          message: "User not found",
+        });
+      }
 
+      // Fetch OTP email template from Firestore
+      const templateSnap = await firestore
+        .collection("emails")
+        .doc("OTP")
+        .get();
+      const templateData = templateSnap.data();
+      if (!templateData) {
+        return response.status(500).json({
+          success: false,
+          message: "OTP email template not found",
+        });
+      }
+
+      const subject = renderTemplate(
+        (templateData.subject as string) ?? "Your OTP Code",
+        {},
+      );
+      const html = wrapInEmailShell(
+        renderTemplate(templateData.content as string, {
+          VERIFICATION_CODE: otpCode,
+          DATE: nowNZ(),
+          EMAIL: email,
+        }),
+      );
+
+      // Send email AFTER db write (or before—either is fine; this is consistent w/ single active OTP)
       const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${RESEND_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          from: RESEND_FROM_EMAIL,
+          to: [email],
+          // bcc: [RESEND_BCC_EMAIL],
+          subject,
+          html,
+        }),
       });
 
       const resendResult = await resendRes.json();

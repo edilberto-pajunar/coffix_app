@@ -15,8 +15,12 @@ class CreditCubit extends Cubit<CreditState> {
   void topup({required double amount}) async {
     emit(CreditState.loading(showTopUpField: state.showTopUpField));
     try {
-      final url = await _paymentRepository.topupCredit(amount: amount);
-      emit(CreditState.loaded(paymentSessionUrl: url));
+      final result = await _paymentRepository.topupCredit(amount: amount);
+      emit(CreditState.loaded(
+        paymentSessionUrl: result['paymentSessionUrl'] as String,
+        amount: result['amount'] as double,
+        transactionNumber: result['transactionNumber'] as String,
+      ));
     } catch (e) {
       emit(
         CreditState.error(
@@ -35,8 +39,13 @@ class CreditCubit extends Cubit<CreditState> {
     state.when(
       initial: (_) => emit(CreditState.initial(showTopUpField: value)),
       loading: (_) => emit(CreditState.loading(showTopUpField: value)),
-      loaded: (url, _) => emit(
-        CreditState.loaded(paymentSessionUrl: url, showTopUpField: value),
+      loaded: (url, amount, txNum, _) => emit(
+        CreditState.loaded(
+          paymentSessionUrl: url,
+          amount: amount,
+          transactionNumber: txNum,
+          showTopUpField: value,
+        ),
       ),
       error: (msg, _) =>
           emit(CreditState.error(message: msg, showTopUpField: value)),

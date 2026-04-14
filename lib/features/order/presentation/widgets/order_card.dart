@@ -13,6 +13,7 @@ import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
@@ -39,13 +40,19 @@ class OrderCard extends StatelessWidget {
 
     // print(products.length);
 
-    if (order.storeId == null) {
-      AppNotification.error(context, 'Store information missing');
+    final authState = context.read<AuthCubit>().state;
+    final storeId = authState.maybeWhen(
+      authenticated: (userWithStore) => userWithStore.user.preferredStoreId,
+      orElse: () => null,
+    );
+
+    if (storeId == null || storeId.isEmpty) {
+      AppNotification.error(
+        context,
+        'No store selected. Please select a store first.',
+      );
       return;
     }
-
-    // 1. update the preferred store
-    // context.read<StoreCubit>().updatePreferredStore(storeId: order.storeId!);
 
     final cartCubit = context.read<CartCubit>();
 
@@ -89,14 +96,14 @@ class OrderCard extends StatelessWidget {
       );
       final quantity = item.quantity ?? 1;
       final id = helper.buildCartItemIdHashed(
-        storeId: order.storeId!,
+        storeId: storeId,
         productId: product.docId ?? '',
         selectedByGroup: selectedByGroup,
       );
 
       final cartItem = CartItem(
         id: id,
-        storeId: order.storeId!,
+        storeId: storeId,
         productId: product.docId ?? '',
         productName: product.name ?? '',
         productImageUrl: product.imageUrl ?? '',

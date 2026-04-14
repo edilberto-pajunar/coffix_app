@@ -376,9 +376,9 @@ class FirebaseService {
     amount: number;
     sessionId: string;
     transactionNumber: string;
-  }): Promise<string> {
+  }): Promise<Record<string, any>> {
     const transactionRef = firestore.collection("transactions").doc();
-    await transactionRef.set({
+    const transactionDoc = {
       docId: transactionRef.id,
       customerId,
       amount,
@@ -387,8 +387,9 @@ class FirebaseService {
       sessionId,
       type: "topup",
       transactionNumber,
-    });
-    return transactionRef.id;
+    };
+    await transactionRef.set(transactionDoc, { merge: true });
+    return transactionDoc;
   }
 
   async findTransactionBySessionId(sessionId: string) {

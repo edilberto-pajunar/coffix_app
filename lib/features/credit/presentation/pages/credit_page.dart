@@ -105,11 +105,15 @@ class _CreditViewState extends State<CreditView> {
               listenWhen: (previous, current) => previous != current,
               listener: (context, state) {
                 state.whenOrNull(
-                  loaded: (paymentSessionUrl, _) {
+                  loaded: (paymentSessionUrl, amount, transactionNumber, _) {
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                       context.pushNamed(
                         CreditTopupPaymentPage.route,
-                        extra: {'paymentSessionUrl': paymentSessionUrl},
+                        extra: {
+                          'paymentSessionUrl': paymentSessionUrl,
+                          'amount': amount,
+                          'transactionNumber': transactionNumber,
+                        },
                       );
                       context.read<CreditCubit>().reset();
                     });
@@ -120,7 +124,7 @@ class _CreditViewState extends State<CreditView> {
                 final showTopUpField = state.maybeWhen(
                   initial: (v) => v,
                   loading: (v) => v,
-                  loaded: (_, v) => v,
+                  loaded: (url, amount, txNum, v) => v,
                   error: (_, v) => v,
                   orElse: () => false,
                 );

@@ -203,17 +203,23 @@ class AppRouter {
                 name: CreditTopupPaymentPage.route,
                 builder: (context, state) {
                   final extra = state.extra as Map<String, dynamic>;
-                  final paymentSessionUrl =
-                      extra['paymentSessionUrl'] as String;
                   return CreditTopupPaymentPage(
-                    paymentSessionUrl: paymentSessionUrl,
+                    paymentSessionUrl: extra['paymentSessionUrl'] as String,
+                    amount: extra['amount'] as double,
+                    transactionNumber: extra['transactionNumber'] as String,
                   );
                 },
               ),
               GoRoute(
                 path: "/credit-success",
                 name: CreditSuccessfulPage.route,
-                builder: (context, state) => const CreditSuccessfulPage(),
+                builder: (context, state) {
+                  final extra = state.extra as Map<String, dynamic>;
+                  return CreditSuccessfulPage(
+                    amount: extra['amount'] as double,
+                    transactionNumber: extra['transactionNumber'] as String,
+                  );
+                },
               ),
             ],
           ),

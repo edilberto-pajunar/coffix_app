@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthenticatedRequest } from "./auth";
-import { rateLimit } from "express-rate-limit";
+import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 
 const tooManyRequestsResponse = (_req: Request, res: Response) => {
   res.status(429).json({
@@ -12,7 +12,7 @@ const tooManyRequestsResponse = (_req: Request, res: Response) => {
 /** Keyed by Firebase UID when available, falls back to IP. */
 const keyByUid = (req: Request): string => {
   const uid = (req as AuthenticatedRequest).user?.uid;
-  return uid ?? (req.ip ?? "unknown");
+  return uid ?? ipKeyGenerator(req.ip ?? "unknown");
 };
 
 export const otpSendLimiter = rateLimit({
@@ -36,6 +36,7 @@ export const otpVerifyLimiter = rateLimit({
 export const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 10,
+  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
   handler: tooManyRequestsResponse,
   standardHeaders: true,
   legacyHeaders: false,
@@ -62,6 +63,7 @@ export const creditLimiter = rateLimit({
 export const globalLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 60,
+  keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
   handler: tooManyRequestsResponse,
   standardHeaders: true,
   legacyHeaders: false,

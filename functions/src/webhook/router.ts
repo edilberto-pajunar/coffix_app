@@ -10,30 +10,25 @@ router.post("/", (request, response) => {
   return response.status(200).json({ success: true });
 });
 
-// Test route to verify the webhook is working
 router.get("/", async (req, res) => {
-  try {
-    console.log("[WEBHOOK GET]", new Date().toISOString(), req.query);
-    logger.info("Webhook received", { query: req.query });
+  console.log("[WEBHOOK GET]", new Date().toISOString(), req.query);
+  logger.info("Webhook received", { query: req.query });
 
+  // Always return 200 — a non-200 response causes Windcave to retry the notification.
+  try {
     const sessionId = req.query.sessionId as string | undefined;
     if (!sessionId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "sessionId is required" });
+      logger.warn("Webhook GET called without sessionId");
+      return res.status(200).json({ success: false, message: "sessionId is required" });
     }
 
-    // Keep webhook fast. Handle quickly + idempotently.
     await new WebhookService().handleWebhook(sessionId);
 
     return res.status(200).json({ success: true });
-    // Optional: return { success:true, data } during testing only
   } catch (err) {
     logger.error("Webhook error:", err);
-    // IMPORTANT: if you return non-200, Windcave may retry.
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error" });
+    // Return 200 even on error to prevent Windcave from retrying.
+    return res.status(200).json({ success: false, message: "Internal server error" });
   }
 });
 

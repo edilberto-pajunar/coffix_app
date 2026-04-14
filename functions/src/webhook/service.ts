@@ -11,6 +11,7 @@ import { logger } from "firebase-functions";
 import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
 import { ReferralService } from "../referrals/service";
+import { firestore } from "../config/firebaseAdmin";
 export class WebhookService {
   private readonly windcaveService: WindcaveService;
   private readonly firebaseService: FirebaseService;
@@ -179,7 +180,27 @@ export class WebhookService {
 
     logger.info(`Transaction Document: ${JSON.stringify(transactionDoc)}`);
 
-    if (["approved", "declined", "cancelled"].includes(transactionDoc.status)) {
+    // Atomically claim processing: set status to "processing" only if still "pending".
+    // This prevents duplicate webhook executions (Windcave retry or concurrent calls)
+    // from both passing the idempotency check before either writes the final status.
+    const claimed = await firestore.runTransaction(async (t) => {
+      const ref = firestore
+        .collection("transactions")
+        .doc(transactionDoc.docId);
+      const snap = await t.get(ref);
+      const current = snap.data()?.status;
+      if (
+        ["approved", "declined", "cancelled", "processing"].includes(current)
+      ) {
+        return false;
+      }
+      t.update(ref, { status: "processing", updatedAt: new Date() });
+      return true;
+    });
+    if (!claimed) {
+      logger.info(
+        `Webhook already processed or in-flight for session: ${sessionId}`,
+      );
       return;
     }
 
@@ -245,7 +266,7 @@ export class WebhookService {
             printerId: storeDoc?.printerId ?? "TRY",
             storeName: storeDoc?.name ?? "",
             storeAddress: storeDoc?.address ?? "",
-            orderNumber: orderDoc?.orderNumber.toString() ?? "",
+            orderNumber: orderDoc?.transactionNumber ?? "",
             orders: (orderDoc.items ?? [])
               .map(
                 (item: any) =>

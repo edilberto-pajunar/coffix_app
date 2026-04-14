@@ -49,10 +49,14 @@ class _CreditTopupViewState extends State<CreditTopupView> {
       body: BlocConsumer<CreditCubit, CreditState>(
         listener: (context, state) {
           state.whenOrNull(
-            loaded: (url, _) {
+            loaded: (url, amount, transactionNumber, _) {
               context.pushNamed(
                 CreditTopupPaymentPage.route,
-                extra: {'paymentSessionUrl': url},
+                extra: {
+                  'paymentSessionUrl': url,
+                  'amount': amount,
+                  'transactionNumber': transactionNumber,
+                },
               );
             },
             error: (message, _) {

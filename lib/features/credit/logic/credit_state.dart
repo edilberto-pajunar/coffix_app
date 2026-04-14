@@ -8,6 +8,8 @@ abstract class CreditState with _$CreditState {
       _Loading;
   const factory CreditState.loaded({
     required String paymentSessionUrl,
+    @Default(0.0) double amount,
+    @Default('') String transactionNumber,
     @Default(false) bool showTopUpField,
   }) = _Loaded;
   const factory CreditState.error({

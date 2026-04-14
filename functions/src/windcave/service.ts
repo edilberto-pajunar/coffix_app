@@ -243,6 +243,9 @@ export class WindcaveService {
     if (!response.ok) {
       throw new Error(`Failed to get session: ${response.statusText}`);
     }
-    return response.json();
+
+    const data = await response.json();
+    logger.info("Response:", data);
+    return data;
   }
 }

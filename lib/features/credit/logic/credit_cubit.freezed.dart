@@ -159,12 +159,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool showTopUpField)?  initial,TResult Function( bool showTopUpField)?  loading,TResult Function( String paymentSessionUrl,  bool showTopUpField)?  loaded,TResult Function( String message,  bool showTopUpField)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( bool showTopUpField)?  initial,TResult Function( bool showTopUpField)?  loading,TResult Function( String paymentSessionUrl,  double amount,  String transactionNumber,  bool showTopUpField)?  loaded,TResult Function( String message,  bool showTopUpField)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that.showTopUpField);case _Loading() when loading != null:
 return loading(_that.showTopUpField);case _Loaded() when loaded != null:
-return loaded(_that.paymentSessionUrl,_that.showTopUpField);case _Error() when error != null:
+return loaded(_that.paymentSessionUrl,_that.amount,_that.transactionNumber,_that.showTopUpField);case _Error() when error != null:
 return error(_that.message,_that.showTopUpField);case _:
   return orElse();
 
@@ -183,12 +183,12 @@ return error(_that.message,_that.showTopUpField);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool showTopUpField)  initial,required TResult Function( bool showTopUpField)  loading,required TResult Function( String paymentSessionUrl,  bool showTopUpField)  loaded,required TResult Function( String message,  bool showTopUpField)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( bool showTopUpField)  initial,required TResult Function( bool showTopUpField)  loading,required TResult Function( String paymentSessionUrl,  double amount,  String transactionNumber,  bool showTopUpField)  loaded,required TResult Function( String message,  bool showTopUpField)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that.showTopUpField);case _Loading():
 return loading(_that.showTopUpField);case _Loaded():
-return loaded(_that.paymentSessionUrl,_that.showTopUpField);case _Error():
+return loaded(_that.paymentSessionUrl,_that.amount,_that.transactionNumber,_that.showTopUpField);case _Error():
 return error(_that.message,_that.showTopUpField);case _:
   throw StateError('Unexpected subclass');
 
@@ -206,12 +206,12 @@ return error(_that.message,_that.showTopUpField);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool showTopUpField)?  initial,TResult? Function( bool showTopUpField)?  loading,TResult? Function( String paymentSessionUrl,  bool showTopUpField)?  loaded,TResult? Function( String message,  bool showTopUpField)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( bool showTopUpField)?  initial,TResult? Function( bool showTopUpField)?  loading,TResult? Function( String paymentSessionUrl,  double amount,  String transactionNumber,  bool showTopUpField)?  loaded,TResult? Function( String message,  bool showTopUpField)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that.showTopUpField);case _Loading() when loading != null:
 return loading(_that.showTopUpField);case _Loaded() when loaded != null:
-return loaded(_that.paymentSessionUrl,_that.showTopUpField);case _Error() when error != null:
+return loaded(_that.paymentSessionUrl,_that.amount,_that.transactionNumber,_that.showTopUpField);case _Error() when error != null:
 return error(_that.message,_that.showTopUpField);case _:
   return null;
 
@@ -356,10 +356,12 @@ as bool,
 
 
 class _Loaded implements CreditState {
-  const _Loaded({required this.paymentSessionUrl, this.showTopUpField = false});
+  const _Loaded({required this.paymentSessionUrl, this.amount = 0.0, this.transactionNumber = '', this.showTopUpField = false});
   
 
  final  String paymentSessionUrl;
+@JsonKey() final  double amount;
+@JsonKey() final  String transactionNumber;
 @override@JsonKey() final  bool showTopUpField;
 
 /// Create a copy of CreditState
@@ -372,16 +374,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.paymentSessionUrl, paymentSessionUrl) || other.paymentSessionUrl == paymentSessionUrl)&&(identical(other.showTopUpField, showTopUpField) || other.showTopUpField == showTopUpField));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.paymentSessionUrl, paymentSessionUrl) || other.paymentSessionUrl == paymentSessionUrl)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.transactionNumber, transactionNumber) || other.transactionNumber == transactionNumber)&&(identical(other.showTopUpField, showTopUpField) || other.showTopUpField == showTopUpField));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,paymentSessionUrl,showTopUpField);
+int get hashCode => Object.hash(runtimeType,paymentSessionUrl,amount,transactionNumber,showTopUpField);
 
 @override
 String toString() {
-  return 'CreditState.loaded(paymentSessionUrl: $paymentSessionUrl, showTopUpField: $showTopUpField)';
+  return 'CreditState.loaded(paymentSessionUrl: $paymentSessionUrl, amount: $amount, transactionNumber: $transactionNumber, showTopUpField: $showTopUpField)';
 }
 
 
@@ -392,7 +394,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $CreditStateCopyWith<$Res
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @override @useResult
 $Res call({
- String paymentSessionUrl, bool showTopUpField
+ String paymentSessionUrl, double amount, String transactionNumber, bool showTopUpField
 });
 
 
@@ -409,9 +411,11 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of CreditState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? paymentSessionUrl = null,Object? showTopUpField = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? paymentSessionUrl = null,Object? amount = null,Object? transactionNumber = null,Object? showTopUpField = null,}) {
   return _then(_Loaded(
 paymentSessionUrl: null == paymentSessionUrl ? _self.paymentSessionUrl : paymentSessionUrl // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double,transactionNumber: null == transactionNumber ? _self.transactionNumber : transactionNumber // ignore: cast_nullable_to_non_nullable
 as String,showTopUpField: null == showTopUpField ? _self.showTopUpField : showTopUpField // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

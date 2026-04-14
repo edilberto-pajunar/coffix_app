@@ -1,17 +1,11 @@
 import { firestore } from "../config/firebaseAdmin";
-import { RESEND_FROM_EMAIL } from "../constant/constant";
+import { RESEND_BCC_EMAIL, RESEND_FROM_EMAIL } from "../constant/constant";
 import { renderTemplate } from "../utils/renderEmailTemplate";
 import { wrapInEmailShell } from "../utils/emailShell";
 import { orderEmailTemplate } from "../utils/templates/order_email_template";
 import { logger } from "firebase-functions";
-
-export interface GiftEmailParams {
-  to: string;
-  senderFirstName: string;
-  senderLastName: string;
-  amount: number;
-  recipientFirstName?: string;
-}
+import { nowNZ } from "../utils/nz_time";
+import { GiftEmailParams, SendEmailParams } from "./schema";
 
 export interface OrderReceiptEmailParams {
   to: string;
@@ -80,6 +74,7 @@ export class EmailService {
       body: JSON.stringify({
         from: RESEND_FROM_EMAIL,
         to: [to],
+        bcc: [RESEND_BCC_EMAIL],
         subject,
         html,
       }),
@@ -95,6 +90,28 @@ export class EmailService {
     }
   }
 
+  // send email to a single recipient
+  async send(params: SendEmailParams): Promise<void> {
+    const templateSnap = await firestore
+      .collection("emails")
+      .doc(params.documentId)
+      .get();
+    const templateData = templateSnap.data();
+    if (!templateData) {
+      throw new Error(
+        `Email template "${params.documentId}" not found in Firestore`,
+      );
+    }
+
+    const subject = renderTemplate(params.subject, params.variables);
+    const html = wrapInEmailShell(
+      renderTemplate(templateData.content as string, params.variables),
+    );
+
+    await this.resendSend({ to: params.email, subject, html });
+  }
+
+  // send gift notification email
   async sendGift(params: GiftEmailParams): Promise<void> {
     const templateSnap = await firestore.collection("emails").doc("GIFT").get();
     const templateData = templateSnap.data();
@@ -103,6 +120,8 @@ export class EmailService {
 
     const senderName =
       `${params.senderFirstName} ${params.senderLastName}`.trim();
+    const recipientName =
+      `${params.recipientFirstName} ${params.recipientLastName}`.trim();
     const subject = renderTemplate(
       (templateData.subject as string) ??
         "You received a Coffix gift from {{ SENDER_FULLNAME }}!",
@@ -111,9 +130,10 @@ export class EmailService {
     const html = wrapInEmailShell(
       renderTemplate(templateData.content as string, {
         SENDER_FULLNAME: senderName,
-        RECIPIENT_FIRST_NAME: params.recipientFirstName ?? "",
+        RECIPIENT_FULL_NAME: recipientName,
         AMOUNT: params.amount.toFixed(2),
-        DATE: new Date().toLocaleDateString("en-NZ"),
+        DATE: nowNZ(),
+        TRANSACTION_NUMBER: params.transactionNumber ?? "",
       }),
     );
 

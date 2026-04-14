@@ -5,5 +5,5 @@ abstract class PaymentRepository {
     required PaymentRequest request,
   });
 
-  Future<String> topupCredit({required double amount});
+  Future<Map<String, dynamic>> topupCredit({required double amount});
 }

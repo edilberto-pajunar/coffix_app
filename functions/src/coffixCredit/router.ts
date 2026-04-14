@@ -60,7 +60,7 @@ router.post(
 
       const transactionNumber = await generateTransactionNumber();
 
-      await firebaseService.createTopupTransaction({
+      const transaction = await firebaseService.createTopupTransaction({
         customerId,
         amount,
         sessionId,
@@ -69,7 +69,7 @@ router.post(
 
       return response.status(200).json({
         success: true,
-        data: { paymentSessionUrl },
+        data: { paymentSessionUrl, transaction },
       });
     } catch (error) {
       if (error instanceof WindcaveError) {

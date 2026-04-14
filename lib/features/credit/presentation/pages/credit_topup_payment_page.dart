@@ -1,4 +1,4 @@
-import 'package:coffix_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:coffix_app/features/credit/presentation/pages/credit_successful_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
@@ -6,20 +6,38 @@ import 'package:go_router/go_router.dart';
 class CreditTopupPaymentPage extends StatelessWidget {
   static String route = 'credit_topup_payment_route';
 
-  const CreditTopupPaymentPage({super.key, required this.paymentSessionUrl});
+  const CreditTopupPaymentPage({
+    super.key,
+    required this.paymentSessionUrl,
+    required this.amount,
+    required this.transactionNumber,
+  });
 
   final String paymentSessionUrl;
+  final double amount;
+  final String transactionNumber;
 
   @override
   Widget build(BuildContext context) {
-    return CreditTopupPaymentView(paymentSessionUrl: paymentSessionUrl);
+    return CreditTopupPaymentView(
+      paymentSessionUrl: paymentSessionUrl,
+      amount: amount,
+      transactionNumber: transactionNumber,
+    );
   }
 }
 
 class CreditTopupPaymentView extends StatefulWidget {
-  const CreditTopupPaymentView({super.key, required this.paymentSessionUrl});
+  const CreditTopupPaymentView({
+    super.key,
+    required this.paymentSessionUrl,
+    required this.amount,
+    required this.transactionNumber,
+  });
 
   final String paymentSessionUrl;
+  final double amount;
+  final String transactionNumber;
 
   @override
   State<CreditTopupPaymentView> createState() => _CreditTopupPaymentViewState();
@@ -50,13 +68,18 @@ class _CreditTopupPaymentViewState extends State<CreditTopupPaymentView> {
               uri.scheme == 'https' &&
               uri.host == 'www.coffix.co.nz' &&
               (uri.path == '/payment/successful' ||
-                  uri.path.contains('/credit') &&
-                      uri.path.contains('success'));
+                  uri.path.contains('/credit') && uri.path.contains('success'));
           if (isSuccess) {
             context.pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
-                context.goNamed(ProfilePage.route);
+                context.goNamed(
+                  CreditSuccessfulPage.route,
+                  extra: {
+                    'amount': widget.amount,
+                    'transactionNumber': widget.transactionNumber,
+                  },
+                );
               }
             });
             return NavigationActionPolicy.CANCEL;

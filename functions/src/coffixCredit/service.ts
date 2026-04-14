@@ -195,6 +195,7 @@ export class CoffixCreditService {
         senderFirstName,
         senderLastName,
         amount,
+        transactionNumber,
       });
     } catch (emailError) {
       logger.error("Error sending gift notification email", { emailError });
