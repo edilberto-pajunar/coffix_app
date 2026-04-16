@@ -21,9 +21,13 @@ class StoreRepositoryImpl implements StoreRepository {
 
   @override
   Stream<List<Store>> getStores() {
-    return _firestore.collection('stores').snapshots().map((event) {
-      return event.docs.map((doc) => Store.fromJson(doc.data())).toList();
-    });
+    return _firestore
+        .collection('stores')
+        .where("disable", isEqualTo: false)
+        .snapshots()
+        .map((event) {
+          return event.docs.map((doc) => Store.fromJson(doc.data())).toList();
+        });
   }
 
   @override
