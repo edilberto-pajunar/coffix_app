@@ -12,6 +12,7 @@ import { ReceiptService } from "../receipt/service";
 import { NotificationService } from "../notification/service";
 import { ReferralService } from "../referrals/service";
 import { firestore } from "../config/firebaseAdmin";
+import { formatNzTime } from "../utils/nz_time";
 export class WebhookService {
   private readonly windcaveService: WindcaveService;
   private readonly firebaseService: FirebaseService;
@@ -266,18 +267,22 @@ export class WebhookService {
             printerId: storeDoc?.printerId ?? "TRY",
             storeName: storeDoc?.name ?? "",
             storeAddress: storeDoc?.address ?? "",
-            orderNumber: orderDoc?.transactionNumber ?? "",
+            transactionNumber: orderDoc?.transactionNumber ?? "",
             orders: (orderDoc.items ?? [])
-              .map(
-                (item: any) =>
-                  `${item.quantity}x ${item.productName} | $${item.price.toFixed(2)}`,
-              )
+              .map((item: any) => {
+                const itemModifiers = (item.modifiers ?? [])
+                  .map((m: any) => m.modifierId)
+                  .join(", ");
+                return `${item.quantity}x ${item.productName} | ${itemModifiers} | $${item.price.toFixed(2)}`;
+              })
               .join("\n"),
             total: Number((orderDoc.amount ?? 0).toFixed(2)),
             customer: transaction.customer.firstName ?? "",
             baristaName: "John Doe",
             duration: orderDoc?.duration ?? 0,
             paymentMethod: "Credit Card",
+            orderTime: formatNzTime(orderDoc?.createdAt ?? new Date()),
+            serviceTime: formatNzTime(orderDoc?.scheduledAt ?? new Date()),
           },
         });
 

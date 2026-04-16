@@ -1,6 +1,6 @@
 import { printerFirestore } from "../config/firebaseAdmin";
 import { createReceiptBodySchema, CreateReceiptBodySchema } from "./schema";
-import { nowNZ } from "../utils/nz_time";
+// import { nowNZ } from "../utils/nz_time";
 
 export class ReceiptService {
   // create a print document to the printer database
@@ -17,39 +17,27 @@ export class ReceiptService {
       throw new Error(errors);
     }
     const printQueueRef = printerFirestore.collection("printQueue").doc();
-    const orderNumber = `Order #${validation.data.orderNumber.substring(
-      validation.data.orderNumber.length - 6,
-      validation.data.orderNumber.length,
-    )}`;
 
-    const now = nowNZ();
+    // const now = nowNZ();
     const { duration } = validation.data;
     const printTime =
       duration > 0 ? new Date(Date.now() + duration * 60_000) : null;
-    const gst = validation.data.total * 0.15;
+    // const gst = validation.data.total * 0.15;
+    const transactionNumber = validation.data.transactionNumber;
     await printQueueRef.set({
       printerId: validation.data.printerId,
       status: duration > 0 ? "scheduled" : "pending",
       printTime,
-      label: orderNumber,
-      templateName: "DEFAULT",
+      label: transactionNumber,
+      templateName: "ORDER",
       lines: [
-        validation.data.storeName,
-        validation.data.storeAddress,
-        "GST",
-        "",
-        orderNumber,
-        "",
-        validation.data.orders,
-        `Total: $${validation.data.total.toFixed(2)}`,
-        `15% GST Included in the total: $${gst.toFixed(2)}`,
-        "",
-        `Paid by: ${validation.data.paymentMethod}`,
-        `Customer: ${validation.data.customer}`,
-        // format it 'MM.dd.yyyy HH:mm aa'
-        `Time: ${printTime ? printTime.toLocaleString("en-NZ", { timeZone: "Pacific/Auckland", month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : now}`,
-        `By: ${validation.data.baristaName}`,
-        "coffix.co.nz",
+        `Order #: ${transactionNumber}`, // Order #
+        `${validation.data.customer}`, // Customer Name
+        `${validation.data.orders}`, // Orders
+        `Total: $${validation.data.total.toFixed(2)}`, // Total
+        `Payment method: ${validation.data.paymentMethod}`, // Payment method
+        `Order Time: ${validation.data.orderTime}`, // Order Time
+        `Service Time: ${validation.data.serviceTime} | ${validation.data.storeName}`, // Service Time
       ],
     });
   }

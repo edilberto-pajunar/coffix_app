@@ -54,3 +54,23 @@ export function scheduledAtNZ(minutes: number): Date {
 
   return new Date(futureUtc + offsetHours * 60 * 60_000);
 }
+
+
+/**
+ * Returns the given date formatted as "MM-DD-YYYY HH:mm AM/PM" in NZ time.
+ */
+export function formatNzTime(date: Date): string {
+  const parts = new Intl.DateTimeFormat("en-NZ", {
+    timeZone: NZ_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).formatToParts(date);
+
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
+  const period = parts.find((p) => p.type === "dayPeriod")?.value ?? "AM";
+  return `${get("month")}-${get("day")}-${get("year")} ${get("hour")}:${get("minute")} ${period}`;
+}

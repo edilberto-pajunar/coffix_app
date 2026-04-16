@@ -14,6 +14,7 @@ import { getOrderMerchantReference } from "../coffixCredit/utils";
 import FirebaseService from "../firebase/service";
 import { generateTransactionNumber } from "../utils/generate_order_number";
 import { paymentLimiter } from "../middleware/rateLimiter";
+import { formatNzTime } from "../utils/nz_time";
 
 const router = express.Router();
 
@@ -103,7 +104,7 @@ router.post(
               printerId: storeDoc.printerId,
               storeName: storeDoc.name,
               storeAddress: storeDoc.address,
-              orderNumber: orderData.orderNumber,
+              transactionNumber: orderData.transactionNumber,
               orders: enrichedItems
                 .map((item) => `${item.quantity}x ${item.productName}`)
                 .join("\n"),
@@ -112,6 +113,8 @@ router.post(
               baristaName: "John Doe",
               duration,
               paymentMethod: "Coffix Credit",
+              orderTime: formatNzTime(orderData.createdAt),
+              serviceTime: formatNzTime(scheduledAt),
             },
           })
           .catch((error) => {
