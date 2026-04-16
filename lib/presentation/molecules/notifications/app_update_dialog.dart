@@ -1,3 +1,4 @@
+import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,14 @@ class AppUpdateDialog extends StatelessWidget {
     this.isDismissable = true,
     required this.title,
     required this.message,
+    required this.backgroundColor,
   });
 
   final bool isDismissable;
   final String title;
   final String message;
   final VoidCallback onUpdate;
+  final Color backgroundColor;
 
   static Future<bool?> show(
     BuildContext context, {
@@ -27,6 +30,7 @@ class AppUpdateDialog extends StatelessWidget {
       context: context,
       barrierDismissible: isDismissable,
       builder: (context) => AppUpdateDialog(
+        backgroundColor: AppColors.background,
         onUpdate: () {
           Navigator.of(context).pop(true);
           onUpdate();

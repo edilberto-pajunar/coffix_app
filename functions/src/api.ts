@@ -16,8 +16,8 @@ export const api = express();
 api.use(express.json());
 api.use(globalLimiter);
 
-api.use("/hello-world", (request, response) => {
-  response.send("Hello World");
+api.use("/health", (request, response) => {
+  response.send("OK");
 });
 
 // Mount routers

@@ -22,6 +22,7 @@ class AppGlobal extends Equatable {
   final double? topupLevel3;
   final double? withdrawalFee;
   final int? invoiceCounter;
+  final double? creditExpiryDuration;
 
   const AppGlobal({
     this.GST,
@@ -39,6 +40,7 @@ class AppGlobal extends Equatable {
     this.topupLevel3,
     this.withdrawalFee,
     this.invoiceCounter,
+    this.creditExpiryDuration,
   });
 
   factory AppGlobal.fromJson(Map<String, dynamic> json) =>
@@ -61,6 +63,7 @@ class AppGlobal extends Equatable {
     double? topupLevel3,
     double? withdrawalFee,
     int? invoiceCounter,
+    double? creditExpiryDuration,
   }) => AppGlobal(
     GST: GST ?? this.GST,
     appVersion: appVersion ?? this.appVersion,
@@ -77,6 +80,7 @@ class AppGlobal extends Equatable {
     topupLevel3: topupLevel3 ?? this.topupLevel3,
     withdrawalFee: withdrawalFee ?? this.withdrawalFee,
     invoiceCounter: invoiceCounter ?? this.invoiceCounter,
+    creditExpiryDuration: creditExpiryDuration ?? this.creditExpiryDuration,
   );
 
   @override
@@ -96,5 +100,6 @@ class AppGlobal extends Equatable {
     topupLevel3,
     withdrawalFee,
     invoiceCounter,
+    creditExpiryDuration,
   ];
 }

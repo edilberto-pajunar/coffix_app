@@ -1,3 +1,4 @@
+import 'package:coffix_app/data/internet_connection_service.dart';
 import 'package:coffix_app/data/repositories/app_repository.dart';
 import 'package:coffix_app/data/repositories/auth_repository.dart';
 import 'package:coffix_app/data/repositories/coupon_repository.dart';
@@ -37,6 +38,7 @@ import 'package:coffix_app/features/referral/domain/repository/referral_reposito
 import 'package:coffix_app/features/referral/logic/referral_cubit.dart';
 import 'package:coffix_app/features/stores/data/store_repository_impl.dart';
 import 'package:coffix_app/features/stores/logic/store_cubit.dart';
+import 'package:coffix_app/features/network/logic/network_cubit.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
 import 'package:coffix_app/features/transaction/domain/transaction_repository_impl.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +50,14 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // Initializes all singleton services for the app.
 Future<void> setupServiceLocator() async {
+  getIt.registerLazySingleton<InternetConnectionService>(
+    () => InternetConnectionService(),
+  );
+
+  getIt.registerLazySingleton<NetworkCubit>(
+    () => NetworkCubit(internetService: getIt<InternetConnectionService>()),
+  );
+
   getIt.registerLazySingleton<AppRepository>(() => AppRepositoryImpl());
   getIt.registerLazySingleton<StoreRepository>(
     () => StoreRepositoryImpl(authRepository: getIt<AuthRepository>()),

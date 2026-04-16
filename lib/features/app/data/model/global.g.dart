@@ -22,6 +22,7 @@ AppGlobal _$AppGlobalFromJson(Map<String, dynamic> json) => AppGlobal(
   topupLevel3: (json['topupLevel3'] as num?)?.toDouble(),
   withdrawalFee: (json['withdrawalFee'] as num?)?.toDouble(),
   invoiceCounter: (json['invoiceCounter'] as num?)?.toInt(),
+  creditExpiryDuration: (json['creditExpiryDuration'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$AppGlobalToJson(AppGlobal instance) => <String, dynamic>{
@@ -40,4 +41,5 @@ Map<String, dynamic> _$AppGlobalToJson(AppGlobal instance) => <String, dynamic>{
   'topupLevel3': instance.topupLevel3,
   'withdrawalFee': instance.withdrawalFee,
   'invoiceCounter': instance.invoiceCounter,
+  'creditExpiryDuration': instance.creditExpiryDuration,
 };

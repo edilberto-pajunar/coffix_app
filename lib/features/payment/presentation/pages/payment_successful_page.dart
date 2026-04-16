@@ -85,6 +85,7 @@ class PaymentSuccessfulView extends StatelessWidget {
                             'THANK YOU!',
                             style: AppTypography.headlineXl,
                             textAlign: TextAlign.center,
+                          
                           ),
                           const SizedBox(height: AppSizes.lg),
                           Text(

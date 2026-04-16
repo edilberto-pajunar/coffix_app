@@ -2,7 +2,6 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
-import 'package:coffix_app/features/credit/presentation/pages/credit_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:flutter/material.dart';
@@ -95,26 +94,29 @@ class CreditSuccessfulView extends StatelessWidget {
                               style: AppTypography.titleM.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
+                              textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: AppSizes.xs),
                             Text(
                               'Transaction #: $transactionNumber',
                               style: AppTypography.bodyM,
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: AppSizes.xl),
                       AppButton.primary(
                         onPressed: () {
                           context.goNamed(HomePage.route);
                         },
                         label: "Ok",
                       ),
+                      SizedBox(height: AppSizes.xl),
                     ],
                   ),
                 ),
               ),
+              SizedBox(height: AppSizes.xl),
               Opacity(
                 opacity: 0.6,
                 child: Column(
