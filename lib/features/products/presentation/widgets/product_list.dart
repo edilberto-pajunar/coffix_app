@@ -55,36 +55,9 @@ class ProductList extends StatelessWidget {
           const SizedBox(height: AppSizes.md),
 
           // product categories
-          SizedBox(
-            height: AppSizes.chipSizeSmall,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemCount: allCategories.length,
-              separatorBuilder: (_, index) =>
-                  const SizedBox(width: AppSizes.md),
-              itemBuilder: (context, index) {
-                final category = allCategories[index];
-                return AppClickable(
-                  showSplash: false,
-                  onPressed: () {
-                    context.read<ProductCubit>().filterProductsByCategory(
-                      category.name!,
-                    );
-                  },
-                  child: AppCard(
-                    borderColor: categoryFilter == category.name
-                        ? AppColors.primary
-                        : AppColors.white,
-                    color: AppColors.lightGrey,
-                    child: Text(
-                      category.name ?? "",
-                      style: AppTypography.labelS,
-                    ),
-                  ),
-                );
-              },
-            ),
+          _CategoryList(
+            allCategories: allCategories,
+            categoryFilter: categoryFilter,
           ),
           const SizedBox(height: AppSizes.md),
           const SizedBox(height: AppSizes.lg),
@@ -142,6 +115,142 @@ class ProductList extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CategoryList extends StatefulWidget {
+  const _CategoryList({
+    required this.allCategories,
+    required this.categoryFilter,
+  });
+
+  final List<ProductCategory> allCategories;
+  final String? categoryFilter;
+
+  @override
+  State<_CategoryList> createState() => _CategoryListState();
+}
+
+class _CategoryListState extends State<_CategoryList> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showLeft = false;
+  bool _showRight = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    // Delay to let the list lay out before checking if scrollable
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final pos = _scrollController.position;
+    setState(() {
+      _showLeft = pos.pixels > 0;
+      _showRight = pos.pixels < pos.maxScrollExtent;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          height: AppSizes.chipSizeSmall,
+          child: ListView.separated(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            shrinkWrap: true,
+            itemCount: widget.allCategories.length,
+            separatorBuilder: (_, index) => const SizedBox(width: AppSizes.md),
+            itemBuilder: (context, index) {
+              final category = widget.allCategories[index];
+              return AppClickable(
+                showSplash: false,
+                onPressed: () {
+                  context.read<ProductCubit>().filterProductsByCategory(
+                    category.name!,
+                  );
+                },
+                child: AppCard(
+                  borderColor: widget.categoryFilter == category.name
+                      ? AppColors.primary
+                      : AppColors.white,
+                  color: AppColors.lightGrey,
+                  child: Text(category.name ?? "", style: AppTypography.labelS),
+                ),
+              );
+            },
+          ),
+        ),
+        // Left fade + arrow
+        if (_showLeft)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: IgnorePointer(
+              child: Container(
+                width: AppSizes.xxxl,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).scaffoldBackgroundColor,
+                      Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(
+                    Icons.chevron_left,
+                    size: AppSizes.iconSizeMedium,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        // Right fade + arrow
+        if (_showRight)
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: IgnorePointer(
+              child: Container(
+                width: AppSizes.xxxl,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor.withValues(alpha: 0),
+                      Theme.of(context).scaffoldBackgroundColor,
+                    ],
+                  ),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.chevron_right,
+                    size: AppSizes.iconSizeMedium,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

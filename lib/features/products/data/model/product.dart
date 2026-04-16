@@ -14,6 +14,8 @@ class Product {
   final double? order;
   final double? price;
   final String? categoryName;
+  final bool? disabledPermanently;
+  final List<String>? disabledStores;
 
   Product({
     this.availableToStores,
@@ -26,6 +28,8 @@ class Product {
     this.order,
     this.price,
     this.categoryName,
+    this.disabledPermanently,
+    this.disabledStores,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) =>

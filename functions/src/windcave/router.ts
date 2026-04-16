@@ -126,7 +126,7 @@ router.post(
           .sendNotification({
             customerId,
             title: "Payment Successful",
-            message: "Your payment has been successful",
+            message: `A payment for order ${orderData.transactionNumber} has been accepted`,
           })
           .catch((error) => {
             logger.error("Failed to send notification", { customerId, error });

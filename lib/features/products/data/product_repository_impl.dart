@@ -8,7 +8,7 @@ import 'package:coffix_app/features/products/data/model/product_with_category.da
 import 'package:rxdart/rxdart.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
-   final FirebaseFirestore _firestore = FirestoreService.instance;
+  final FirebaseFirestore _firestore = FirestoreService.instance;
   // ignore: unused_field
   final StoreRepository _storeRepository;
 
@@ -22,7 +22,10 @@ class ProductRepositoryImpl implements ProductRepository {
         .orderBy('order', descending: false)
         .snapshots()
         .map((event) {
-          return event.docs.map((doc) => Product.fromJson(doc.data())).toList();
+          return event.docs
+              .map((doc) => Product.fromJson(doc.data()))
+              .where((product) => product.disabledPermanently != true)
+              .toList();
         });
   }
 

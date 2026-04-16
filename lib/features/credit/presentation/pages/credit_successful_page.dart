@@ -104,6 +104,13 @@ class CreditSuccessfulView extends StatelessWidget {
                           ],
                         ),
                       ),
+                      SizedBox(height: AppSizes.xl),
+                      AppButton.primary(
+                        onPressed: () {
+                          context.goNamed(HomePage.route);
+                        },
+                        label: "Ok",
+                      ),
                     ],
                   ),
                 ),

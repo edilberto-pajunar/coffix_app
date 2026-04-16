@@ -315,9 +315,9 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
     if (uid == null) {
       throw Exception('No user found');
     }
-    await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
-      {"lastLogin": TimeUtils.now()},
-    );
+    await _firestore.collection("customers").doc(_auth.currentUser?.uid).set({
+      "lastLogin": TimeUtils.now(),
+    }, SetOptions(merge: true));
   }
 
   @override
@@ -369,8 +369,9 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
       throw Exception('No FCM token found');
     }
 
-    await _firestore.collection("customers").doc(_auth.currentUser?.uid).update(
-      {"fcmToken": fcmToken, "updatedAt": TimeUtils.now()},
-    );
+    await _firestore.collection("customers").doc(_auth.currentUser?.uid).set({
+      "fcmToken": fcmToken,
+      "updatedAt": TimeUtils.now(),
+    }, SetOptions(merge: true));
   }
 }

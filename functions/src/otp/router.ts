@@ -171,6 +171,7 @@ otpRouter.post(
       const errors = validation.error.issues
         .map((i) => `${i.path.join(".")}: ${i.message}`)
         .join(", ");
+      console.warn("[otp/verify] schema validation failed:", errors);
       return response.status(400).json({ success: false, errors });
     }
 
@@ -188,6 +189,7 @@ otpRouter.post(
         .get();
 
       if (snap.empty) {
+        console.warn("[otp/verify] no pending OTP for uid:", uid);
         return response
           .status(400)
           .json({ success: false, message: "No pending OTP found" });
@@ -199,6 +201,7 @@ otpRouter.post(
       const expiresAt = data.expirationDate.toDate().getTime();
 
       if (expiresAt < Date.now()) {
+        console.warn("[otp/verify] OTP expired for uid:", uid);
         return response
           .status(400)
           .json({ success: false, message: "OTP expired" });
@@ -209,6 +212,7 @@ otpRouter.post(
           { attempts: admin.firestore.FieldValue.increment(1) },
           { merge: true },
         );
+        console.warn("[otp/verify] invalid OTP submitted for uid:", uid);
         return response
           .status(400)
           .json({ success: false, message: "Invalid OTP" });

@@ -285,7 +285,7 @@ export class WebhookService {
           .sendNotification({
             customerId: customerId ?? "",
             title: "Order Successful",
-            message: "Your order has been successful",
+            message: `A payment for order ${orderDoc?.transactionNumber} has been accepted`,
           })
           .catch((err) => logger.error("Notification failed:", err));
         this.referralService
