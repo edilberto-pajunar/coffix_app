@@ -17,6 +17,7 @@ on:
       - ".env"
       - ".env.dev"
       - ".github/workflows/ci.yml"
+      - "functions/**"
   pull_request:
     branches:
       - main
@@ -33,7 +34,7 @@ on:
       - ".env"
       - ".env.dev"
       - ".github/workflows/ci.yml"
-
+      - "functions/**"
 permissions:
   contents: read
 
