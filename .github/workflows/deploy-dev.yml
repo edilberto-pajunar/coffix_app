@@ -2,7 +2,7 @@ name: Deploy App (dev)
 
 on:
   workflow_run:
-    workflows: ["Deploy Functions (dev)"]
+    workflows: ["CI"]
     branches: [dev]
     types: [completed]
   workflow_dispatch:
