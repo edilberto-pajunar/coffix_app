@@ -80,7 +80,7 @@ router.post(
         paymentMethod: validation.data.paymentMethod,
         transactionNumber,
       });
-
+ 
       // handle coffix credit payment
       // if the payment user is using [coffixCredit] then we need to deduct the credit from the user
       if (validation.data.paymentMethod === "coffixCredit") {
@@ -97,6 +97,8 @@ router.post(
             transactionNumber,
           });
 
+        const customerName = `${userDoc.firstName} ${userDoc.lastName}`;
+
         // Non-critical path: don't block response
         void receiptService
           .createPrintQueue({
@@ -109,7 +111,7 @@ router.post(
                 .map((item) => `${item.quantity}x ${item.productName}`)
                 .join("\n"),
               total: totalAmount,
-              customer: userDoc.firstName,
+              customer: customerName,
               baristaName: "John Doe",
               duration,
               paymentMethod: "Coffix Credit",
@@ -168,6 +170,8 @@ router.post(
         amount: totalAmount,
         sessionId,
         transactionNumber,
+        type: "order",
+        gstNumber: orderData.storeGst,
       });
 
       return response.status(200).json({

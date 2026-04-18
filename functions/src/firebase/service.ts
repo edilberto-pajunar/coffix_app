@@ -1,9 +1,16 @@
 import { firestore, printerFirestore } from "../config/firebaseAdmin";
-import { generateOrderNumber } from "../utils/generate_order_number";
+import {
+  generateOrderNumber,
+  generateTransactionNumber,
+} from "../utils/generate_order_number";
 import { createOrderBodySchema, CreateOrderBodySchema } from "./schema";
 import { InsufficientCreditError } from "../coffixCredit/errors";
 import { scheduledAtNZ } from "../utils/nz_time";
 import * as admin from "firebase-admin";
+import { Timestamp } from "firebase-admin/firestore";
+import { AppUser } from "../user/interface";
+import { GLOBAL_COLLECTION_ID } from "../constant/constant";
+import { logger } from "firebase-functions";
 
 class FirebaseService {
   /**
@@ -32,6 +39,16 @@ class FirebaseService {
       orderId: orderId,
       createdAt: new Date(),
     });
+  }
+
+  async getGlobal() {
+    const globalRef = firestore.collection("global").doc(GLOBAL_COLLECTION_ID);
+    const globalSnap = await globalRef.get();
+    if (!globalSnap.exists) {
+      throw new Error("Global not found");
+    }
+    logger.info("Global", { global: globalSnap.data() });
+    return globalSnap.data();
   }
 
   // Order Status	Meaning
@@ -66,6 +83,7 @@ class FirebaseService {
       storeId: validation.data.storeId,
       storeName: storeDoc.name,
       storeAddress: storeDoc.address,
+      storeGst: storeDoc.gstNumber,
       items: validation.data.items,
       createdAt: new Date(),
       status: "pending_payment",
@@ -338,14 +356,23 @@ class FirebaseService {
     amount,
     sessionId,
     transactionNumber,
+    type,
+    gstNumber,
   }: {
     customerId: string;
     orderId: string;
     amount: number;
     sessionId: string;
     transactionNumber: string;
+    type: string;
+    gstNumber: string;
   }): Promise<string> {
     const transactionRef = firestore.collection("transactions").doc();
+
+    const global = await this.getGlobal();
+    logger.info("Global Gst", { global: global.gst });
+    const gst = global.GST ?? 0;
+    const gstAmount = (gst / 100) * amount;
     await transactionRef.set({
       docId: transactionRef.id,
       customerId,
@@ -355,6 +382,10 @@ class FirebaseService {
       createdAt: new Date(),
       sessionId,
       transactionNumber,
+      type,
+      gst,
+      gstNumber,
+      gstAmount,
     });
     return transactionRef.id;
   }
@@ -392,6 +423,18 @@ class FirebaseService {
     return transactionDoc;
   }
 
+  async findTransactionByTransactionNumber(
+    transactionNumber: string,
+  ): Promise<Record<string, any> | null> {
+    const snap = await firestore
+      .collection("transactions")
+      .where("transactionNumber", "==", transactionNumber)
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    return snap.docs[0].data();
+  }
+
   async findTransactionBySessionId(sessionId: string) {
     const transactionRef = await firestore
       .collection("transactions")
@@ -411,6 +454,18 @@ class FirebaseService {
     return orderRef.data();
   }
 
+  async findOrderByTransactionNumber(
+    transactionNumber: string,
+  ): Promise<Record<string, any> | null> {
+    const snap = await firestore
+      .collection("orders")
+      .where("transactionNumber", "==", transactionNumber)
+      .limit(1)
+      .get();
+    if (snap.empty) return null;
+    return snap.docs[0].data();
+  }
+
   async findStoreByStoreId(storeId: string) {
     const storeRef = await firestore.collection("stores").doc(storeId).get();
     if (!storeRef.exists) {
@@ -419,7 +474,7 @@ class FirebaseService {
     return storeRef.data();
   }
 
-  async findUserByCustomerId(customerId: string) {
+  async findUserByCustomerId(customerId: string): Promise<AppUser | null> {
     const userRef = await firestore
       .collection("customers")
       .doc(customerId)
@@ -427,7 +482,7 @@ class FirebaseService {
     if (!userRef.exists) {
       return null;
     }
-    return userRef.data();
+    return userRef.data() as AppUser;
   }
 
   async findCustomerByEmail(email: string): Promise<{
@@ -518,6 +573,63 @@ class FirebaseService {
         tx.update(doc.ref, { recipientCustomerId: newUserId });
       }
     });
+  }
+
+  async expireCredits(): Promise<{ expiredCount: number }> {
+    const customersSnap = await firestore
+      .collection("customers")
+      .where("creditAvailable", ">", 0)
+      .get();
+
+    const toNZDateString = (date: Date): string =>
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Pacific/Auckland",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(date);
+
+    const todayNZ = toNZDateString(new Date());
+
+    let expiredCount = 0;
+
+    for (const doc of customersSnap.docs) {
+      const data = doc.data();
+      const creditExpiryRaw = data.creditExpiry;
+      const creditAvailable: number = data.creditAvailable ?? 0;
+
+      if (!creditExpiryRaw || creditAvailable <= 0) continue;
+
+      // creditExpiry is stored as a Firestore Timestamp — convert to NZ date string
+      const expiryDate: Date =
+        creditExpiryRaw instanceof Timestamp
+          ? creditExpiryRaw.toDate()
+          : new Date(creditExpiryRaw);
+      const expiryNZ = toNZDateString(expiryDate);
+
+      // Only expire when today is strictly after the expiry date
+      if (expiryNZ >= todayNZ) continue;
+
+      const transactionNumber = await generateTransactionNumber();
+      const transactionRef = firestore.collection("transactions").doc();
+      const batch = firestore.batch();
+
+      batch.update(doc.ref, { creditAvailable: 0 });
+      batch.set(transactionRef, {
+        docId: transactionRef.id,
+        customerId: doc.id,
+        amount: 0,
+        type: "expired",
+        status: "expired",
+        createdAt: new Date(),
+        transactionNumber,
+      });
+
+      await batch.commit();
+      expiredCount++;
+    }
+
+    return { expiredCount };
   }
 }
 

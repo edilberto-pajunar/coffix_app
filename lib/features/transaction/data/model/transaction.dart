@@ -17,6 +17,8 @@ enum TransactionStatus {
   declined,
   @JsonValue('completed')
   completed,
+  @JsonValue('expired')
+  expired,
 }
 
 @JsonSerializable()
@@ -42,6 +44,9 @@ class Transaction {
   String? senderLastName;
   String? transactionNumber;
   double? totalAmount;
+  double? gst;
+  double? gstAmount;
+  String? gstNumber;
 
   Transaction({
     this.docId,
@@ -62,6 +67,9 @@ class Transaction {
     this.senderLastName,
     this.transactionNumber,
     this.totalAmount,
+    this.gst,
+    this.gstAmount,
+    this.gstNumber,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

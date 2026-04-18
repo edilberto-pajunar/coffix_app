@@ -140,16 +140,11 @@ class AuthCubit extends Cubit<AuthState> {
     _userWithStoreSubscription?.cancel();
     _userWithStoreSubscription = stream.listen(
       (AppUserWithStore? user) {
-        // if (user?.user.emailVerified != true) {
-        //   emit(AuthState.emailNotVerified());
-        //   return;
-        // }
         emit(AuthState.authenticated(userWithStore: user!));
-        // emit(
-        //   user != null
-        //       ? AuthState.authenticated(userWithStore: user)
-        //       : AuthState.unauthenticated(),
-        // );
+        if (user.user.qrId == null || user.user.email == null) {
+          _authRepository.updateUser(uid: user.user.docId!);
+        }
+      
       },
       onError: (error) {
         emit(AuthState.error(message: error.toString()));

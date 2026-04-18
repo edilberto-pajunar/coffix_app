@@ -185,7 +185,9 @@ class _CategoryListState extends State<_CategoryList> {
                   borderColor: widget.categoryFilter == category.name
                       ? AppColors.primary
                       : AppColors.white,
-                  color: AppColors.lightGrey,
+                  color: widget.categoryFilter == category.name
+                      ? AppColors.primary
+                      : AppColors.lightGrey,
                   child: Text(category.name ?? "", style: AppTypography.labelS),
                 ),
               );

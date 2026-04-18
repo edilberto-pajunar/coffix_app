@@ -17,6 +17,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthRepositoryImpl extends ApiClient implements AuthRepository {
@@ -272,7 +273,10 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
         .doc(_auth.currentUser?.uid)
         .snapshots()
         .map((event) {
-          return AppUser.fromJson(event.data() ?? {});
+          return AppUser.fromJson({
+            ...event.data() ?? {},
+            "docId": _auth.currentUser?.uid,
+          });
         });
   }
 
@@ -315,8 +319,11 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
     if (uid == null) {
       throw Exception('No user found');
     }
+    final packageInfo = await PackageInfo.fromPlatform();
+    final appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
     await _firestore.collection("customers").doc(_auth.currentUser?.uid).set({
       "lastLogin": TimeUtils.now(),
+      "appVersion": appVersion,
     }, SetOptions(merge: true));
   }
 
@@ -371,6 +378,17 @@ class AuthRepositoryImpl extends ApiClient implements AuthRepository {
 
     await _firestore.collection("customers").doc(_auth.currentUser?.uid).set({
       "fcmToken": fcmToken,
+      "updatedAt": TimeUtils.now(),
+    }, SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> updateUser({required String uid}) async {
+    final user = _auth.currentUser;
+    await _firestore.collection("customers").doc(uid).set({
+      "docId": uid,
+      "email": user?.email,
+      "qrId": generateQrId(uid),
       "updatedAt": TimeUtils.now(),
     }, SetOptions(merge: true));
   }

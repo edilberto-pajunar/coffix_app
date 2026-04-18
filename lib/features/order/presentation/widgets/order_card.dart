@@ -7,17 +7,14 @@ import 'package:coffix_app/features/cart/presentation/pages/cart_page.dart';
 import 'package:coffix_app/features/modifier/data/model/modifier.dart';
 import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/core/constants/colors.dart';
-import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/data/model/order.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
-import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
-import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -155,19 +152,6 @@ class OrderCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    AppClickable(
-                      onPressed: () {
-                        context.read<OrderCubit>().sendOrderToEmail(
-                          orderId: order.docId ?? '',
-                        );
-                      },
-                      child: Image.asset(
-                        AppImages.email,
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
-                    const SizedBox(width: AppSizes.sm),
                     Text(
                       '#${order.transactionNumber ?? 'N/A'}',
                       style: theme.textTheme.titleSmall?.copyWith(

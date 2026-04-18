@@ -35,7 +35,6 @@ class Order {
   final DateTime? createdAt;
   @DateTimeConverter()
   final DateTime? scheduledAt;
-  final String? orderNumber;
   final List<Item>? items;
   final OrderStatus? status;
   final PaymentStatus? paymentStatus;
@@ -51,7 +50,6 @@ class Order {
     this.amount,
     this.createdAt,
     this.scheduledAt,
-    this.orderNumber,
     this.status,
     this.paymentStatus,
     this.items,

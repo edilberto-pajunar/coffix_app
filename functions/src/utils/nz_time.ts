@@ -28,7 +28,8 @@ export function nzDateKey(): string {
     day: "2-digit",
   }).formatToParts(new Date());
 
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
+  const get = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "00";
   return `${get("year")}${get("month")}${get("day")}`;
 }
 
@@ -47,14 +48,14 @@ export function scheduledAtNZ(minutes: number): Date {
     timeZoneName: "shortOffset",
   });
   const parts = formatter.formatToParts(new Date(futureUtc));
-  const offsetStr = parts.find((p) => p.type === "timeZoneName")?.value ?? "GMT+0";
+  const offsetStr =
+    parts.find((p) => p.type === "timeZoneName")?.value ?? "GMT+0";
   // offsetStr e.g. "GMT+13" or "GMT+12"
   const match = offsetStr.match(/GMT([+-]\d+)/);
   const offsetHours = match ? parseInt(match[1], 10) : 0;
 
   return new Date(futureUtc + offsetHours * 60 * 60_000);
 }
-
 
 /**
  * Returns the given date formatted as "MM-DD-YYYY HH:mm AM/PM" in NZ time.
@@ -70,7 +71,24 @@ export function formatNzTime(date: Date): string {
     hour12: true,
   }).formatToParts(date);
 
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
+  const get = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "00";
   const period = parts.find((p) => p.type === "dayPeriod")?.value ?? "AM";
-  return `${get("month")}-${get("day")}-${get("year")} ${get("hour")}:${get("minute")} ${period}`;
+  return `${get("day")}-${get("month")}-${get("year")} ${get("hour")}:${get("minute")} ${period}`;
+}
+
+/**
+ * Returns the given date formatted as "MM-DD-YYYY" in NZ time.
+ */
+export function formatNzDate(date: Date): string {
+  const parts = new Intl.DateTimeFormat("en-NZ", {
+    timeZone: NZ_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const get = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "00";
+  return `${get("day")}-${get("month")}-${get("year")}`;
 }

@@ -2,54 +2,44 @@ import { firestore } from "../config/firebaseAdmin";
 import { RESEND_BCC_EMAIL, RESEND_FROM_EMAIL } from "../constant/constant";
 import { renderTemplate } from "../utils/renderEmailTemplate";
 import { wrapInEmailShell } from "../utils/emailShell";
-import { orderEmailTemplate } from "../utils/templates/order_email_template";
 import { logger } from "firebase-functions";
-import { nowNZ } from "../utils/nz_time";
-import { GiftEmailParams, SendEmailParams } from "./schema";
+import {
+  GiftEmailParams,
+  SendEmailParams,
+  SendInvoiceSchema,
+  SendOTPSchema,
+  SendReferralEmailSchema,
+} from "./schema";
+import { AppUser } from "../user/interface";
+import { EmailTemplate } from "./interface";
+import { formatNzDate, nowNZ } from "../utils/nz_time";
 
-export interface OrderReceiptEmailParams {
-  to: string;
-  orderNumber: string;
-  storeName: string;
-  storeAddress: string;
-  createdAt: string;
-  paymentMethod: string;
-  total: number;
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-    modifiers?: string[];
-  }>;
-}
-
-function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
-}
-
-function buildItemRows(items: OrderReceiptEmailParams["items"]): string {
-  if (!items.length) {
-    return `<tr><td colspan="4" style="padding:12px 0;color:#888;font-size:14px;">No items</td></tr>`;
-  }
-
-  return items
-    .map((item) => {
-      const subtotal = item.quantity * item.price;
-      const modifierHtml = item.modifiers?.length
-        ? `<div class="item-modifiers">${item.modifiers.join(", ")}</div>`
-        : "";
-      return `
-        <tr>
-          <td>
-            <div class="item-name">${item.name}</div>
-            ${modifierHtml}
-          </td>
-          <td class="right">${item.quantity}</td>
-          <td class="right">${formatCurrency(item.price)}</td>
-          <td class="right">${formatCurrency(subtotal)}</td>
-        </tr>`;
-    })
-    .join("");
+function buildUserVariables(
+  user: AppUser | null,
+): Record<string, string | number | boolean> {
+  if (!user) return {};
+  return {
+    first_name: user.firstName ?? "",
+    last_name: user.lastName ?? "",
+    nick_name: user.nickName ?? "",
+    email: user.email ?? "",
+    mobile: user.mobile ?? "",
+    birthday: formatNzDate(user.birthday) ?? "",
+    suburb: user.suburb ?? "",
+    city: user.city ?? "",
+    preferred_store_id: user.preferredStoreId ?? "",
+    credit_available: user.creditAvailable ?? 0,
+    created_at: formatNzDate(user.createdAt) ?? "",
+    email_verified: user.emailVerified ?? false,
+    get_purchase_info_by_mail: user.getPurchaseInfoByMail ?? false,
+    get_promotions: user.getPromotions ?? false,
+    allow_win_a_coffee: user.allowWinACoffee ?? false,
+    last_login: formatNzDate(user.lastLogin) ?? "",
+    disabled: user.disabled ?? false,
+    qr_id: user.qrId ?? "",
+    fcm_token: user.fcmToken ?? "",
+    doc_id: user.docId ?? "",
+  };
 }
 
 export class EmailService {
@@ -92,69 +82,91 @@ export class EmailService {
 
   // send email to a single recipient
   async send(params: SendEmailParams): Promise<void> {
-    const templateSnap = await firestore
-      .collection("emails")
-      .doc(params.documentId)
-      .get();
-    const templateData = templateSnap.data();
-    if (!templateData) {
-      throw new Error(
-        `Email template "${params.documentId}" not found in Firestore`,
+    let subject: string;
+    let html: string;
+
+    const [templateSnap, userSnap] = await Promise.all([
+      firestore.collection("emails").doc(params.documentId).get(),
+      params.userId
+        ? firestore.collection("customers").doc(params.userId).get()
+        : Promise.resolve(null),
+    ]);
+
+    const userVariables = buildUserVariables(
+      userSnap?.exists ? (userSnap.data() as AppUser) : null,
+    );
+    const now = nowNZ();
+    const templateData = templateSnap.data() as EmailTemplate;
+    const variables = {
+      ...userVariables,
+      ...params.variables,
+      date: now,
+    };
+
+    if (params.htmlContent) {
+      subject = renderTemplate(
+        templateData.subject ?? params.subject ?? "",
+        variables,
+      );
+      html = params.htmlContent;
+    } else {
+      html = wrapInEmailShell(
+        renderTemplate(templateData.content ?? "", variables),
       );
     }
-
-    const subject = renderTemplate(params.subject, params.variables);
-    const html = wrapInEmailShell(
-      renderTemplate(templateData.content as string, params.variables),
-    );
 
     await this.resendSend({ to: params.email, subject, html });
   }
 
   // send gift notification email
   async sendGift(params: GiftEmailParams): Promise<void> {
-    const templateSnap = await firestore.collection("emails").doc("GIFT").get();
-    const templateData = templateSnap.data();
-    if (!templateData)
-      throw new Error("GIFT_NOTIFICATION template not found in Firestore");
-
-    const senderName =
-      `${params.senderFirstName} ${params.senderLastName}`.trim();
-    const recipientName =
-      `${params.recipientFirstName} ${params.recipientLastName}`.trim();
-    const subject = renderTemplate(
-      (templateData.subject as string) ??
-        "You received a Coffix gift from {{ SENDER_FULLNAME }}!",
-      { SENDER_FULLNAME: senderName },
-    );
-    const html = wrapInEmailShell(
-      renderTemplate(templateData.content as string, {
-        SENDER_FULLNAME: senderName,
-        RECIPIENT_FULL_NAME: recipientName,
-        AMOUNT: params.amount.toFixed(2),
-        DATE: nowNZ(),
-        TRANSACTION_NUMBER: params.transactionNumber ?? "",
-      }),
-    );
-
-    await this.resendSend({ to: params.to, subject, html });
+    await this.send({
+      email: params.to,
+      documentId: "GIFT",
+      userId: params.userId,
+      variables: {
+        gift_amount: params.amount.toFixed(2),
+        transaction_number: params.transactionNumber ?? "",
+      },
+    });
   }
 
-  async sendOrderReceipt(params: OrderReceiptEmailParams): Promise<void> {
-    const shortNumber = params.orderNumber.slice(-6);
-    const html = orderEmailTemplate
-      .replace(/{{orderNumber}}/g, shortNumber)
-      .replace(/{{storeName}}/g, params.storeName)
-      .replace(/{{storeAddress}}/g, params.storeAddress)
-      .replace(/{{createdAt}}/g, params.createdAt)
-      .replace(/{{total}}/g, formatCurrency(params.total))
-      .replace(/{{paymentMethod}}/g, params.paymentMethod)
-      .replace(/{{items}}/g, buildItemRows(params.items));
+  async sendInvoice(
+    params: Omit<SendInvoiceSchema, "invoice"> & { invoiceHtml: string },
+  ): Promise<void> {
+    await this.send({
+      email: params.to,
+      documentId: "INVOICE",
+      userId: params.userId,
+      variables: {
+        store_name: params.storeName,
+        transaction_number: params.transactionNumber,
+      },
+      htmlContent: params.invoiceHtml,
+    });
+  }
 
-    await this.resendSend({
-      to: params.to,
-      subject: `Your Coffix Order Receipt #${params.orderNumber}`,
-      html,
+  async sendOTP(params: SendOTPSchema): Promise<void> {
+    await this.send({
+      email: params.to,
+      subject: "Your OTP code for Coffix",
+      documentId: "OTP",
+      userId: params.userId,
+      variables: {
+        otp_code: params.otp,
+      },
+    });
+  }
+
+  async sendReferralEmail(params: SendReferralEmailSchema): Promise<void> {
+    await this.send({
+      email: params.to,
+      subject: "You received a referral code from a friend!",
+      documentId: "REFERRAL",
+      userId: params.userId,
+      variables: {
+        referee_name: params.referee_name,
+      },
     });
   }
 }

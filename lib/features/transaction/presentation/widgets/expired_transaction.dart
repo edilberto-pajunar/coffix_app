@@ -2,7 +2,6 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
-import 'package:coffix_app/core/extensions/payment_method_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
@@ -13,13 +12,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TopUpTransaction extends StatefulWidget {
-  const TopUpTransaction({super.key, required this.transaction});
+class ExpiredTransaction extends StatefulWidget {
+  const ExpiredTransaction({super.key, required this.transaction});
 
   final Transaction transaction;
 
   @override
-  State<TopUpTransaction> createState() => TopUpTransactionState();
+  State<ExpiredTransaction> createState() => ExpiredTransactionState();
 }
 
 (String, Color) _transactionStatusStyle(TransactionStatus? s) {
@@ -29,11 +28,12 @@ class TopUpTransaction extends StatefulWidget {
     TransactionStatus.approved => ('Approved', AppColors.success),
     TransactionStatus.failed => ('Failed', AppColors.error),
     TransactionStatus.completed => ('Completed', AppColors.success),
+    TransactionStatus.expired => ('Expired', AppColors.error),
     _ => ('—', AppColors.lightGrey),
   };
 }
 
-class TopUpTransactionState extends State<TopUpTransaction> {
+class ExpiredTransactionState extends State<ExpiredTransaction> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -43,10 +43,6 @@ class TopUpTransactionState extends State<TopUpTransaction> {
     final order = context.watch<OrderCubit>().state.orders.firstWhereOrNull(
       (order) => order.docId == widget.transaction.orderId,
     );
-    final bonus = widget.transaction.totalAmount == null
-        ? 0.0
-        : (widget.transaction.totalAmount ?? 0.0) -
-              (widget.transaction.amount ?? 0.0);
 
     return Container(
       padding: const EdgeInsets.all(AppSizes.md),
@@ -104,18 +100,10 @@ class TopUpTransactionState extends State<TopUpTransaction> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "You received ${widget.transaction.totalAmount?.toCurrency() ?? 'N/A'} credits (${widget.transaction.amount?.toCurrency() ?? 'N/A'} + ${bonus.toCurrency()} bonus)",
-                        ),
-                      ],
-                    ),
-                  ],
+                  children: [Text("Your credit balance has expired.")],
                 ),
               ),
+
               SizedBox(width: AppSizes.md),
               Column(
                 children: [
@@ -125,7 +113,7 @@ class TopUpTransactionState extends State<TopUpTransaction> {
                         ) ??
                         0.00.toCurrencySuperscript(style: AppTypography.titleS),
                   ),
-                  Text(widget.transaction.paymentMethod?.label ?? ''),
+
                   StatusChip(label: statusLabel, color: statusColor),
                 ],
               ),

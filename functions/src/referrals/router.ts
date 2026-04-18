@@ -6,6 +6,7 @@ import { firestore } from "../config/firebaseAdmin";
 import { AuthService } from "../auth/service";
 import { logger } from "firebase-functions/v1";
 import { ReferralService } from "./service";
+import { EmailService } from "../email/service";
 
 const referralsRouter = express.Router();
 referralsRouter.use(express.json());
@@ -26,6 +27,7 @@ referralsRouter.post(
   requirePost,
   requiredAuth,
   async (request: AuthenticatedRequest, response) => {
+    const emailService = new EmailService();
     const validation = sendReferralSchema.safeParse(request.body);
     if (!validation.success) {
       const errors = validation.error.issues
@@ -92,9 +94,10 @@ referralsRouter.post(
             referrerUid: uid,
             referee: { email, name },
           });
-          await referralService.sendReferralEmail({
-            referrerUid: uid,
-            referee: { email, name },
+          await emailService.sendReferralEmail({
+            to: email,
+            userId: uid,
+            referee_name: name,
           });
         }),
       );

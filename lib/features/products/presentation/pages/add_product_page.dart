@@ -195,8 +195,8 @@ class _AddProductViewState extends State<AddProductView> {
                           children: [
                             Text(
                               "Quantity",
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: AppColors.lightGrey,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: AppSizes.sm),

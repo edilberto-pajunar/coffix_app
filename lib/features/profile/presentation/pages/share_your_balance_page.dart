@@ -1,3 +1,4 @@
+import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
@@ -50,7 +51,7 @@ class _ShareYourBalanceViewState extends State<ShareYourBalanceView> {
       orElse: () => false,
     );
     return Scaffold(
-      appBar: const AppBackHeader(title: 'Share your balance'),
+      appBar: const AppBackHeader(title: 'My Coffix Credit Balance'),
       body: BlocListener<ProfileCubit, ProfileState>(
         listener: (context, state) {
           state.maybeWhen(
@@ -86,6 +87,7 @@ class _ShareYourBalanceViewState extends State<ShareYourBalanceView> {
                             children: [
                               const SizedBox(height: AppSizes.xxl),
                               AppCard(
+                                color: AppColors.softGrey,
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,

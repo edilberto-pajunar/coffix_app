@@ -85,12 +85,11 @@ class PaymentSuccessfulView extends StatelessWidget {
                             'THANK YOU!',
                             style: AppTypography.headlineXl,
                             textAlign: TextAlign.center,
-                          
                           ),
                           const SizedBox(height: AppSizes.lg),
                           Text(
                             orderCreated != null
-                                ? 'Order #${orderCreated.orderNumber?.substring(orderCreated.orderNumber!.length - 6) ?? '—'} will be ready for pick up from \n${store?.name ?? '—'} at'
+                                ? 'Order #${orderCreated.transactionNumber ?? '—'} will be ready for pick up from \n${store?.name ?? '—'} at'
                                 : 'Your order will be ready for pick up from \n${store?.name ?? '—'} at',
                             style: AppTypography.bodyM,
                             textAlign: TextAlign.center,

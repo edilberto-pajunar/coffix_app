@@ -13,6 +13,8 @@ import { NotificationService } from "../notification/service";
 import { ReferralService } from "../referrals/service";
 import { firestore } from "../config/firebaseAdmin";
 import { formatNzTime } from "../utils/nz_time";
+import { EmailService } from "../email/service";
+import { buildAndSendOrderInvoice } from "../order/router";
 export class WebhookService {
   private readonly windcaveService: WindcaveService;
   private readonly firebaseService: FirebaseService;
@@ -293,6 +295,7 @@ export class WebhookService {
             message: `A payment for order #${orderDoc?.transactionNumber} has been accepted`,
           })
           .catch((err) => logger.error("Notification failed:", err));
+
         this.referralService
           .handleFirstPurchase({
             customerId: customerId ?? "",
@@ -302,6 +305,19 @@ export class WebhookService {
           .catch((err) =>
             logger.error("Referral first-purchase check failed:", err),
           );
+          
+        this.firebaseService
+          .findUserByCustomerId(customerId ?? "")
+          .then((customer) => {
+            if (!customer?.allowWinACoffee) return;
+            return buildAndSendOrderInvoice(
+              this.firebaseService,
+              new EmailService(),
+              customerId ?? "",
+              orderDoc.transactionNumber as string,
+            );
+          })
+          .catch((err) => logger.error("Invoice email failed:", err));
         return;
       } else {
         await this.firebaseService.updateTransaction(transactionDoc.docId, {

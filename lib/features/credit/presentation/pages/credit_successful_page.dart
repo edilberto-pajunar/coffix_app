@@ -84,7 +84,6 @@ class CreditSuccessfulView extends StatelessWidget {
                           vertical: AppSizes.md,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
                           borderRadius: BorderRadius.circular(AppSizes.md),
                         ),
                         child: Column(
@@ -105,6 +104,7 @@ class CreditSuccessfulView extends StatelessWidget {
                           ],
                         ),
                       ),
+                      SizedBox(height: AppSizes.xl),
                       AppButton.primary(
                         onPressed: () {
                           context.goNamed(HomePage.route);

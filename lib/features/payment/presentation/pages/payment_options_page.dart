@@ -94,7 +94,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                     PaymentSuccessfulPage.route,
                     extra: {
                       "pickupAt": order.scheduledAt,
-                      "orderNumber": order.orderNumber,
+                      "orderNumber": order.transactionNumber,
                     },
                   );
                   context.read<CartCubit>().resetCart();

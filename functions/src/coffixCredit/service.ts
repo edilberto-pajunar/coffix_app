@@ -192,8 +192,7 @@ export class CoffixCreditService {
     try {
       await new EmailService().sendGift({
         to: recipientEmail,
-        senderFirstName,
-        senderLastName,
+        userId: senderId,
         amount,
         transactionNumber,
       });

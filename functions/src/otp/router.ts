@@ -12,6 +12,7 @@ import { otpSendLimiter } from "../middleware/rateLimiter";
 import { renderTemplate } from "../utils/renderEmailTemplate";
 import { wrapInEmailShell } from "../utils/emailShell";
 import { nowNZ } from "../utils/nz_time";
+import { EmailService } from "../email/service";
 
 export const otpRouter = express.Router();
 otpRouter.use(express.json());
@@ -29,6 +30,7 @@ otpRouter.post(
   requiredAuth,
   otpSendLimiter,
   async (request: AuthenticatedRequest, response) => {
+    const emailService = new EmailService();
     const validation = sendEmailOTPSchema.safeParse(request.body);
     if (!validation.success) {
       const errors = validation.error.issues
@@ -80,65 +82,21 @@ otpRouter.post(
         });
       });
 
-      // Fetch user document
-      const userSnap = await firestore.collection("customers").doc(uid).get();
-      if (!userSnap.exists) {
+      // Fetch full user document
+      const firebaseService = new FirebaseService();
+      const user = await firebaseService.findUserByCustomerId(uid);
+      if (!user) {
         return response.status(500).json({
           success: false,
           message: "User not found",
         });
       }
 
-      // Fetch OTP email template from Firestore
-      const templateSnap = await firestore
-        .collection("emails")
-        .doc("OTP")
-        .get();
-      const templateData = templateSnap.data();
-      if (!templateData) {
-        return response.status(500).json({
-          success: false,
-          message: "OTP email template not found",
-        });
-      }
-
-      const subject = renderTemplate(
-        (templateData.subject as string) ?? "Your OTP Code",
-        {},
-      );
-      const html = wrapInEmailShell(
-        renderTemplate(templateData.content as string, {
-          VERIFICATION_CODE: otpCode,
-          DATE: nowNZ(),
-          EMAIL: email,
-        }),
-      );
-
-      // Send email AFTER db write (or before—either is fine; this is consistent w/ single active OTP)
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: RESEND_FROM_EMAIL,
-          to: [email],
-          // bcc: [RESEND_BCC_EMAIL],
-          subject,
-          html,
-        }),
+      await emailService.sendOTP({
+        to: email,
+        userId: uid,
+        otp: otpCode,
       });
-
-      const resendResult = await resendRes.json();
-
-      if (!resendRes.ok) {
-        console.error("Resend API error:", resendResult);
-        return response.status(500).json({
-          success: false,
-          message: "Failed to send email",
-        });
-      }
 
       return response.status(200).json({
         success: true,

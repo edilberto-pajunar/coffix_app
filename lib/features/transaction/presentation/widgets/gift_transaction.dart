@@ -1,10 +1,12 @@
 import 'package:coffix_app/core/constants/colors.dart';
+import 'package:coffix_app/core/constants/images.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/extensions/date_extensions.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/order/logic/order_cubit.dart';
 import 'package:coffix_app/features/transaction/data/model/transaction.dart';
+import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/molecules/status_chip.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +58,20 @@ class GiftTransactionState extends State<GiftTransaction> {
               Expanded(
                 child: Row(
                   children: [
+                    AppClickable(
+                      onPressed: () {
+                        context.read<OrderCubit>().sendOrderToEmail(
+                          transactionNumber:
+                              widget.transaction.transactionNumber ?? '',
+                        );
+                      },
+                      child: Image.asset(
+                        AppImages.email,
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                    const SizedBox(width: AppSizes.sm),
                     Text(
                       "#${widget.transaction.transactionNumber ?? 'N/A'}",
                       style: theme.textTheme.titleSmall?.copyWith(
