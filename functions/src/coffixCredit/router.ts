@@ -14,6 +14,7 @@ import {
 import { shareCoffixCreditSchema, topupBodySchema } from "./schema";
 import { generateTransactionNumber } from "../utils/generate_order_number";
 import { creditLimiter } from "../middleware/rateLimiter";
+import { addLog } from "../log/service";
 
 const router = express.Router();
 
@@ -50,6 +51,13 @@ router.post(
 
       const { amount } = validation.data;
       const merchantReference = getTopupMerchantReference(customerId);
+      void addLog({
+        category: "purchase",
+        severityLevel: "info",
+        action: "Add Coffix Credit to customer",
+        notes: `Amount: ${amount}`,
+        customerId,
+      });
 
       const { paymentSessionUrl, sessionId } =
         await windcaveService.createPaymentSession({
@@ -82,6 +90,13 @@ router.post(
           .json({ success: false, message: error.message, data: error.data });
       }
       logger.error("Error creating topup session:", error);
+      void addLog({
+        category: "purchase",
+        severityLevel: "error",
+        action: "Failed to add Coffix Credit to customer",
+        notes: `Error: ${error.message}`,
+        customerId,
+      });
       return response
         .status(500)
         .json({ success: false, message: "Internal server error" });
@@ -121,6 +136,14 @@ router.post(
           .json({ success: false, message: "Unauthorized" });
       }
 
+      void addLog({
+        category: "purchase",
+        severityLevel: "info",
+        action: "Share Coffix Credit to customer",
+        notes: `Amount: ${validation.data.amount}`,
+        customerId: senderId,
+      });
+
       const { recipientFirstName, recipientLastName, recipientEmail, amount } =
         validation.data;
 
@@ -145,6 +168,13 @@ router.post(
 
       return response.status(200).json({ success: true });
     } catch (error) {
+      void addLog({
+        category: "purchase",
+        severityLevel: "error",
+        action: "Failed to share Coffix Credit to customer",
+        notes: `Error: ${error.message}`,
+        customerId: senderId,
+      });
       if (error instanceof InsufficientCreditError) {
         return response.status(400).json({
           success: false,
@@ -184,6 +214,12 @@ router.post(
     const firebaseService = new FirebaseService();
     try {
       const { expiredCount } = await firebaseService.expireCredits();
+      void addLog({
+        category: "purchase",
+        severityLevel: "info",
+        action: "Scheduled Every Day at 00:00 to expire Coffix Credit",
+        notes: `Expired ${expiredCount} customers`,
+      });
       logger.info(`Credit expiry run: ${expiredCount} customers expired`);
       return response
         .status(200)

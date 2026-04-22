@@ -13,6 +13,7 @@ import { renderTemplate } from "../utils/renderEmailTemplate";
 import { wrapInEmailShell } from "../utils/emailShell";
 import { nowNZ } from "../utils/nz_time";
 import { EmailService } from "../email/service";
+import { addLog } from "../log/service";
 
 export const otpRouter = express.Router();
 otpRouter.use(express.json());
@@ -43,6 +44,13 @@ otpRouter.post(
     const email = validation.data.email;
 
     const otpCode = generateOtp6();
+    void addLog({
+      category: "auth",
+      severityLevel: "info",
+      action: "Send OTP to customer",
+      notes: `Customer ${uid} requested OTP to ${email}`,
+      customerId: uid,
+    });
     try {
       const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -104,6 +112,13 @@ otpRouter.post(
       });
     } catch (e) {
       console.error("Error sending email OTP:", e);
+      void addLog({
+        category: "auth",
+        severityLevel: "error",
+        action: "Send OTP to customer",
+        notes: `Customer ${uid} requested OTP to ${email}`,
+        customerId: uid,
+      });
       return response.status(500).json({
         success: false,
         message: "Internal server error",

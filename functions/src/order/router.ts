@@ -12,6 +12,7 @@ import { formatNzTime } from "../utils/nz_time";
 import * as admin from "firebase-admin";
 import FirebaseService from "../firebase/service";
 import { getPaymentMethod } from "./service";
+import { addLog } from "../log/service";
 
 const router = express.Router();
 
@@ -162,6 +163,8 @@ async function sendGiftInvoice(
       .replace("{{createdAt}}", r(createdAt)),
   );
 
+  
+
   await emailService.sendInvoice({
     to: sender?.email as string,
     userId: transaction.customerId as string,
@@ -235,6 +238,12 @@ router.post(
 
     try {
       const customerId = request.user?.uid;
+      void addLog({
+        category: "email",
+        severityLevel: "info",
+        action: "Send order invoice",
+        notes: `Customer ${customerId} sent order invoice`,
+      });
       if (!customerId) {
         return response
           .status(401)

@@ -7,7 +7,8 @@ part 'log.g.dart';
 class Log {
   final String? docId;
   final String? page;
-  final String? customerId;
+  final String? customerId; // if under customers collection
+  final String? userId; // if under staffs collection
   final String? category; // refund, purchase, referral, info update, bonus,
   final String? severityLevel; // error, warning, info, success
   final String? action;
@@ -19,6 +20,7 @@ class Log {
     this.docId,
     this.page,
     this.customerId,
+    this.userId,
     this.category,
     this.severityLevel,
     this.action,

@@ -17,6 +17,7 @@ import { paymentLimiter } from "../middleware/rateLimiter";
 import { formatNzTime, scheduledAtNZ } from "../utils/nz_time";
 import { buildAndSendOrderInvoice } from "../order/router";
 import { EmailService } from "../email/service";
+import { addLog } from "../log/service";
 
 const router = express.Router();
 
@@ -89,6 +90,13 @@ router.post(
       // handle coffix credit payment
       // if the payment user is using [coffixCredit] then we need to deduct the credit from the user
       if (validation.data.paymentMethod === "coffixCredit") {
+        void addLog({
+          category: "purchase",
+          severityLevel: "info",
+          action: "Purchase products using Coffix Credit",
+          customerId,
+          notes: `Amount: ${totalAmount}`,
+        });
         const duration = validation.data.duration ?? 0;
 
         // Single atomic transaction: deduct credit + create transaction doc + mark order paid
@@ -178,6 +186,14 @@ router.post(
       // handle card payment
       logger.info("Total amount:", totalAmount);
 
+      void addLog({
+        category: "purchase",
+        severityLevel: "info",
+        action: "Purchase products using Coffix Credit",
+        customerId,
+        notes: `Amount: ${totalAmount}`,
+      });
+
       const merchantReference = getOrderMerchantReference(customerId, orderId);
 
       const { paymentSessionUrl, sessionId } =
@@ -225,6 +241,13 @@ router.post(
         });
       }
       logger.error("Error creating payment session:", error);
+      void addLog({
+        category: "purchase",
+        severityLevel: "error",
+        action: "Failed to create payment session",
+        customerId,
+        notes: `Error: ${error.message}`,
+      });
       return response
         .status(500)
         .json({ success: false, message: "Internal server error" });

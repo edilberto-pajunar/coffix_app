@@ -9,13 +9,13 @@ import authRouter from "./auth/route";
 import orderRouter from "./order/router";
 import notificationRouter from "./notification/router";
 import emailRouter from "./email/router";
+import logRouter from "./log/router";
 import { globalLimiter } from "./middleware/rateLimiter";
 
 export const api = express();
 // Global middleware
 api.use(express.json());
 api.use(globalLimiter);
-
 
 api.use("/health", (request, response) => {
   response.send("OK");
@@ -32,3 +32,4 @@ api.use("/order", orderRouter);
 api.use("/notification", notificationRouter);
 api.use("/referrals", referralsRouter);
 api.use("/email", emailRouter);
+api.use("/log", logRouter);

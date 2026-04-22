@@ -13,6 +13,7 @@ import {
 import { AppUser } from "../user/interface";
 import { EmailTemplate } from "./interface";
 import { formatNzDate, nowNZ } from "../utils/nz_time";
+import { addLog } from "../log/service";
 
 function buildUserVariables(
   user: AppUser | null,
@@ -124,6 +125,12 @@ export class EmailService {
 
   // send gift notification email
   async sendGift(params: GiftEmailParams): Promise<void> {
+    void addLog({
+      category: "gift",
+      severityLevel: "info",
+      action: "Share Coffix Credit to another customer",
+      notes: `Customer ${params.userId} sent gift email to ${params.to}`,
+    });
     await this.send({
       email: params.to,
       documentId: "GIFT",

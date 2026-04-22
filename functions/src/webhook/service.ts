@@ -18,6 +18,7 @@ import { buildAndSendOrderInvoice } from "../order/router";
 import { wrapInEmailShell } from "../utils/emailShell";
 import { topupEmailTemplate } from "../utils/templates/topup_email_template";
 import admin from "firebase-admin";
+import { addLog } from "../log/service";
 
 function toDate(value: unknown): Date {
   if (value instanceof Date) return value;
@@ -281,6 +282,13 @@ export class WebhookService {
     if (merchantReference.startsWith(TOPUP_PREFIX)) {
       const customerId = parseTopupMerchantReference(merchantReference);
       logger.info("customerId", customerId);
+      void addLog({
+        category: "webhook",
+        severityLevel: "info",
+        action: "Received topup webhook",
+        notes: `Amount: ${amount}`,
+        customerId: customerId ?? "",
+      });
       this.handleTopUp({
         customerId: customerId ?? "",
         amount,
@@ -301,6 +309,13 @@ export class WebhookService {
         orderDoc?.storeId,
       );
       const customerName = `${transaction.customer.firstName} ${transaction.customer.lastName}`;
+      void addLog({
+        category: "webhook",
+        severityLevel: "info",
+        action: "Received order webhook",
+        notes: `Amount: ${amount}`,
+        customerId: customerId ?? "",
+      });
       if (authorised) {
         if (!orderDoc) {
           throw new WindcaveError(400, {
@@ -378,6 +393,13 @@ export class WebhookService {
           .catch((err) => logger.error("Invoice email failed:", err));
         return;
       } else {
+        void addLog({
+          category: "webhook",
+          severityLevel: "info",
+          action: "Order payment declined",
+          notes: `Order #${orderDoc?.transactionNumber} has been declined`,
+          customerId: customerId ?? "",
+        });
         await this.firebaseService.updateTransaction(transactionDoc.docId, {
           status: "declined",
           updatedAt: new Date(),
