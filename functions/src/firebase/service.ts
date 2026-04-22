@@ -234,7 +234,7 @@ class FirebaseService {
     ]);
     const gst = (globalDoc.GST ?? 0) as number;
     const gstNumber = (orderSnap.data()?.storeGst as string) ?? "";
-    const gstAmount = (gst / 100) * amount;
+    const gstAmount = amount - amount / (1 + gst / 100);
 
     // Fetch eligible coupons outside the transaction (reads before transaction opens)
     const couponSnap = await firestore
@@ -388,7 +388,7 @@ class FirebaseService {
     const global = await this.getGlobal();
     logger.info("Global Gst", { global: global.gst });
     const gst = global.GST ?? 0;
-    const gstAmount = (gst / 100) * amount;
+    const gstAmount = amount - amount / (1 + gst / 100);
     await transactionRef.set({
       docId: transactionRef.id,
       customerId,
@@ -434,6 +434,7 @@ class FirebaseService {
       createdAt: new Date(),
       sessionId,
       type: "topup",
+      paymentMethod: "coffixCredit",
       transactionNumber,
     };
     await transactionRef.set(transactionDoc, { merge: true });

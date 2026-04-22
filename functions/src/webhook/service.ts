@@ -55,7 +55,9 @@ export class WebhookService {
     authorised: boolean,
   ): Promise<void> {
     const [transaction, customer] = await Promise.all([
-      this.firebaseService.findTransactionByTransactionNumber(transactionNumber),
+      this.firebaseService.findTransactionByTransactionNumber(
+        transactionNumber,
+      ),
       this.firebaseService.findUserByCustomerId(customerId),
     ]);
     if (!customer?.email || !transaction) return;
@@ -338,7 +340,7 @@ export class WebhookService {
             orders: (orderDoc.items ?? [])
               .map((item: any) => {
                 const itemModifiers = (item.modifiers ?? [])
-                  .map((m: any) => m.modifierId)
+                  .map((m: any) => m.name)
                   .join(", ");
                 return `${item.quantity}x ${item.productName} | ${itemModifiers} | $${item.price.toFixed(2)}`;
               })
@@ -363,16 +365,6 @@ export class WebhookService {
                 : `A payment for order #${orderDoc?.transactionNumber} has been accepted`,
           })
           .catch((err) => logger.error("Notification failed:", err));
-
-        this.referralService
-          .handleFirstPurchase({
-            customerId: customerId ?? "",
-            orderId,
-            paidAt,
-          })
-          .catch((err) =>
-            logger.error("Referral first-purchase check failed:", err),
-          );
 
         this.firebaseService
           .findUserByCustomerId(customerId ?? "")
@@ -446,16 +438,24 @@ export class WebhookService {
         responseText: transaction.responseText,
         totalAmount,
       });
-      
+
       this.notificationService
         .sendNotification({
           customerId,
           title: "TopUp Payment Successful",
-          message: `A payment for top-up #${transactionDoc?.transactionNumber} has been accepted`,
+          message: `A payment for topUp #${transactionDoc?.transactionNumber} has been accepted`,
         })
         .catch((err) => logger.error("Notification failed:", err));
-      this.sendTopupEmail(customerId, transactionDoc.transactionNumber, true)
-        .catch((err) => logger.error("Email failed:", err));
+      this.sendTopupEmail(
+        customerId,
+        transactionDoc.transactionNumber,
+        true,
+      ).catch((err) => logger.error("Email failed:", err));
+      this.referralService
+        .handleFirstPurchase({ customerId })
+        .catch((err) =>
+          logger.error("Referral first-topup check failed:", err),
+        );
       return;
     } else {
       await this.firebaseService.updateTransaction(transactionDoc.docId, {
@@ -472,8 +472,11 @@ export class WebhookService {
           message: "Your top-up has been failed",
         })
         .catch((err) => logger.error("Notification failed:", err));
-      this.sendTopupEmail(customerId, transactionDoc.transactionNumber, false)
-        .catch((err) => logger.error("Email failed:", err));
+      this.sendTopupEmail(
+        customerId,
+        transactionDoc.transactionNumber,
+        false,
+      ).catch((err) => logger.error("Email failed:", err));
     }
     return;
   }

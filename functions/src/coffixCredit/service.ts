@@ -57,6 +57,7 @@ export class CoffixCreditService {
     const discountLevel3 = ((globalData.discountLevel3 ?? 0) / 100) as number;
     const topupLevel2 = (globalData.topupLevel2 ?? Infinity) as number;
     const topupLevel3 = (globalData.topupLevel3 ?? Infinity) as number;
+    const creditExpiryDuration = (globalData.creditExpiryDuration ?? 0) as number;
 
     if (amount < minTopUp) {
       throw new Error(`Top-up amount is below the minimum of ${minTopUp}`);
@@ -78,9 +79,10 @@ export class CoffixCreditService {
         ? ((customerSnap.data()?.creditAvailable ?? 0) as number)
         : 0;
 
+      const expiryDate = new Date(Date.now() + creditExpiryDuration * 24 * 60 * 60 * 1000);
       tx.set(
         customerRef,
-        { creditAvailable: current + totalAmount },
+        { creditAvailable: current + totalAmount, creditExpiry: expiryDate },
         { merge: true },
       );
     });

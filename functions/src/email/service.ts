@@ -108,7 +108,7 @@ export class EmailService {
         templateData.subject ?? params.subject ?? "",
         variables,
       );
-      html = params.htmlContent;
+      html = wrapInEmailShell(params.htmlContent);
     } else {
       subject = renderTemplate(
         templateData.subject ?? params.subject ?? "",

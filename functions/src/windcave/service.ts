@@ -205,7 +205,7 @@ export class WindcaveService {
           const m = found.get(modifierId);
           return {
             modifierId,
-            name: m?.name ?? "",
+            name: m?.label ?? "",
             priceDelta: Number(m?.priceDelta ?? 0),
           };
         });

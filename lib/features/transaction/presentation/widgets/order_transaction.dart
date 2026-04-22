@@ -199,9 +199,7 @@ class OrderTransactionState extends State<OrderTransaction> {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    entry.value.modifierId
-                                                            ?.toLarge() ??
-                                                        '—',
+                                                    entry.value.name ?? '—',
                                                     style: AppTypography.body3XS
                                                         .copyWith(
                                                           color: AppColors

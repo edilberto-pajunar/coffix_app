@@ -92,10 +92,12 @@ Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
 ItemModifier _$ItemModifierFromJson(Map<String, dynamic> json) => ItemModifier(
   modifierId: json['modifierId'] as String?,
   priceDelta: (json['priceDelta'] as num?)?.toDouble(),
+  name: json['name'] as String?,
 );
 
 Map<String, dynamic> _$ItemModifierToJson(ItemModifier instance) =>
     <String, dynamic>{
       'modifierId': instance.modifierId,
       'priceDelta': instance.priceDelta,
+      'name': instance.name,
     };

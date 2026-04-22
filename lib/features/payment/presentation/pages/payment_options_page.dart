@@ -227,6 +227,7 @@ class _PaymentOptionsPageViewState extends State<PaymentOptionsPageView> {
                               insufficientCredit,
                           onPressed: () {
                             if (cart == null) return;
+                            print(cart.items?[0].selectedByGroup);
                             final request = PaymentRequest(
                               storeId: cart.storeId ?? "",
                               items:

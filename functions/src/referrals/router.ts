@@ -58,7 +58,8 @@ referralsRouter.post(
       if (existingEmails.length > 0) {
         return response.status(400).json({
           success: false,
-          message: `The following emails are already registered: ${existingEmails.join(", ")}`,
+          // message: `The following emails are already registered: ${existingEmails.join(", ")}`,
+          message: "Some of the referrals already exist and will not be invited",
         });
       }
 
@@ -82,7 +83,8 @@ referralsRouter.post(
       if (alreadyReferredEmails.length > 0) {
         return response.status(400).json({
           success: false,
-          message: `The following emails already have a pending referral: ${alreadyReferredEmails.join(", ")}`,
+          // message: `The following emails already have a pending referral: ${alreadyReferredEmails.join(", ")}`,
+          message: "Some of the referrals already exist and will not be invited",
         });
       }
 

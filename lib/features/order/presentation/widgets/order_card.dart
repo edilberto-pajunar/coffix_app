@@ -75,7 +75,8 @@ class OrderCard extends StatelessWidget {
       final disabledStores = product.disabledStores;
       final availableStores = product.availableToStores;
       if (disabledStores != null && disabledStores.contains(storeId)) continue;
-      if (availableStores != null && !availableStores.contains(storeId)) continue;
+      if (availableStores != null && !availableStores.contains(storeId))
+        continue;
 
       final selectedByGroup = item.selectedModifiers ?? {};
       final modifierMap = <String, Modifier>{
@@ -84,10 +85,15 @@ class OrderCard extends StatelessWidget {
             im.modifierId!: Modifier(
               docId: im.modifierId,
               priceDelta: im.priceDelta,
+              label: im.name,
             ),
       };
       // print(modifierMap);
       final modifierPriceSnapshot = helper.buildModifierPriceSnapshot(
+        selectedByGroup: selectedByGroup,
+        modifierMap: modifierMap,
+      );
+      final modifierLabelSnapshot = helper.buildModifierLabelSnapshot(
         selectedByGroup: selectedByGroup,
         modifierMap: modifierMap,
       );
@@ -113,6 +119,7 @@ class OrderCard extends StatelessWidget {
         selectedByGroup: selectedByGroup,
         basePrice: basePrice,
         modifierPriceSnapshot: modifierPriceSnapshot,
+        modifierLabelSnapshot: modifierLabelSnapshot,
         unitTotal: unitTotal,
         lineTotal: unitTotal * quantity,
         createdAt: TimeUtils.now(),
@@ -178,8 +185,8 @@ class OrderCard extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    final modifiers =
-                        item.modifiers?.map((m) => m.modifierId).toList() ?? [];
+                    final List<String> modifiers =
+                        item.modifiers?.map((m) => m.name ?? "").toList() ?? [];
                     final imageUrl = item.productImageUrl ?? '';
 
                     return Padding(
@@ -229,7 +236,7 @@ class OrderCard extends StatelessWidget {
                                     children: modifiers
                                         .map(
                                           (m) => Text(
-                                            m?.toLarge() ?? '—',
+                                            m.toLarge() ?? '—',
                                             style: AppTypography.body3XS
                                                 .copyWith(
                                                   color:

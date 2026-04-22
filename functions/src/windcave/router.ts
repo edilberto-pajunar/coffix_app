@@ -114,7 +114,7 @@ router.post(
               orders: (orderData.items ?? [])
                 .map((item: any) => {
                   const itemModifiers = (item.modifiers ?? [])
-                    .map((m: any) => m.modifierId)
+                    .map((m: any) => m.name)
                     .join(", ");
                   return `${item.quantity}x ${item.productName} | ${itemModifiers} | $${item.price.toFixed(2)}`;
                 })

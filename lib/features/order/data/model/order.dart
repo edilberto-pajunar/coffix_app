@@ -92,8 +92,9 @@ class Item {
 class ItemModifier {
   final String? modifierId;
   final double? priceDelta;
+  final String? name;
 
-  ItemModifier({this.modifierId, this.priceDelta});
+  ItemModifier({this.modifierId, this.priceDelta, this.name});
 
   factory ItemModifier.fromJson(Map<String, dynamic> json) =>
       _$ItemModifierFromJson(json);

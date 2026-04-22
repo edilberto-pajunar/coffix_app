@@ -1,6 +1,6 @@
 import { firestore } from "../config/firebaseAdmin";
 import FirebaseService from "../firebase/service";
-import { RESEND_FROM_EMAIL } from "../constant/constant";
+import { RESEND_FROM_EMAIL, GLOBAL_COLLECTION_ID } from "../constant/constant";
 import { renderTemplate } from "../utils/renderEmailTemplate";
 import { wrapInEmailShell } from "../utils/emailShell";
 import { logger } from "firebase-functions/v1";
@@ -14,15 +14,26 @@ export class ReferralService {
     referrerUid: string;
     referee: { email: string; name: string };
   }): Promise<void> {
+    const globalSnap = await firestore
+      .collection("global")
+      .doc(GLOBAL_COLLECTION_ID)
+      .get();
+    const referralExpiryDays = (globalSnap.data()?.referralExpiryDays ?? 7) as number;
+
+    const referralTime = new Date();
+    const validTime = new Date(
+      referralTime.getTime() + referralExpiryDays * 24 * 60 * 60 * 1000,
+    );
+
     const referralRef = firestore.collection("referrals").doc();
     await referralRef.set({
       docId: referralRef.id,
-      referralTime: new Date(),
+      referralTime,
       referrer: referrerUid,
       referee: referee.email,
       refereeUid: null,
       signupTime: null,
-      expiresAt: null,
+      validTime,
       couponId: null,
       refereeCouponId: null,
       status: "pending",
@@ -41,12 +52,19 @@ export class ReferralService {
 
     const referralDoc = snap.docs[0];
     const signupTime = new Date();
-    const expiresAt = new Date(signupTime.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    const validTime: Date =
+      referralDoc.data().validTime?.toDate?.() ?? referralDoc.data().validTime;
+
+    if (signupTime > validTime) {
+      await referralDoc.ref.update({ status: "expired" });
+      logger.info(`Referral expired for referee: ${refereeUid}`);
+      return;
+    }
 
     await referralDoc.ref.update({
       refereeUid,
       signupTime,
-      expiresAt,
       status: "active",
     });
 
@@ -55,12 +73,8 @@ export class ReferralService {
 
   async handleFirstPurchase({
     customerId,
-    orderId,
-    paidAt,
   }: {
     customerId: string;
-    orderId: string;
-    paidAt: Date;
   }): Promise<void> {
     // 1. Find active referral for this referee
     const referralSnap = await firestore
@@ -75,39 +89,40 @@ export class ReferralService {
     const referralDoc = referralSnap.docs[0];
     const referral = referralDoc.data();
 
-    // 2. Check expiry window
-    const expiresAt: Date =
-      referral.expiresAt?.toDate?.() ?? referral.expiresAt;
-
-    if (paidAt > expiresAt) {
-      await referralDoc.ref.update({ status: "expired" });
-      logger.info(`Referral expired for referee: ${customerId}`);
-      return;
-    }
-
-    // 3. Ensure this is the first paid order
-    const paidOrdersSnap = await firestore
-      .collection("orders")
+    // 2. Ensure this is the first approved topup
+    const topupSnap = await firestore
+      .collection("transactions")
       .where("customerId", "==", customerId)
-      .where("status", "==", "paid")
+      .where("type", "==", "topup")
+      .where("status", "==", "approved")
       .limit(2)
       .get();
 
-    if (paidOrdersSnap.size > 1) return;
+    if (topupSnap.size > 1) return;
+
+    // 3. Read coupon config from globals
+    const globalSnap = await firestore
+      .collection("global")
+      .doc(GLOBAL_COLLECTION_ID)
+      .get();
+    const couponAmount = (globalSnap.data()?.couponDefaultAmount ?? 5) as number;
+    const couponExpiryDays = (globalSnap.data()?.couponExpiryDays ?? 30) as number;
 
     // 4. Generate unique coupon codes
     const referrerCode = await this.generateUniqueCode();
     const refereeCode = await this.generateUniqueCode();
 
     const now = new Date();
-    const couponExpiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const couponExpiry = new Date(
+      now.getTime() + couponExpiryDays * 24 * 60 * 60 * 1000,
+    );
 
     const referrerCouponRef = firestore.collection("coupons").doc();
     const refereeCouponRef = firestore.collection("coupons").doc();
 
     const baseCoupon = {
       type: "fixed",
-      amount: 5,
+      amount: couponAmount,
       usageLimit: 1,
       usageCount: 0,
       source: "referral",
@@ -115,7 +130,7 @@ export class ReferralService {
       isUsed: false,
       expiryDate: couponExpiry,
       storeId: null,
-      notes: "Referral reward - $5 off your next order",
+      notes: `Referral reward - $${couponAmount} off your next order`,
     };
 
     // 5. Batch write both coupons + update referral atomically
@@ -144,7 +159,7 @@ export class ReferralService {
     await batch.commit();
 
     logger.info(
-      `Referral rewarded. Referrer: ${referral.referrer}, Referee: ${customerId}, Order: ${orderId}`,
+      `Referral rewarded. Referrer: ${referral.referrer}, Referee: ${customerId}`,
     );
   }
 

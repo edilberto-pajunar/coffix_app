@@ -24,7 +24,7 @@ function buildItemsHtml(items: Array<Record<string, any>>): string {
       }>;
       const modifierHtml =
         modifiers.length > 0
-          ? `<div class="item-modifiers">${modifiers.map((m) => m.modifierId).join(", ")}</div>`
+          ? `<div class="item-modifiers">${modifiers.map((m) => m.name).join(", ")}</div>`
           : "";
       return `<div class="item-row">
             <div class="item-left">
