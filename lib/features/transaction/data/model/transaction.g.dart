@@ -12,7 +12,11 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
   customerId: json['customerId'] as String?,
   amount: (json['amount'] as num?)?.toDouble(),
   createdAt: const DateTimeConverter().fromJson(json['createdAt']),
-  status: $enumDecodeNullable(_$TransactionStatusEnumMap, json['status']),
+  status: $enumDecodeNullable(
+    _$TransactionStatusEnumMap,
+    json['status'],
+    unknownValue: TransactionStatus.created,
+  ),
   paymentMethod: const PaymentMethodConverter().fromJson(json['paymentMethod']),
   paymentId: json['paymentId'] as String?,
   paymentTime: const DateTimeConverter().fromJson(json['paymentTime']),

@@ -15,6 +15,7 @@ class AppGlobal extends Equatable {
   final double? maxDayBetweenLogin;
   final double? minCreditToShare;
   final double? minTopUp;
+  final String? aboutUrl;
   final String? specialUrl;
   final String? storeUrl;
   final String? tcUrl;
@@ -33,6 +34,7 @@ class AppGlobal extends Equatable {
     this.maxDayBetweenLogin,
     this.minCreditToShare,
     this.minTopUp,
+    this.aboutUrl,
     this.specialUrl,
     this.storeUrl,
     this.tcUrl,
@@ -56,6 +58,7 @@ class AppGlobal extends Equatable {
     double? maxDayBetweenLogin,
     double? minCreditToShare,
     double? minTopUp,
+    String? aboutUrl,
     String? specialUrl,
     String? storeUrl,
     String? tcUrl,
@@ -73,6 +76,7 @@ class AppGlobal extends Equatable {
     maxDayBetweenLogin: maxDayBetweenLogin ?? this.maxDayBetweenLogin,
     minCreditToShare: minCreditToShare ?? this.minCreditToShare,
     minTopUp: minTopUp ?? this.minTopUp,
+    aboutUrl: aboutUrl ?? this.aboutUrl,
     specialUrl: specialUrl ?? this.specialUrl,
     storeUrl: storeUrl ?? this.storeUrl,
     tcUrl: tcUrl ?? this.tcUrl,
@@ -93,6 +97,7 @@ class AppGlobal extends Equatable {
     maxDayBetweenLogin,
     minCreditToShare,
     minTopUp,
+    aboutUrl,
     specialUrl,
     storeUrl,
     tcUrl,

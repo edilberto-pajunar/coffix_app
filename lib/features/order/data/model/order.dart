@@ -23,6 +23,8 @@ enum OrderStatus {
   cancelled,
   @JsonValue('pending')
   pending,
+  @JsonValue('payment_failed')
+  paymentFailed,
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -36,6 +38,7 @@ class Order {
   @DateTimeConverter()
   final DateTime? scheduledAt;
   final List<Item>? items;
+  @JsonKey(unknownEnumValue: OrderStatus.draft)
   final OrderStatus? status;
   final PaymentStatus? paymentStatus;
   @PaymentMethodConverter()

@@ -29,6 +29,7 @@ class Transaction {
   final double? amount;
   @DateTimeConverter()
   final DateTime? createdAt;
+  @JsonKey(unknownEnumValue: TransactionStatus.created)
   final TransactionStatus? status;
   @PaymentMethodConverter()
   final PaymentMethod? paymentMethod;

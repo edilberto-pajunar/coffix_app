@@ -166,8 +166,9 @@ class _HomeViewState extends State<HomeView> {
                                       'Password reset email sent. Please check your email.',
                                     );
                                   },
-                                  unauthenticated: () =>
-                                      context.goNamed(HomePage.route),
+                                  unauthenticated: () {
+                                    context.goNamed(HomePage.route);
+                                  },
                                   error: (message) =>
                                       AppNotification.error(context, message),
                                 );
@@ -240,8 +241,8 @@ class _HomeViewState extends State<HomeView> {
                                                     icon: Icon(
                                                       Icons.settings,
                                                       color: Colors.white,
-                                                      size:
-                                                          AppSizes.iconSizeLarge,
+                                                      size: AppSizes
+                                                          .iconSizeLarge,
                                                     ),
                                                   ),
                                                 ),

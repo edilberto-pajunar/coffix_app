@@ -5,6 +5,8 @@ import 'package:coffix_app/core/di/service_locator.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/data/model/global.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
+import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payment_page.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';
@@ -15,6 +17,7 @@ import 'package:coffix_app/presentation/atoms/app_layout_builder.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_money_field.dart';
 import 'package:coffix_app/presentation/molecules/app_back_header.dart';
+import 'package:coffix_app/presentation/molecules/app_guest_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -80,6 +83,12 @@ class _CreditViewState extends State<CreditView> {
 
     final bool minTopUpNotReached =
         parsedAmount < double.parse(minTopUp ?? '0');
+    final isAuthenticated = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) =>
+          user.user.emailVerified == true &&
+          user.user.finishedOnboarding == true,
+      orElse: () => false,
+    );
 
     return Scaffold(
       appBar: AppBackHeader(
@@ -266,7 +275,13 @@ class _CreditViewState extends State<CreditView> {
                           (amount.isEmpty ||
                               parsedAmount < (global?.minTopUp ?? 0))),
                       onPressed: () {
-                        if (showTopUpField &&
+                        if (!isAuthenticated) {
+                          AppGuestBottomSheet.show(
+                            context,
+                            message: "Please sign in to continue",
+                          
+                          );
+                        } else if (showTopUpField &&
                             formKey.currentState!.validate()) {
                           context.read<CreditCubit>().topup(
                             amount: parsedAmount,

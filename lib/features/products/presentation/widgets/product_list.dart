@@ -2,6 +2,7 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/extensions/price_extensions.dart';
 import 'package:coffix_app/core/theme/typography.dart';
+import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/products/data/model/product_category.dart';
 import 'package:coffix_app/features/products/data/model/product_with_category.dart';
 import 'package:coffix_app/features/products/logic/product_cubit.dart';
@@ -11,6 +12,7 @@ import 'package:coffix_app/presentation/atoms/app_cached_network_image.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_field.dart';
+import 'package:coffix_app/presentation/molecules/app_guest_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +35,12 @@ class ProductList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAuthenticated = context.watch<AuthCubit>().state.maybeWhen(
+      authenticated: (user) =>
+          user.user.emailVerified == true &&
+          user.user.finishedOnboarding == true,
+      orElse: () => false,
+    );
     return SingleChildScrollView(
       padding: AppSizes.defaultPadding,
       child: Column(
@@ -70,11 +78,18 @@ class ProductList extends StatelessWidget {
               return AppClickable(
                 showSplash: false,
                 onPressed: () {
-                  context.read<ProductModifierCubit>().resetModifiers();
-                  context.pushNamed(
-                    AddProductPage.route,
-                    extra: {"product": product.product, "storeId": storeId},
-                  );
+                  if (!isAuthenticated) {
+                    AppGuestBottomSheet.show(
+                      context,
+                      message: "Please sign in to continue",
+                    );
+                  } else {
+                    context.read<ProductModifierCubit>().resetModifiers();
+                    context.pushNamed(
+                      AddProductPage.route,
+                      extra: {"product": product.product, "storeId": storeId},
+                    );
+                  }
                 },
                 child: Row(
                   children: [

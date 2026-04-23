@@ -13,7 +13,11 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   amount: (json['amount'] as num?)?.toDouble(),
   createdAt: const DateTimeConverter().fromJson(json['createdAt']),
   scheduledAt: const DateTimeConverter().fromJson(json['scheduledAt']),
-  status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']),
+  status: $enumDecodeNullable(
+    _$OrderStatusEnumMap,
+    json['status'],
+    unknownValue: OrderStatus.draft,
+  ),
   paymentStatus: $enumDecodeNullable(
     _$PaymentStatusEnumMap,
     json['paymentStatus'],
@@ -53,6 +57,7 @@ const _$OrderStatusEnumMap = {
   OrderStatus.completed: 'completed',
   OrderStatus.cancelled: 'cancelled',
   OrderStatus.pending: 'pending',
+  OrderStatus.paymentFailed: 'payment_failed',
 };
 
 const _$PaymentStatusEnumMap = {
