@@ -2,6 +2,7 @@ import 'package:coffix_app/core/constants/colors.dart';
 import 'package:coffix_app/core/constants/sizes.dart';
 import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
+import 'package:coffix_app/presentation/atoms/app_icon.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTile extends StatelessWidget {
@@ -11,12 +12,15 @@ class ProfileTile extends StatelessWidget {
     required this.onTap,
     required this.icon,
     this.textColor,
+    this.trailingIcon,
   });
 
   final String label;
   final VoidCallback onTap;
   final Color? textColor;
   final String icon;
+  final Widget? trailingIcon;
+
   @override
   Widget build(BuildContext context) {
     return AppClickable(
@@ -44,11 +48,7 @@ class ProfileTile extends StatelessWidget {
                 ],
               ),
             ),
-            // AppIcon.withIconData(
-            //   Icons.chevron_right_rounded,
-            //   size: AppSizes.iconSizeSmall,
-            //   color: AppColors.lightGrey,
-            // ),
+            if (trailingIcon != null) trailingIcon!,
           ],
         ),
       ),

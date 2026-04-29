@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import { requirePost } from "../middleware/method";
+import { requiredAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { EmailService } from "./service";
-import { sendGiftEmailSchema, sendInvoiceSchema } from "./schema";
+import { sendGiftEmailSchema } from "./schema";
 
 const router = express.Router();
 const emailService = new EmailService();
@@ -25,5 +26,31 @@ router.post("/gift", requirePost, async (req: Request, res: Response) => {
     });
   }
 });
+
+router.get(
+  "/credit-transactions",
+  requiredAuth,
+  async (request: AuthenticatedRequest, response: Response) => {
+    try {
+      const customerId = request.user?.uid;
+      if (!customerId) {
+        return response
+          .status(401)
+          .json({ success: false, message: "Unauthorized" });
+      }
+
+      await emailService.sendCreditTransactions(customerId);
+
+      return response
+        .status(200)
+        .json({ success: true, message: "Credit transactions email sent" });
+    } catch (e: any) {
+      return response.status(500).json({
+        success: false,
+        message: e.message ?? "Failed to send credit transactions email",
+      });
+    }
+  },
+);
 
 export default router;

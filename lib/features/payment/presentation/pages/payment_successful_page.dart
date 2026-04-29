@@ -89,12 +89,27 @@ class PaymentSuccessfulView extends StatelessWidget {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: AppSizes.lg),
-                          Text(
-                            orderCreated != null
-                                ? 'Order #${orderCreated.transactionNumber ?? '—'} will be ready for pick up from \n${store?.name ?? '—'} at'
-                                : 'Your order will be ready for pick up from \n${store?.name ?? '—'} at',
-                            style: AppTypography.bodyM,
+                          RichText(
                             textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: AppTypography.bodyM.copyWith(
+                                color: AppColors.textBlackColor,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text:
+                                      "Order #${orderCreated?.transactionNumber ?? '—'} will be ready for pick up from ",
+                                ),
+                                TextSpan(
+                                  text: "\n${store?.name ?? '—'} ",
+                                  style: AppTypography.bodyM.copyWith(
+                                    color: AppColors.textBlackColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(text: "at"),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: AppSizes.sm),
                           Container(

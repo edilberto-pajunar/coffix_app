@@ -7,6 +7,7 @@ import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/confirm_account_deletion.dart';
+import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';
@@ -119,6 +120,18 @@ class AboutView extends StatelessWidget {
                       }
                     },
                     text: 'Report an issue / feedback',
+                  ),
+                  SizedBox(height: AppSizes.sm),
+                  AppTextButton(
+                    showUnderline: true,
+                    onPressed: () async {
+                      await launchUrl(
+                        Uri.parse(
+                          'https://www.coffix.co.nz/term-of-use-privacy',
+                        ),
+                      );
+                    },
+                    text: 'Terms of use & privacy',
                   ),
                   SizedBox(height: AppSizes.sm),
                   AppTextButton(

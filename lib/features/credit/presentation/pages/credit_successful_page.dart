@@ -89,7 +89,7 @@ class CreditSuccessfulView extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              'Amount Added: \$${amount.toStringAsFixed(2)}',
+                              'Amount Paid: \$${amount.toStringAsFixed(2)}',
                               style: AppTypography.titleM.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),

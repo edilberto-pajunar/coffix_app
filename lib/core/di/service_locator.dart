@@ -41,6 +41,7 @@ import 'package:coffix_app/features/stores/logic/store_cubit.dart';
 import 'package:coffix_app/features/network/logic/network_cubit.dart';
 import 'package:coffix_app/features/transaction/logic/transaction_cubit.dart';
 import 'package:coffix_app/features/transaction/domain/transaction_repository_impl.dart';
+import 'package:coffix_app/features/transaction/domain/usecases/download_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -74,6 +75,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(),
   );
+  getIt.registerLazySingleton<DownloadTransaction>(() => DownloadTransaction());
   getIt.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl());
   getIt.registerLazySingleton<DraftRepository>(() => DraftRepositoryImpl());
   getIt.registerLazySingleton<ReferralRepository>(

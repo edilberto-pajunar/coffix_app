@@ -19,7 +19,9 @@ import 'package:coffix_app/features/profile/presentation/pages/qr_id_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/share_your_balance_page.dart';
 import 'package:coffix_app/features/profile/presentation/pages/special_url_page.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/profile_tile.dart';
+import 'package:coffix_app/features/transaction/domain/usecases/download_transaction.dart';
 import 'package:coffix_app/features/transaction/presentation/pages/transaction_page.dart';
+import 'package:coffix_app/domain/usecases/use_case.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:coffix_app/presentation/atoms/app_card.dart';
 import 'package:coffix_app/presentation/atoms/app_clickable.dart';
@@ -84,13 +86,12 @@ class _ProfileViewState extends State<ProfileView> {
       loaded: (global, appVersion) => global,
       orElse: () => null,
     );
+    final fullName = "${user?.firstName} ${user?.lastName}".length > 20
+        ? "${"${user?.firstName} ${user?.lastName}".substring(0, 20)}..."
+        : "${user?.firstName} ${user?.lastName}";
 
     return Scaffold(
-      appBar: AppBackHeader(
-        title: isAuthenticated
-            ? "${user?.firstName} ${user?.lastName}"
-            : "My Account",
-      ),
+      appBar: AppBackHeader(title: isAuthenticated ? fullName : "My Account"),
       body: SingleChildScrollView(
         padding: AppSizes.defaultPadding,
         child: Column(
@@ -169,6 +170,17 @@ class _ProfileViewState extends State<ProfileView> {
                 context.pushNamed(TransactionPage.route);
               },
               icon: AppImages.transaction,
+              trailingIcon: AppClickable(
+                onPressed: () async {
+                  await getIt<DownloadTransaction>().call(const NoParams());
+                },
+                showSplash: false,
+                child: Image.asset(
+                  AppImages.transactionDownload,
+                  width: AppSizes.iconSizeMedium,
+                  height: AppSizes.iconSizeMedium,
+                ),
+              ),
             ),
             Divider(height: 0, color: AppColors.textBlackColor),
 
@@ -243,27 +255,6 @@ class _ProfileViewState extends State<ProfileView> {
             ),
             Divider(height: 0, color: AppColors.textBlackColor),
             const SizedBox(height: AppSizes.xxxl),
-            Center(
-              child: AppClickable(
-                onPressed: () async {
-                  await launchUrl(
-                    Uri.parse('https://www.coffix.co.nz/term-of-use-privacy'),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-                  child: Text(
-                    'Terms of use & privacy',
-                    style: AppTypography.bodyXS.copyWith(
-                      color: AppColors.lightGrey,
-                      decoration: TextDecoration.underline,
-                      decorationColor: AppColors.lightGrey,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSizes.xxl),
           ],
         ),
       ),

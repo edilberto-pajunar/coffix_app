@@ -12,7 +12,20 @@ import {
 } from "./schema";
 import { AppUser } from "../user/interface";
 import { EmailTemplate } from "./interface";
-import { formatNzDate, nowNZ } from "../utils/nz_time";
+import { formatNzDate, formatNzTime, nowNZ } from "../utils/nz_time";
+import * as admin from "firebase-admin";
+
+function toDate(value: unknown): Date {
+  if (value instanceof Date) return value;
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    typeof (value as admin.firestore.Timestamp).toDate === "function"
+  ) {
+    return (value as admin.firestore.Timestamp).toDate();
+  }
+  return new Date(value as string);
+}
 
 function buildUserVariables(
   user: AppUser | null,
@@ -140,7 +153,7 @@ export class EmailService {
   ): Promise<void> {
     await this.send({
       email: params.to,
-      documentId: "INVOICE",
+      documentId: "COFFIX_CREDIT_INVOICE",
       userId: params.userId,
       variables: {
         store_name: params.storeName,
@@ -171,6 +184,87 @@ export class EmailService {
       variables: {
         referee_name: params.referee_name,
       },
+    });
+  }
+
+  async sendCreditTransactions(customerId: string): Promise<void> {
+    const customerSnap = await firestore
+      .collection("customers")
+      .doc(customerId)
+      .get();
+    if (!customerSnap.exists) throw new Error("Customer not found");
+
+    const customer = customerSnap.data()!;
+    const customerEmail = customer.email as string;
+    const customerName =
+      [customer.firstName, customer.lastName].filter(Boolean).join(" ") ||
+      "Customer";
+
+    const snap = await firestore
+      .collection("transactions")
+      .where("customerId", "==", customerId)
+      .where("paymentMethod", "==", "coffixCredit")
+      .where("status", "in", ["paid", "approved", "completed"])
+      .orderBy("createdAt", "asc")
+      .get();
+
+    const transactions = snap.docs.map((d) => d.data());
+
+    let runningBalance = 0;
+    const rows = transactions.map((tx) => {
+      const type = (tx.type as string | undefined) ?? "order";
+      const amount = (tx.amount as number | undefined) ?? 0;
+      const totalAmount = (tx.totalAmount as number | undefined) ?? amount;
+      if (type === "topup" || type === "gift") {
+        runningBalance += totalAmount;
+      } else {
+        runningBalance -= amount;
+      }
+      return {
+        time: formatNzTime(toDate(tx.createdAt)),
+        transaction: `#${tx.transactionNumber ?? ""} ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+        amount: `$${amount.toFixed(2)}`,
+        balance: `$${runningBalance.toFixed(2)}`,
+      };
+    });
+
+    rows.reverse();
+
+    const tableRows = rows
+      .map(
+        (r) => `<tr>
+          <td style="padding:8px 12px;border:1px solid #e0e0e0;">${r.time}</td>
+          <td style="padding:8px 12px;border:1px solid #e0e0e0;">${r.transaction}</td>
+          <td style="padding:8px 12px;border:1px solid #e0e0e0;">${r.amount}</td>
+          <td style="padding:8px 12px;border:1px solid #e0e0e0;">${r.balance}</td>
+        </tr>`,
+      )
+      .join("\n");
+
+    const content = `
+      <h2 style="margin:0 0 16px;font-size:18px;text-align:center;">Coffix Credit Transactions</h2>
+      <p style="margin:0 0 16px;">Hi ${customerName}, here is your Coffix Credit transaction history.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background-color:#f5f5f5;">
+            <th style="padding:8px 12px;border:1px solid #e0e0e0;text-align:left;">Time</th>
+            <th style="padding:8px 12px;border:1px solid #e0e0e0;text-align:left;">Transaction</th>
+            <th style="padding:8px 12px;border:1px solid #e0e0e0;text-align:left;">Amount</th>
+            <th style="padding:8px 12px;border:1px solid #e0e0e0;text-align:left;">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows || '<tr><td colspan="4" style="padding:8px 12px;border:1px solid #e0e0e0;text-align:center;">No transactions found.</td></tr>'}
+        </tbody>
+      </table>
+    `;
+
+    await this.sendInvoice({
+      to: customerEmail,
+      userId: customerId,
+      invoiceHtml: content,
+      storeName: "Coffix",
+      transactionNumber: "credit-history",
     });
   }
 }
