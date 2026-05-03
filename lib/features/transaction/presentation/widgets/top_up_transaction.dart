@@ -21,24 +21,10 @@ class TopUpTransaction extends StatefulWidget {
   State<TopUpTransaction> createState() => TopUpTransactionState();
 }
 
-(String, Color) _transactionStatusStyle(TransactionStatus? s) {
-  return switch (s) {
-    TransactionStatus.paid => ('Paid', AppColors.success),
-    TransactionStatus.created => ('Created', AppColors.primary),
-    TransactionStatus.approved => ('Approved', AppColors.success),
-    TransactionStatus.failed => ('Failed', AppColors.error),
-    TransactionStatus.completed => ('Completed', AppColors.success),
-    _ => ('—', AppColors.lightGrey),
-  };
-}
-
 class TopUpTransactionState extends State<TopUpTransaction> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final (statusLabel, statusColor) = _transactionStatusStyle(
-      widget.transaction.status,
-    );
     final order = context.watch<OrderCubit>().state.orders.firstWhereOrNull(
       (order) => order.docId == widget.transaction.orderId,
     );

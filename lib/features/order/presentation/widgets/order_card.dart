@@ -236,7 +236,7 @@ class OrderCard extends StatelessWidget {
                                     children: modifiers
                                         .map(
                                           (m) => Text(
-                                            m.toLarge() ?? '—',
+                                            m.toLarge(),
                                             style: AppTypography.body3XS
                                                 .copyWith(
                                                   color:

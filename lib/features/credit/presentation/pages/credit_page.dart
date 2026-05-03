@@ -6,7 +6,6 @@ import 'package:coffix_app/core/theme/typography.dart';
 import 'package:coffix_app/features/app/data/model/global.dart';
 import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
-import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/features/credit/logic/credit_cubit.dart';
 import 'package:coffix_app/features/credit/presentation/pages/credit_topup_payment_page.dart';
 import 'package:coffix_app/features/credit/presentation/widgets/info_card.dart';

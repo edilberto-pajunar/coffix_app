@@ -7,7 +7,6 @@ import 'package:coffix_app/features/app/logic/app_cubit.dart';
 import 'package:coffix_app/features/auth/logic/auth_cubit.dart';
 import 'package:coffix_app/features/cart/logic/cart_cubit.dart';
 import 'package:coffix_app/features/profile/presentation/widgets/confirm_account_deletion.dart';
-import 'package:coffix_app/presentation/atoms/app_clickable.dart';
 import 'package:coffix_app/presentation/atoms/app_loading.dart';
 import 'package:coffix_app/presentation/atoms/app_notification.dart';
 import 'package:coffix_app/presentation/atoms/app_text_button.dart';

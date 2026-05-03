@@ -1,5 +1,4 @@
 import 'package:coffix_app/core/constants/sizes.dart';
-import 'package:coffix_app/features/auth/presentation/pages/login_page.dart';
 import 'package:coffix_app/features/home/presentation/pages/home_page.dart';
 import 'package:coffix_app/presentation/atoms/app_button.dart';
 import 'package:flutter/material.dart';

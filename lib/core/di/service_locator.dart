@@ -10,6 +10,7 @@ import 'package:coffix_app/data/repositories/profile_repository.dart';
 import 'package:coffix_app/data/repositories/referral_repository.dart';
 import 'package:coffix_app/data/repositories/store_repository.dart';
 import 'package:coffix_app/data/repositories/transaction_repository.dart';
+import 'package:coffix_app/core/services/log_service.dart';
 import 'package:coffix_app/features/app/data/app_repository_impl.dart';
 import 'package:coffix_app/features/coupons/data/coupon_repository_impl.dart';
 import 'package:coffix_app/features/coupons/logic/coupon_cubit.dart';
@@ -88,6 +89,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<CouponCubit>(
     () => CouponCubit(couponRepository: getIt<CouponRepository>()),
   );
+  getIt.registerLazySingleton<LogService>(() => LogService());
   // App Cubit
   getIt.registerLazySingleton<AppCubit>(
     () => AppCubit(appRepository: getIt<AppRepository>()),

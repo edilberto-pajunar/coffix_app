@@ -28,7 +28,6 @@ class OrderItemRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtotal = price * (cartItem.quantity ?? 0);
-    print(cartItem.toJson());
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

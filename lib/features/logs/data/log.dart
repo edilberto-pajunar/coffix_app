@@ -10,6 +10,8 @@ class Log {
   final String? customerId;
   final String? category; // refund, purchase, referral, info update, bonus,
   final String? severityLevel; // error, warning, info, success
+  // used for admin controlling staff not customers in web app
+  final String? userId;
   final String? action;
   final String? notes;
   @DateTimeConverter()
@@ -21,6 +23,7 @@ class Log {
     this.customerId,
     this.category,
     this.severityLevel,
+    this.userId,
     this.action,
     this.notes,
     this.time,
